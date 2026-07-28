@@ -43,6 +43,10 @@
     scroll-behavior: smooth;
   }
 
+  [id] {
+    scroll-margin-top: 5rem;
+  }
+
   body {
     margin: 0;
     min-width: 20rem;
@@ -80,6 +84,11 @@
   a {
     color: inherit;
     text-decoration: inherit;
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--color-brand-700);
+    outline-offset: 3px;
   }
 
   ::selection {
@@ -143,4 +152,3 @@
     transition-duration: 0.01ms !important;
   }
 }
-
