@@ -1,4 +1,5 @@
 import { Header } from "./components/layout/Header";
+import { Features } from "./components/sections/Features";
 import { Hero } from "./components/sections/Hero";
 import { HowItWorks } from "./components/sections/HowItWorks";
 import { TrustStrip } from "./components/sections/TrustStrip";
@@ -11,6 +12,7 @@ export function App() {
         <Hero />
         <TrustStrip />
         <HowItWorks />
+        <Features />
       </main>
     </>
   );
