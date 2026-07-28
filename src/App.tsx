@@ -1,4 +1,5 @@
 import { Header } from "./components/layout/Header";
+import { Faq } from "./components/sections/Faq";
 import { Features } from "./components/sections/Features";
 import { Hero } from "./components/sections/Hero";
 import { HowItWorks } from "./components/sections/HowItWorks";
@@ -15,6 +16,7 @@ export function App() {
         <HowItWorks />
         <Features />
         <Pricing />
+        <Faq />
       </main>
     </>
   );
