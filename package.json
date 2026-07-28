@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:pages": "tsc -b && vite build --base=/autoapply/",
     "typecheck": "tsc -b --pretty false",
     "preview": "vite preview"
   },
@@ -23,4 +24,3 @@
     "vite": "^8.1.5"
   }
 }
-
