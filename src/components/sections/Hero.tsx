@@ -1,5 +1,5 @@
 import { PageContainer } from "../layout/PageContainer";
-import { Button } from "../ui/Button";
+import { ButtonLink } from "../ui/Button";
 import { Section } from "../ui/Section";
 
 const applications = [
@@ -38,10 +38,12 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button size="lg">Start organizing</Button>
-            <Button size="lg" variant="secondary">
+            <ButtonLink href="#pricing" size="lg">
+              Start organizing
+            </ButtonLink>
+            <ButtonLink href="#how-it-works" size="lg" variant="secondary">
               See how it works
-            </Button>
+            </ButtonLink>
           </div>
 
           <ul className="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-ink-muted">
