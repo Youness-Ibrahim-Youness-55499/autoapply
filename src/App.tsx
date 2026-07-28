@@ -1,3 +1,4 @@
+import { Footer } from "./components/layout/Footer";
 import { Header } from "./components/layout/Header";
 import { Faq } from "./components/sections/Faq";
 import { Features } from "./components/sections/Features";
@@ -9,7 +10,7 @@ import { TrustStrip } from "./components/sections/TrustStrip";
 
 export function App() {
   return (
-    <>
+    <div id="top">
       <Header />
       <main>
         <Hero />
@@ -20,6 +21,7 @@ export function App() {
         <Faq />
         <FinalCta />
       </main>
-    </>
+      <Footer />
+    </div>
   );
 }
