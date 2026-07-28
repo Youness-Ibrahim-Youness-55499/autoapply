@@ -10,7 +10,7 @@ const workflowSteps = [
   },
   {
     description:
-      "Keep the right rÃ©sumÃ©, notes, and supporting materials beside the application they belong to.",
+      "Keep the right resume, notes, and supporting materials beside the application they belong to.",
     label: "Prepare",
     title: "Tailor your materials",
   },
@@ -54,7 +54,7 @@ export function HowItWorks() {
               <div className="p-6 sm:p-8">
                 <div className="flex items-center justify-between gap-4">
                   <p className="eyebrow">
-                    {String(index + 1).padStart(2, "0")} Â· {step.label}
+                    {String(index + 1).padStart(2, "0")} - {step.label}
                   </p>
                   <span className="text-xs font-semibold text-ink-muted">
                     Step {index + 1} of {workflowSteps.length}
@@ -99,7 +99,7 @@ function WorkflowPreview({ step }: WorkflowPreviewProps) {
 
       {step === 1 && (
         <div className="space-y-3">
-          <PreviewDocument name="Product rÃ©sumÃ©" status="Ready" />
+          <PreviewDocument name="Product resume" status="Ready" />
           <PreviewDocument name="Portfolio notes" status="Review" />
           <PreviewDocument name="Cover letter" status="Draft" />
         </div>
