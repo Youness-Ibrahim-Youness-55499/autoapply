@@ -46,7 +46,7 @@ export function Faq() {
           <div className="border-t border-line">
             {questions.map((item) => (
               <details className="group border-b border-line py-1" key={item.question}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-lg font-semibold marker:content-none">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-lg py-6 text-lg font-semibold marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2">
                   {item.question}
                   <span
                     aria-hidden="true"
