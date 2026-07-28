@@ -5,7 +5,7 @@ const navigationItems = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#pricing", label: "Pricing" },
-  { href: "#resources", label: "Resources" },
+  { href: "#faq", label: "FAQ" },
 ];
 
 export function Header() {
@@ -40,13 +40,13 @@ export function Header() {
           <div className="hidden items-center gap-3 md:flex">
             <a
               className="rounded-full px-3 py-2 text-sm font-semibold text-ink transition-colors hover:text-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
-              href="#login"
+              href="#footer"
             >
-              Log in
+              Contact
             </a>
             <a
               className="inline-flex min-h-10 items-center justify-center rounded-full border border-brand-900 bg-brand-900 px-5 text-sm font-semibold text-white shadow-button transition-colors hover:border-brand-800 hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
-              href="#get-started"
+              href="#pricing"
             >
               Get started
             </a>
@@ -90,13 +90,13 @@ export function Header() {
               <div className="mt-3 grid grid-cols-2 gap-3 border-t border-line pt-4">
                 <a
                   className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-4 text-sm font-semibold text-ink"
-                  href="#login"
+                  href="#footer"
                 >
-                  Log in
+                  Contact
                 </a>
                 <a
                   className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-900 px-4 text-sm font-semibold text-white"
-                  href="#get-started"
+                  href="#pricing"
                 >
                   Get started
                 </a>
@@ -108,4 +108,3 @@ export function Header() {
     </header>
   );
 }
-
