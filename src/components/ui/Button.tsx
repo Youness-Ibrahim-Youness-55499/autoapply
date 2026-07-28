@@ -1,4 +1,8 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  ReactNode,
+} from "react";
 
 type ButtonVariant = "primary" | "secondary" | "quiet";
 type ButtonSize = "sm" | "md" | "lg";
@@ -25,6 +29,14 @@ export type ButtonProps = {
   variant?: ButtonVariant;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
+function buttonClasses(
+  variant: ButtonVariant,
+  size: ButtonSize,
+  className: string,
+) {
+  return `inline-flex items-center justify-center gap-2 rounded-full border font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+}
+
 export function Button({
   children,
   className = "",
@@ -35,7 +47,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-full border font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={buttonClasses(variant, size, className)}
       type={type}
       {...props}
     >
@@ -44,3 +56,23 @@ export function Button({
   );
 }
 
+export type ButtonLinkProps = {
+  children: ReactNode;
+  className?: string;
+  size?: ButtonSize;
+  variant?: ButtonVariant;
+} & AnchorHTMLAttributes<HTMLAnchorElement>;
+
+export function ButtonLink({
+  children,
+  className = "",
+  size = "md",
+  variant = "primary",
+  ...props
+}: ButtonLinkProps) {
+  return (
+    <a className={buttonClasses(variant, size, className)} {...props}>
+      {children}
+    </a>
+  );
+}
