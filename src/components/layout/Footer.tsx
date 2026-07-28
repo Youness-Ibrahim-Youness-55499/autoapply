@@ -12,11 +12,11 @@ const footerGroups = [
   },
   {
     links: [
-      ["Privacy", "#footer"],
-      ["Terms", "#footer"],
-      ["Accessibility", "#footer"],
+      ["Contact", "mailto:hello@autoapply.app"],
+      ["FAQ", "#faq"],
+      ["Back to top", "#top"],
     ],
-    title: "Company",
+    title: "Help",
   },
 ];
 
