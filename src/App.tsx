@@ -1,5 +1,6 @@
 import { Header } from "./components/layout/Header";
 import { Hero } from "./components/sections/Hero";
+import { TrustStrip } from "./components/sections/TrustStrip";
 
 export function App() {
   return (
@@ -7,6 +8,7 @@ export function App() {
       <Header />
       <main>
         <Hero />
+        <TrustStrip />
       </main>
     </>
   );
