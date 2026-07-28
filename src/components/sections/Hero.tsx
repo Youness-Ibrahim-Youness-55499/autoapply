@@ -1,4 +1,4 @@
-import dashboardHero from "../../assets/autoapply-dashboard-hero.png";
+import dashboardHero from "../../assets/autoapply-dashboard-hero-midnight.png";
 import { PageContainer } from "../layout/PageContainer";
 import { ButtonLink } from "../ui/Button";
 import { Section } from "../ui/Section";
@@ -59,3 +59,4 @@ export function Hero() {
     </Section>
   );
 }
+
