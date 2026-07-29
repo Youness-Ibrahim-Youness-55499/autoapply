@@ -1,36 +1,15 @@
-import { Footer } from "./components/layout/Footer";
-import { Header } from "./components/layout/Header";
-import { Faq } from "./components/sections/Faq";
-import { Features } from "./components/sections/Features";
-import { FinalCta } from "./components/sections/FinalCta";
-import { Hero } from "./components/sections/Hero";
-import { HowItWorks } from "./components/sections/HowItWorks";
-import { Pricing } from "./components/sections/Pricing";
-import { ScrollProcessShowcase } from "./components/sections/ScrollProcessShowcase";
-import { TrustStrip } from "./components/sections/TrustStrip";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { AuthPage } from "./pages/AuthPage";
+import { LandingPage } from "./pages/LandingPage";
 
 export function App() {
   return (
-    <div id="top">
-      <a
-        className="fixed left-4 top-4 z-50 -translate-y-24 rounded-full bg-brand-950 px-4 py-2 text-sm font-semibold text-white transition-transform focus:translate-y-0"
-        href="#main-content"
-      >
-        Skip to main content
-      </a>
-      <Header />
-      <main id="main-content">
-        <Hero />
-        <TrustStrip />
-        <HowItWorks />
-        <Features />
-        <ScrollProcessShowcase />
-        <Pricing />
-        <Faq />
-        <FinalCta />
-      </main>
-      <Footer />
-    </div>
+    <Routes>
+      <Route element={<LandingPage />} path="/" />
+      <Route element={<AuthPage mode="signup" />} path="/signup" />
+      <Route element={<AuthPage mode="login" />} path="/login" />
+      <Route element={<Navigate replace to="/" />} path="*" />
+    </Routes>
   );
 }
 
