@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { PageContainer } from "../layout/PageContainer";
 import { Section } from "../ui/Section";
 
@@ -93,16 +94,16 @@ export function Pricing() {
                   </li>
                 ))}
               </ul>
-              <a
+              <Link
                 className={`mt-8 inline-flex min-h-11 items-center justify-center rounded-full border px-5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 ${
                   plan.featured
                     ? "border-white bg-white text-brand-950 hover:bg-brand-50"
                     : "border-brand-900 bg-brand-900 text-white hover:bg-brand-800"
                 }`}
-                href="#final-cta"
+                to="/signup"
               >
                 Choose {plan.name}
-              </a>
+              </Link>
             </article>
           ))}
         </div>
@@ -115,3 +116,4 @@ export function Pricing() {
     </Section>
   );
 }
+

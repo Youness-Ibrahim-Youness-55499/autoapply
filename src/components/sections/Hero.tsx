@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import dashboardHero from "../../assets/autoapply-dashboard-hero-midnight.png";
 import { PageContainer } from "../layout/PageContainer";
 import { ButtonLink } from "../ui/Button";
@@ -18,9 +19,12 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <ButtonLink href="#pricing" size="lg">
+            <Link
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-brand-900 bg-brand-900 px-6 text-base font-semibold text-white shadow-button transition-colors duration-200 hover:border-brand-800 hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
+              to="/signup"
+            >
               Start organizing
-            </ButtonLink>
+            </Link>
             <ButtonLink href="#how-it-works" size="lg" variant="secondary">
               See how it works
             </ButtonLink>
