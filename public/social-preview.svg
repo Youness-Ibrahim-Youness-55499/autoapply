@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="background" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#171831"/>
+      <stop offset="1" stop-color="#25264f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="75%" cy="20%" r="70%">
+      <stop offset="0" stop-color="#6658ed" stop-opacity=".65"/>
+      <stop offset="1" stop-color="#6658ed" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" rx="32" fill="url(#background)"/>
+  <rect width="1200" height="630" rx="32" fill="url(#glow)"/>
+  <g transform="translate(88 78)">
+    <rect width="58" height="58" rx="16" fill="#cbc5ff"/>
+    <path
+      d="m15 43 9-28h10l9 28h-8l-1.5-5.5h-9L23 43h-8Zm11.4-12h5.2L29 21.5 26.4 31Z"
+      fill="#171831"
+    />
+    <text x="78" y="43" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700">
+      autoapply
+    </text>
+  </g>
+  <text x="88" y="278" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="650" letter-spacing="-3">
+    A calmer job search
+  </text>
+  <text x="88" y="362" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="650" letter-spacing="-3">
+    starts with clarity.
+  </text>
+  <text x="90" y="454" fill="#cbc5ff" font-family="Inter, Arial, sans-serif" font-size="30">
+    Organize opportunities, improve materials, and follow every next step.
+  </text>
+  <path d="M90 528h350" stroke="#8174f7" stroke-width="4" stroke-linecap="round"/>
+  <path d="M468 528h122" stroke="#cbc5ff" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+</svg>
+
