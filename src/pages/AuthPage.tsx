@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Seo } from "../components/Seo";
 import { SkipLink } from "../components/SkipLink";
 import { PageContainer } from "../components/layout/PageContainer";
+import { supabase } from "../lib/supabase";
 
 type AuthPageProps = {
   mode: "login" | "signup";
@@ -9,6 +11,67 @@ type AuthPageProps = {
 
 export function AuthPage({ mode }: AuthPageProps) {
   const isSignup = mode === "signup";
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
+    setIsSubmitting(true);
+
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
+    const name = String(formData.get("name") ?? "").trim();
+
+    try {
+      if (isSignup) {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { name },
+            emailRedirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
+          },
+        });
+
+        if (error) {
+          setErrorMessage(error.message);
+          return;
+        }
+
+        if (data.session) {
+          navigate("/", { replace: true });
+          return;
+        }
+
+        setSuccessMessage(
+          "Check your email and follow the confirmation link to finish creating your account.",
+        );
+        event.currentTarget.reset();
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+
+      navigate("/", { replace: true });
+    } catch {
+      setErrorMessage("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -66,21 +129,23 @@ export function AuthPage({ mode }: AuthPageProps) {
               {isSignup ? "Create an account" : "Log in"}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-              This is the route foundation. Secure authentication will be connected
-              in a later step.
+              {isSignup
+                ? "Use your email to create a secure Autoapply account."
+                : "Enter the email and password connected to your account."}
             </p>
 
-            <form className="mt-8 space-y-5" onSubmit={(event) => event.preventDefault()}>
+            <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
               {isSignup && (
                 <label className="block text-sm font-semibold">
                   Name
                   <input
                     autoComplete="name"
                     className="mt-2 min-h-12 w-full rounded-xl border border-line bg-canvas px-4 font-normal outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
-                  name="name"
-                  placeholder="Your name"
-                  required
-                  type="text"
+                    disabled={isSubmitting}
+                    name="name"
+                    placeholder="Your name"
+                    required
+                    type="text"
                   />
                 </label>
               )}
@@ -89,6 +154,7 @@ export function AuthPage({ mode }: AuthPageProps) {
                 <input
                   autoComplete="email"
                   className="mt-2 min-h-12 w-full rounded-xl border border-line bg-canvas px-4 font-normal outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                  disabled={isSubmitting}
                   name="email"
                   placeholder="you@example.com"
                   required
@@ -100,6 +166,7 @@ export function AuthPage({ mode }: AuthPageProps) {
                 <input
                   autoComplete={isSignup ? "new-password" : "current-password"}
                   className="mt-2 min-h-12 w-full rounded-xl border border-line bg-canvas px-4 font-normal outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                  disabled={isSubmitting}
                   name="password"
                   minLength={8}
                   placeholder="At least 8 characters"
@@ -107,11 +174,35 @@ export function AuthPage({ mode }: AuthPageProps) {
                   type="password"
                 />
               </label>
+
+              <div aria-live="polite">
+                {errorMessage && (
+                  <p
+                    className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                    role="alert"
+                  >
+                    {errorMessage}
+                  </p>
+                )}
+                {successMessage && (
+                  <p className="rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-900">
+                    {successMessage}
+                  </p>
+                )}
+              </div>
+
               <button
-                className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-brand-900 px-6 text-sm font-semibold text-white hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-brand-900 px-6 text-sm font-semibold text-white hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isSubmitting}
                 type="submit"
               >
-                {isSignup ? "Create account" : "Log in"}
+                {isSubmitting
+                  ? isSignup
+                    ? "Creating account…"
+                    : "Logging in…"
+                  : isSignup
+                    ? "Create account"
+                    : "Log in"}
               </button>
             </form>
           </section>
@@ -120,4 +211,3 @@ export function AuthPage({ mode }: AuthPageProps) {
     </div>
   );
 }
-
