@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { PageContainer } from "./PageContainer";
 
 const footerGroups = [
@@ -18,13 +19,21 @@ const footerGroups = [
     ],
     title: "Help",
   },
+  {
+    links: [
+      ["Privacy", "/privacy"],
+      ["Terms", "/terms"],
+      ["Legal notice", "/legal-notice"],
+    ],
+    title: "Legal",
+  },
 ];
 
 export function Footer() {
   return (
     <footer className="border-t border-line bg-surface" id="footer">
       <PageContainer>
-        <div className="grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-[1.5fr_0.75fr_0.75fr]">
+        <div className="grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-[1.5fr_0.75fr_0.75fr_0.75fr]">
           <div>
             <a
               className="text-xl font-bold tracking-[-0.03em] text-brand-900"
@@ -50,12 +59,21 @@ export function Footer() {
               <ul className="mt-4 space-y-3">
                 {group.links.map(([label, href]) => (
                   <li key={label}>
-                    <a
-                      className="text-sm text-ink-muted hover:text-brand-800"
-                      href={href}
-                    >
-                      {label}
-                    </a>
+                    {href.startsWith("/") ? (
+                      <Link
+                        className="text-sm text-ink-muted hover:text-brand-800"
+                        to={href}
+                      >
+                        {label}
+                      </Link>
+                    ) : (
+                      <a
+                        className="text-sm text-ink-muted hover:text-brand-800"
+                        href={href}
+                      >
+                        {label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -71,3 +89,4 @@ export function Footer() {
     </footer>
   );
 }
+
