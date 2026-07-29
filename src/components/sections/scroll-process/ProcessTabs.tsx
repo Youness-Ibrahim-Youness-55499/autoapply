@@ -6,8 +6,10 @@ type ProcessTabsProps = {
 
 export function ProcessTabs({ activeStage }: ProcessTabsProps) {
   return (
-    <nav aria-label="Application automation stages">
-      <ol className="flex items-center">
+    <ol
+      aria-label="Application automation stages"
+      className="flex items-center"
+    >
         {processStages.map((stage, index) => (
           <li className="flex min-w-0 flex-1 items-center last:flex-none" key={stage}>
             <span
@@ -22,7 +24,7 @@ export function ProcessTabs({ activeStage }: ProcessTabsProps) {
             >
               <span
                 className={`text-[0.625rem] font-bold ${
-                  index === activeStage ? "text-white/55" : "text-ink-muted/65"
+                  index === activeStage ? "text-white/75" : "text-ink-muted"
                 }`}
               >
                 0{index + 1}
@@ -40,8 +42,7 @@ export function ProcessTabs({ activeStage }: ProcessTabsProps) {
             ) : null}
           </li>
         ))}
-      </ol>
-    </nav>
+    </ol>
   );
 }
 
