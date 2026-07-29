@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Seo } from "../components/Seo";
+import { SkipLink } from "../components/SkipLink";
 import { PageContainer } from "../components/layout/PageContainer";
 
 type AuthPageProps = {
@@ -21,6 +22,7 @@ export function AuthPage({ mode }: AuthPageProps) {
         path={`/${mode}`}
         title={isSignup ? "Create your account" : "Log in"}
       />
+      <SkipLink />
       <header className="border-b border-line bg-surface">
         <PageContainer>
           <div className="flex min-h-18 items-center justify-between">
@@ -40,7 +42,7 @@ export function AuthPage({ mode }: AuthPageProps) {
         </PageContainer>
       </header>
 
-      <main>
+      <main id="main-content">
         <PageContainer className="grid min-h-[calc(100vh-4.5rem)] items-center gap-12 py-16 lg:grid-cols-[1fr_0.8fr]">
           <div className="max-w-xl">
             <p className="eyebrow">{isSignup ? "Create your workspace" : "Welcome back"}</p>
@@ -75,9 +77,10 @@ export function AuthPage({ mode }: AuthPageProps) {
                   <input
                     autoComplete="name"
                     className="mt-2 min-h-12 w-full rounded-xl border border-line bg-canvas px-4 font-normal outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
-                    name="name"
-                    placeholder="Your name"
-                    type="text"
+                  name="name"
+                  placeholder="Your name"
+                  required
+                  type="text"
                   />
                 </label>
               )}
@@ -88,6 +91,7 @@ export function AuthPage({ mode }: AuthPageProps) {
                   className="mt-2 min-h-12 w-full rounded-xl border border-line bg-canvas px-4 font-normal outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                   name="email"
                   placeholder="you@example.com"
+                  required
                   type="email"
                 />
               </label>
@@ -97,7 +101,9 @@ export function AuthPage({ mode }: AuthPageProps) {
                   autoComplete={isSignup ? "new-password" : "current-password"}
                   className="mt-2 min-h-12 w-full rounded-xl border border-line bg-canvas px-4 font-normal outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                   name="password"
+                  minLength={8}
                   placeholder="At least 8 characters"
+                  required
                   type="password"
                 />
               </label>
