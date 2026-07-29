@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { PageContainer } from "../layout/PageContainer";
 import { Section } from "../ui/Section";
 
@@ -22,12 +23,12 @@ export function FinalCta() {
               workflow designed around thoughtful progress.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a
+              <Link
                 className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-base font-semibold text-brand-950 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-950"
-                href="#pricing"
+                to="/signup"
               >
                 Start with the free plan
-              </a>
+              </Link>
               <a
                 className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/25 px-6 text-base font-semibold text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-950"
                 href="#how-it-works"
@@ -41,3 +42,4 @@ export function FinalCta() {
     </Section>
   );
 }
+
