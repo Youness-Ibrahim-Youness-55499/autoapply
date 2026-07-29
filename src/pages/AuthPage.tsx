@@ -35,7 +35,7 @@ export function AuthPage({ mode }: AuthPageProps) {
           password,
           options: {
             data: { name },
-            emailRedirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
+            emailRedirectTo: new URL(\n              "app",\n              new URL(import.meta.env.BASE_URL, window.location.origin),\n            ).href,
           },
         });
 
@@ -45,7 +45,7 @@ export function AuthPage({ mode }: AuthPageProps) {
         }
 
         if (data.session) {
-          navigate("/", { replace: true });
+          navigate("/app", { replace: true });
           return;
         }
 
@@ -66,7 +66,7 @@ export function AuthPage({ mode }: AuthPageProps) {
         return;
       }
 
-      navigate("/", { replace: true });
+      navigate("/app", { replace: true });
     } catch {
       setErrorMessage("Something went wrong. Please try again.");
     } finally {
@@ -197,8 +197,8 @@ export function AuthPage({ mode }: AuthPageProps) {
               >
                 {isSubmitting
                   ? isSignup
-                    ? "Creating accountâ€¦"
-                    : "Logging inâ€¦"
+                    ? "Creating account..."
+                    : "Logging in..."
                   : isSignup
                     ? "Create account"
                     : "Log in"}
