@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { PageContainer } from "./PageContainer";
 
 const navigationItems = [
@@ -72,18 +73,18 @@ export function Header() {
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
-            <a
+            <Link
               className="rounded-full px-3 py-2 text-sm font-semibold text-ink transition-colors hover:text-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
-              href="#footer"
+              to="/login"
             >
-              Contact
-            </a>
-            <a
+              Log in
+            </Link>
+            <Link
               className="inline-flex min-h-10 items-center justify-center rounded-full border border-brand-900 bg-brand-900 px-5 text-sm font-semibold text-white shadow-button transition-colors hover:border-brand-800 hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
-              href="#pricing"
+              to="/signup"
             >
               Get started
-            </a>
+            </Link>
           </div>
 
           <button
@@ -138,20 +139,20 @@ export function Header() {
                 </a>
               ))}
               <div className="mt-3 grid grid-cols-2 gap-3 border-t border-line pt-4">
-                <a
+                <Link
                   className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-4 text-sm font-semibold text-ink"
-                  href="#footer"
                   onClick={closeMenu}
+                  to="/login"
                 >
-                  Contact
-                </a>
-                <a
+                  Log in
+                </Link>
+                <Link
                   className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-900 px-4 text-sm font-semibold text-white"
-                  href="#pricing"
                   onClick={closeMenu}
+                  to="/signup"
                 >
                   Get started
-                </a>
+                </Link>
               </div>
             </div>
           </nav>
