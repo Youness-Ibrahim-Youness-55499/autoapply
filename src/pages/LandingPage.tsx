@@ -1,3 +1,4 @@
+import { Seo } from "../components/Seo";
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
 import { Faq } from "../components/sections/Faq";
@@ -12,6 +13,10 @@ import { TrustStrip } from "../components/sections/TrustStrip";
 export function LandingPage() {
   return (
     <div id="top">
+      <Seo
+        description="Organize opportunities, improve application materials, and keep every next step visible with Autoapply."
+        title="A calmer job search workspace"
+      />
       <a
         className="fixed left-4 top-4 z-50 -translate-y-24 rounded-full bg-brand-950 px-4 py-2 text-sm font-semibold text-white transition-transform focus:translate-y-0"
         href="#main-content"
