@@ -6,6 +6,7 @@ import { FinalCta } from "./components/sections/FinalCta";
 import { Hero } from "./components/sections/Hero";
 import { HowItWorks } from "./components/sections/HowItWorks";
 import { Pricing } from "./components/sections/Pricing";
+import { ScrollProcessShowcase } from "./components/sections/ScrollProcessShowcase";
 import { TrustStrip } from "./components/sections/TrustStrip";
 
 export function App() {
@@ -23,6 +24,7 @@ export function App() {
         <TrustStrip />
         <HowItWorks />
         <Features />
+        <ScrollProcessShowcase />
         <Pricing />
         <Faq />
         <FinalCta />
@@ -31,3 +33,5 @@ export function App() {
     </div>
   );
 }
+
+
