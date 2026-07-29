@@ -70,7 +70,7 @@ export function Pricing() {
                 {plan.price}
                 <span
                   className={`ml-2 text-sm font-medium tracking-normal ${
-                    plan.featured ? "text-white/55" : "text-ink-muted"
+                    plan.featured ? "text-white/75" : "text-ink-muted"
                   }`}
                 >
                   / month

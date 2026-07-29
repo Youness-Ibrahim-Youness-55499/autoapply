@@ -79,7 +79,7 @@ function FindPanel() {
       <div className="flex min-h-0 flex-col rounded-2xl bg-[#11172a] p-4 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-white/45">New opportunities</p>
+            <p className="text-xs text-white/70">New opportunities</p>
             <p className="mt-1 text-3xl font-semibold leading-none tracking-[-0.05em]">24</p>
           </div>
           <span className="rounded-full bg-brand-500/20 px-3 py-1 text-xs text-brand-200">Updated now</span>
@@ -89,7 +89,7 @@ function FindPanel() {
             <div className="grid grid-cols-[1fr_auto] items-center rounded-xl border border-white/10 bg-white/[0.045] px-4 py-2.5" key={role}>
               <div>
                 <p className="text-sm font-semibold">{role}</p>
-                <p className="mt-1 text-xs text-white/42">{company}</p>
+                <p className="mt-1 text-xs text-white/70">{company}</p>
               </div>
               <span className="text-sm font-semibold text-brand-200">{match}</span>
             </div>
@@ -159,7 +159,7 @@ function ApplyPanel() {
           ))}
         </div>
         <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-3">
-          <p className="text-xs text-white/45">Nothing is submitted without your approval.</p>
+          <p className="text-xs text-white/70">Nothing is submitted without your approval.</p>
           <span className="rounded-full bg-brand-500 px-5 py-2 text-sm font-semibold">Approve and submit</span>
         </div>
       </div>
@@ -192,7 +192,7 @@ function TrackPanel() {
         <div className="mt-3 grid grid-cols-4 gap-2">
           {pipeline.map(([label, value]) => (
             <div className="rounded-xl border border-white/10 bg-white/[0.045] px-3 py-2.5" key={label}>
-              <p className="text-[0.6875rem] text-white/42">{label}</p>
+              <p className="text-[0.6875rem] text-white/70">{label}</p>
               <p className="mt-1 text-2xl font-semibold">{value}</p>
             </div>
           ))}
@@ -241,7 +241,7 @@ function PipelineRow({ company, next, status }: { company: string; next: string;
     <div className="grid grid-cols-[1fr_auto] items-center rounded-xl border border-white/10 bg-white/[0.045] px-4 py-2">
       <div>
         <p className="text-sm font-semibold">{company}</p>
-        <p className="mt-1 text-xs text-white/42">{next}</p>
+        <p className="mt-1 text-xs text-white/70">{next}</p>
       </div>
       <span className="text-xs text-brand-200">{status}</span>
     </div>
