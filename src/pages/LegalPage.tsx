@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "../components/Seo";
+import { SkipLink } from "../components/SkipLink";
 import { PageContainer } from "../components/layout/PageContainer";
 
 type LegalPageKind = "legal-notice" | "privacy" | "terms";
@@ -210,6 +211,7 @@ export function LegalPage({ kind }: LegalPageProps) {
         path={`/${kind}`}
         title={page.title}
       />
+      <SkipLink />
       <header className="border-b border-line bg-surface">
         <PageContainer>
           <div className="flex min-h-18 items-center justify-between gap-6">
@@ -229,7 +231,7 @@ export function LegalPage({ kind }: LegalPageProps) {
         </PageContainer>
       </header>
 
-      <main className="py-14 sm:py-20">
+      <main className="py-14 sm:py-20" id="main-content">
         <PageContainer size="narrow">
           <p className="eyebrow">{page.eyebrow}</p>
           <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] sm:text-6xl">
