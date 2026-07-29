@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Seo } from "../components/Seo";
 import { PageContainer } from "../components/layout/PageContainer";
 
 type AuthPageProps = {
@@ -10,6 +11,16 @@ export function AuthPage({ mode }: AuthPageProps) {
 
   return (
     <div className="min-h-screen bg-canvas">
+      <Seo
+        description={
+          isSignup
+            ? "Create your Autoapply workspace and bring every job-search step into one organized place."
+            : "Log in to Autoapply to continue organizing applications, materials, and follow-ups."
+        }
+        noIndex
+        path={`/${mode}`}
+        title={isSignup ? "Create your account" : "Log in"}
+      />
       <header className="border-b border-line bg-surface">
         <PageContainer>
           <div className="flex min-h-18 items-center justify-between">
