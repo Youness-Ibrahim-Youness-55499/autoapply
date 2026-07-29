@@ -18,6 +18,7 @@ export function AuthPage({ mode }: AuthPageProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setErrorMessage("");
     setSuccessMessage("");
     setIsSubmitting(true);
@@ -51,7 +52,7 @@ export function AuthPage({ mode }: AuthPageProps) {
         setSuccessMessage(
           "Check your email and follow the confirmation link to finish creating your account.",
         );
-        event.currentTarget.reset();
+        form.reset();
         return;
       }
 
@@ -174,7 +175,6 @@ export function AuthPage({ mode }: AuthPageProps) {
                   type="password"
                 />
               </label>
-
               <div aria-live="polite">
                 {errorMessage && (
                   <p
@@ -190,7 +190,6 @@ export function AuthPage({ mode }: AuthPageProps) {
                   </p>
                 )}
               </div>
-
               <button
                 className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-brand-900 px-6 text-sm font-semibold text-white hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={isSubmitting}
@@ -198,8 +197,8 @@ export function AuthPage({ mode }: AuthPageProps) {
               >
                 {isSubmitting
                   ? isSignup
-                    ? "Creating account…"
-                    : "Logging in…"
+                    ? "Creating accountâ€¦"
+                    : "Logging inâ€¦"
                   : isSignup
                     ? "Create account"
                     : "Log in"}
@@ -211,3 +210,4 @@ export function AuthPage({ mode }: AuthPageProps) {
     </div>
   );
 }
+
