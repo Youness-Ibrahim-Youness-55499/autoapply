@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type KeyboardEvent } from "react";
 
 type TagEditorProps = {
   label: string;
@@ -18,8 +18,7 @@ export function TagEditor({
   const [draft, setDraft] = useState("");
   const inputId = `tag-editor-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 
-  function addTag(event: FormEvent) {
-    event.preventDefault();
+  function addTag() {
     const nextTag = draft.trim();
 
     if (
@@ -34,28 +33,37 @@ export function TagEditor({
     setDraft("");
   }
 
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      addTag();
+    }
+  }
+
   return (
     <div>
       <label className="text-sm font-semibold" htmlFor={inputId}>
         {label}
       </label>
-      <form className="mt-2 flex gap-2" onSubmit={addTag}>
+      <div className="mt-2 flex gap-2">
         <input
           className="min-h-11 min-w-0 flex-1 rounded-xl border border-line bg-canvas px-4 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
           id={inputId}
           maxLength={80}
           onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
           value={draft}
         />
         <button
           className="min-h-11 rounded-full border border-line bg-surface px-4 text-sm font-semibold transition hover:bg-brand-50 disabled:opacity-45"
           disabled={!draft.trim() || value.length >= maxItems}
-          type="submit"
+          onClick={addTag}
+          type="button"
         >
           Add
         </button>
-      </form>
+      </div>
 
       {value.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-2">
