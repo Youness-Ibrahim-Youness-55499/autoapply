@@ -4,6 +4,7 @@ import type { Application, ApplicationStatus } from "./types";
 
 type ApplicationListProps = {
   applications: Application[];
+  onDelete: (application: Application) => void;
   onEdit: (application: Application) => void;
   onStatusUpdated: (id: string, status: ApplicationStatus) => void;
 };
@@ -54,6 +55,7 @@ function JobTitle({ application }: { application: Application }) {
 
 export function ApplicationList({
   applications,
+  onDelete,
   onEdit,
   onStatusUpdated,
 }: ApplicationListProps) {
@@ -101,15 +103,25 @@ export function ApplicationList({
                 <td className="px-6 py-5 text-sm text-ink-muted">
                   <time dateTime={application.created_at}>{formatDate(application.created_at)}</time>
                 </td>
-                <td className="px-6 py-5 text-right">
-                  <Button
-                    aria-label={`Edit ${application.job_title} at ${application.company_name}`}
-                    onClick={() => onEdit(application)}
-                    size="sm"
-                    variant="secondary"
-                  >
-                    Edit
-                  </Button>
+                <td className="px-6 py-5">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      aria-label={`Edit ${application.job_title} at ${application.company_name}`}
+                      onClick={() => onEdit(application)}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      aria-label={`Delete ${application.job_title} at ${application.company_name}`}
+                      onClick={() => onDelete(application)}
+                      size="sm"
+                      variant="quiet"
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -142,14 +154,22 @@ export function ApplicationList({
                 </dd>
               </div>
             </dl>
-            <Button
-              className="mt-5 w-full"
-              onClick={() => onEdit(application)}
-              size="sm"
-              variant="secondary"
-            >
-              Edit application
-            </Button>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <Button
+                onClick={() => onEdit(application)}
+                size="sm"
+                variant="secondary"
+              >
+                Edit
+              </Button>
+              <Button
+                onClick={() => onDelete(application)}
+                size="sm"
+                variant="quiet"
+              >
+                Delete
+              </Button>
+            </div>
           </li>
         ))}
       </ul>
