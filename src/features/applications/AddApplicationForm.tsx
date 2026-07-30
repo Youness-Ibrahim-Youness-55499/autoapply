@@ -114,6 +114,7 @@ export function AddApplicationForm({
     <section
       aria-labelledby="add-application-title"
       className="mt-8 max-w-4xl rounded-card border border-brand-200 bg-surface p-6 shadow-card sm:p-8"
+      id="add-application-form"
     >
       <div>
         <p className="eyebrow">New record</p>
