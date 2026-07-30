@@ -109,7 +109,7 @@ for select
 to authenticated
 using (
   bucket_id = 'resumes'
-  and owner_id = (select auth.uid())
+  and owner_id = (select auth.uid()::text)
 );
 
 drop policy if exists "Users can delete their own resumes" on storage.objects;
@@ -119,5 +119,5 @@ for delete
 to authenticated
 using (
   bucket_id = 'resumes'
-  and owner_id = (select auth.uid())
+  and owner_id = (select auth.uid()::text)
 );
