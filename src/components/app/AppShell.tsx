@@ -109,6 +109,7 @@ export function AppShell() {
   const location = useLocation();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState("");
@@ -137,6 +138,25 @@ export function AppShell() {
       if (event.key === "Escape") {
         setIsMenuOpen(false);
         menuButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab" || !mobileMenuRef.current) {
+        return;
+      }
+
+      const focusableElements = mobileMenuRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      const firstElement = focusableElements.item(0);
+      const lastElement = focusableElements.item(focusableElements.length - 1);
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement?.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement?.focus();
       }
     }
 
@@ -265,6 +285,7 @@ export function AppShell() {
             aria-modal="true"
             className="absolute inset-y-0 right-0 flex w-[min(22rem,88vw)] flex-col border-l border-line bg-surface shadow-2xl"
             id="mobile-workspace-navigation"
+            ref={mobileMenuRef}
             role="dialog"
           >
             <div className="flex min-h-20 items-center justify-between border-b border-line px-5">
