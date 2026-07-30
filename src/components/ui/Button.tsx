@@ -4,10 +4,12 @@ import type {
   ReactNode,
 } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "quiet";
+type ButtonVariant = "danger" | "primary" | "secondary" | "quiet";
 type ButtonSize = "sm" | "md" | "lg";
 
 const variantClasses: Record<ButtonVariant, string> = {
+  danger:
+    "border-red-700 bg-red-700 text-white shadow-button hover:border-red-800 hover:bg-red-800",
   primary:
     "border-brand-900 bg-brand-900 text-white shadow-button hover:border-brand-800 hover:bg-brand-800",
   secondary:
