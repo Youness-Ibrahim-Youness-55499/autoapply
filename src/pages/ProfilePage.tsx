@@ -10,11 +10,12 @@ import { useProfile } from "../features/profile/useProfile";
 
 export function ProfilePage() {
   const {
-    errorMessage,
     isLoading,
     isSaving,
+    loadErrorMessage,
     profile,
     retry,
+    saveErrorMessage,
     saveProfile,
     successMessage,
   } = useProfile();
@@ -42,17 +43,17 @@ export function ProfilePage() {
           </div>
         )}
 
-        {!isLoading && errorMessage && (
+        {!isLoading && loadErrorMessage && (
           <div className="mt-10 max-w-4xl">
             <ErrorState
               action={<Button onClick={retry}>Try again</Button>}
-              description={errorMessage}
+              description={loadErrorMessage}
               title="Profile could not be loaded"
             />
           </div>
         )}
 
-        {!isLoading && !errorMessage && (
+        {!isLoading && !loadErrorMessage && (
           <div className="mt-10 grid max-w-6xl items-start gap-7 lg:grid-cols-[18rem_minmax(0,1fr)]">
             <div className="lg:sticky lg:top-28">
               <ProfileProgress profile={profile} />
@@ -60,6 +61,14 @@ export function ProfilePage() {
                 {successMessage && (
                   <p className="mt-4 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-900">
                     {successMessage}
+                  </p>
+                )}
+                {saveErrorMessage && (
+                  <p
+                    className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                    role="alert"
+                  >
+                    {saveErrorMessage}
                   </p>
                 )}
               </div>
