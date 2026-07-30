@@ -125,3 +125,16 @@ For screenshot-based work:
 4. Capture the result at the target viewport.
 5. Compare structure, spacing, typography, colors, and responsiveness.
 6. Correct important
+
+
+## Local preview gate
+
+For every change that affects the visible frontend:
+
+1. Apply the change to the canonical local checkout at
+   `C:\\Users\\youni\\Documents\\autoapply-current`.
+2. Run `pnpm verify`.
+3. Start or restart `pnpm dev`.
+4. Give the user the exact localhost route to review.
+5. Wait for the user's local approval before creating or updating a pull
+   request, unless the user explicitly asks to push first.
