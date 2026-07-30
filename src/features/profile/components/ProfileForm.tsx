@@ -83,7 +83,7 @@ export function ProfileForm({
               <input
                 autoComplete="name"
                 className={inputClasses}
-                maxLength={160}
+                maxLength={120}
                 onChange={(event) => update({ fullName: event.target.value })}
                 required
                 value={draft.fullName}
