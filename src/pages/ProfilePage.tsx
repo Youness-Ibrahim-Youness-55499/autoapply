@@ -1,51 +1,86 @@
-import { useAuth } from "../auth/AuthProvider";
 import { ProductPageHeader } from "../components/app/ProductPageHeader";
 import { Seo } from "../components/Seo";
 import { PageContainer } from "../components/layout/PageContainer";
-import { EmptyState } from "../components/states/EmptyState";
+import { ErrorState } from "../components/states/ErrorState";
+import { LoadingState } from "../components/states/LoadingState";
+import { Button } from "../components/ui/Button";
+import { ProfileForm } from "../features/profile/components/ProfileForm";
+import { ProfileProgress } from "../features/profile/components/ProfileProgress";
+import { useProfile } from "../features/profile/useProfile";
 
 export function ProfilePage() {
-  const { session } = useAuth();
-  const metadataName = session?.user.user_metadata.name;
-  const name =
-    typeof metadataName === "string" && metadataName.trim()
-      ? metadataName.trim()
-      : "Not provided";
+  const {
+    isLoading,
+    isSaving,
+    loadErrorMessage,
+    profile,
+    retry,
+    saveErrorMessage,
+    saveProfile,
+    successMessage,
+  } = useProfile();
 
   return (
     <>
       <Seo
-        description="Review the candidate information connected to your Autoapply account."
+        description="Build the candidate profile Autoapply uses for matching and application materials."
         noIndex
         path="/app/profile"
         title="Profile"
       />
       <PageContainer className="py-10 sm:py-14 lg:px-10" size="wide">
         <ProductPageHeader
-          description="Your profile will become the trusted source for matching roles and preparing accurate application materials."
-          title="Profile"
+          description="Create one reliable source for your target roles, preferences, skills, experience, and education."
+          title="Candidate profile"
         />
 
-        <div className="mt-10 grid max-w-5xl gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-          <section className="rounded-card border border-line bg-surface p-6 shadow-card sm:p-8">
-            <p className="eyebrow">Account details</p>
-            <dl className="mt-6 space-y-5">
-              <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Name</dt>
-                <dd className="mt-1 font-semibold">{name}</dd>
-              </div>
-              <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Email</dt>
-                <dd className="mt-1 break-all font-semibold">{session?.user.email}</dd>
-              </div>
-            </dl>
-          </section>
+        {isLoading && (
+          <div className="mt-10 max-w-4xl">
+            <LoadingState
+              description="Loading your private candidate information."
+              title="Loading profile"
+            />
+          </div>
+        )}
 
-          <EmptyState
-            description="Desired roles, skills, experience, education, and work preferences are not collected yet. Profile onboarding will add them in Phase 3."
-            title="Candidate profile not completed"
-          />
-        </div>
+        {!isLoading && loadErrorMessage && (
+          <div className="mt-10 max-w-4xl">
+            <ErrorState
+              action={<Button onClick={retry}>Try again</Button>}
+              description={loadErrorMessage}
+              title="Profile could not be loaded"
+            />
+          </div>
+        )}
+
+        {!isLoading && !loadErrorMessage && (
+          <div className="mt-10 grid max-w-6xl items-start gap-7 lg:grid-cols-[18rem_minmax(0,1fr)]">
+            <div className="lg:sticky lg:top-28">
+              <ProfileProgress profile={profile} />
+              <div aria-live="polite">
+                {successMessage && (
+                  <p className="mt-4 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-900">
+                    {successMessage}
+                  </p>
+                )}
+                {saveErrorMessage && (
+                  <p
+                    className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                    role="alert"
+                  >
+                    {saveErrorMessage}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <ProfileForm
+              isSaving={isSaving}
+              onSave={saveProfile}
+              profile={profile}
+            />
+          </div>
+        )}
       </PageContainer>
     </>
   );
