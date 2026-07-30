@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
 import { SkipLink } from "../SkipLink";
+import { ErrorState } from "../states/ErrorState";
 
 type NavigationItem = {
   icon: ReactNode;
@@ -230,9 +231,13 @@ export function AppShell() {
 
         <div className="border-t border-white/10 p-4">
           {signOutError && (
-            <p className="mb-3 rounded-lg bg-red-400/15 px-3 py-2 text-xs leading-relaxed text-red-100" role="alert">
-              {signOutError}
-            </p>
+            <div className="mb-3">
+              <ErrorState
+                compact
+                description={signOutError}
+                title="Could not log out"
+              />
+            </div>
           )}
           {accountCard()}
         </div>
@@ -314,9 +319,13 @@ export function AppShell() {
 
             <div className="border-t border-line p-4">
               {signOutError && (
-                <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs leading-relaxed text-red-800" role="alert">
-                  {signOutError}
-                </p>
+                <div className="mb-3">
+                  <ErrorState
+                    compact
+                    description={signOutError}
+                    title="Could not log out"
+                  />
+                </div>
               )}
               {accountCard(true)}
             </div>
