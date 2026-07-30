@@ -12,6 +12,7 @@ type ApplicationsState = {
   errorMessage: string;
   isLoading: boolean;
   refresh: () => void;
+  removeLocally: (id: string) => void;
   retry: () => void;
   updateStatusLocally: (id: string, status: ApplicationStatus) => void;
 };
@@ -102,6 +103,12 @@ export function useApplications(): ApplicationsState {
 
   const refresh = () => setRequestVersion((version) => version + 1);
 
+  function removeLocally(id: string) {
+    setApplications((currentApplications) =>
+      currentApplications.filter((application) => application.id !== id),
+    );
+  }
+
   function updateStatusLocally(id: string, status: ApplicationStatus) {
     setApplications((currentApplications) =>
       currentApplications.map((application) =>
@@ -115,6 +122,7 @@ export function useApplications(): ApplicationsState {
     errorMessage,
     isLoading,
     refresh,
+    removeLocally,
     retry: refresh,
     updateStatusLocally,
   };
