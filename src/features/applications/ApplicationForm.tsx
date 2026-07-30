@@ -5,12 +5,14 @@ import { supabase } from "../../lib/supabase";
 import {
   applicationStatuses,
   isApplicationStatus,
+  type Application,
   type ApplicationStatus,
 } from "./types";
 
-type AddApplicationFormProps = {
+type ApplicationFormProps = {
+  application?: Application;
   onCancel: () => void;
-  onCreated: () => void;
+  onSaved: () => void;
 };
 
 const statusLabels: Record<ApplicationStatus, string> = {
@@ -39,17 +41,22 @@ function getSafeOptionalUrl(value: string) {
 
     return { error: "", value: url.href };
   } catch {
-    return { error: "Enter a complete job link, such as https://example.com/job.", value: null };
+    return {
+      error: "Enter a complete job link, such as https://example.com/job.",
+      value: null,
+    };
   }
 }
 
-export function AddApplicationForm({
+export function ApplicationForm({
+  application,
   onCancel,
-  onCreated,
-}: AddApplicationFormProps) {
+  onSaved,
+}: ApplicationFormProps) {
   const { session } = useAuth();
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isEditing = Boolean(application);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -90,7 +97,7 @@ export function AddApplicationForm({
 
     setIsSubmitting(true);
 
-    const { error } = await supabase.from("applications").insert({
+    const values = {
       applied_at: appliedAt || null,
       company_name: companyName,
       job_title: jobTitle,
@@ -98,31 +105,59 @@ export function AddApplicationForm({
       location: location || null,
       notes: notes || null,
       status,
-      user_id: userId,
-    });
+    };
 
-    if (error) {
-      setErrorMessage(error.message);
-      setIsSubmitting(false);
-      return;
+    if (application) {
+      const { data, error } = await supabase
+        .from("applications")
+        .update(values)
+        .eq("id", application.id)
+        .eq("user_id", userId)
+        .select("id")
+        .maybeSingle();
+
+      if (error) {
+        setErrorMessage(error.message);
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (!data) {
+        setErrorMessage("This application could not be found or is no longer available.");
+        setIsSubmitting(false);
+        return;
+      }
+    } else {
+      const { error } = await supabase.from("applications").insert({
+        ...values,
+        user_id: userId,
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        setIsSubmitting(false);
+        return;
+      }
     }
 
-    onCreated();
+    onSaved();
   }
 
   return (
     <section
-      aria-labelledby="add-application-title"
+      aria-labelledby="application-form-title"
       className="mt-8 max-w-4xl rounded-card border border-brand-200 bg-surface p-6 shadow-card sm:p-8"
-      id="add-application-form"
+      id="application-form"
     >
       <div>
-        <p className="eyebrow">New record</p>
-        <h3 className="mt-2 text-2xl font-semibold" id="add-application-title">
-          Add an application
+        <p className="eyebrow">{isEditing ? "Update record" : "New record"}</p>
+        <h3 className="mt-2 text-2xl font-semibold" id="application-form-title">
+          {isEditing ? "Edit application" : "Add an application"}
         </h3>
         <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-          Save the opportunity now. You can update its details and status in later steps.
+          {isEditing
+            ? "Review the saved details and change only what needs updating."
+            : "Save the opportunity now. You can update its details and status later."}
         </p>
       </div>
 
@@ -134,6 +169,7 @@ export function AddApplicationForm({
               <input
                 autoFocus
                 className={inputClasses}
+                defaultValue={application?.company_name}
                 maxLength={160}
                 name="company_name"
                 placeholder="Company name"
@@ -144,6 +180,7 @@ export function AddApplicationForm({
               Job title
               <input
                 className={inputClasses}
+                defaultValue={application?.job_title}
                 maxLength={160}
                 name="job_title"
                 placeholder="Role title"
@@ -154,6 +191,7 @@ export function AddApplicationForm({
               Location <span className="font-normal text-ink-muted">(optional)</span>
               <input
                 className={inputClasses}
+                defaultValue={application?.location ?? ""}
                 maxLength={160}
                 name="location"
                 placeholder="Berlin, Remote..."
@@ -163,6 +201,7 @@ export function AddApplicationForm({
               Job link <span className="font-normal text-ink-muted">(optional)</span>
               <input
                 className={inputClasses}
+                defaultValue={application?.job_url ?? ""}
                 maxLength={2048}
                 name="job_url"
                 placeholder="https://..."
@@ -171,7 +210,11 @@ export function AddApplicationForm({
             </label>
             <label className="text-sm font-semibold">
               Status
-              <select className={inputClasses} defaultValue="saved" name="status">
+              <select
+                className={inputClasses}
+                defaultValue={application?.status ?? "saved"}
+                name="status"
+              >
                 {applicationStatuses.map((status) => (
                   <option key={status} value={status}>
                     {statusLabels[status]}
@@ -181,7 +224,12 @@ export function AddApplicationForm({
             </label>
             <label className="text-sm font-semibold">
               Applied date <span className="font-normal text-ink-muted">(optional)</span>
-              <input className={inputClasses} name="applied_at" type="date" />
+              <input
+                className={inputClasses}
+                defaultValue={application?.applied_at ?? ""}
+                name="applied_at"
+                type="date"
+              />
             </label>
           </div>
 
@@ -189,6 +237,7 @@ export function AddApplicationForm({
             Notes <span className="font-normal text-ink-muted">(optional)</span>
             <textarea
               className={`${inputClasses} min-h-28 py-3`}
+              defaultValue={application?.notes ?? ""}
               maxLength={10000}
               name="notes"
               placeholder="Add useful context about this opportunity."
@@ -210,7 +259,13 @@ export function AddApplicationForm({
             Cancel
           </Button>
           <Button disabled={isSubmitting} type="submit">
-            {isSubmitting ? "Saving..." : "Save application"}
+            {isSubmitting
+              ? isEditing
+                ? "Updating..."
+                : "Saving..."
+              : isEditing
+                ? "Save changes"
+                : "Save application"}
           </Button>
         </div>
       </form>

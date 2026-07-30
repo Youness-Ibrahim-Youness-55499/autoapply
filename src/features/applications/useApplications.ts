@@ -32,6 +32,7 @@ function isApplication(value: unknown): value is Application {
     isApplicationStatus(row.status) &&
     isNullableString(row.job_url) &&
     isNullableString(row.location) &&
+    isNullableString(row.notes) &&
     isNullableString(row.applied_at) &&
     typeof row.created_at === "string" &&
     typeof row.updated_at === "string"
@@ -63,7 +64,7 @@ export function useApplications(): ApplicationsState {
       const { data, error } = await supabase
         .from("applications")
         .select(
-          "id, company_name, job_title, status, job_url, location, applied_at, created_at, updated_at",
+          "id, company_name, job_title, status, job_url, location, notes, applied_at, created_at, updated_at",
         )
         .eq("user_id", userId)
         .order("created_at", { ascending: false });

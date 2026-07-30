@@ -17,6 +17,7 @@ export type Application = {
   job_title: string;
   job_url: string | null;
   location: string | null;
+  notes: string | null;
   status: ApplicationStatus;
   updated_at: string;
 };
