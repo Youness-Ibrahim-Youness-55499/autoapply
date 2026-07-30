@@ -17,14 +17,13 @@ export function DeleteApplicationDialog({
 }: DeleteApplicationDialogProps) {
   const { session } = useAuth();
   const dialogRef = useRef<HTMLDivElement>(null);
-  const cancelButtonRef = useRef<HTMLButtonElement>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    cancelButtonRef.current?.focus();
+    dialogRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape" && !isDeleting) {
@@ -137,7 +136,6 @@ export function DeleteApplicationDialog({
           <Button
             disabled={isDeleting}
             onClick={onCancel}
-            ref={cancelButtonRef}
             variant="secondary"
           >
             Keep application
