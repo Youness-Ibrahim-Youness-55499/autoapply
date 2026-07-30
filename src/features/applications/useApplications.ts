@@ -10,6 +10,7 @@ type ApplicationsState = {
   applications: Application[];
   errorMessage: string;
   isLoading: boolean;
+  refresh: () => void;
   retry: () => void;
 };
 
@@ -96,10 +97,13 @@ export function useApplications(): ApplicationsState {
     };
   }, [requestVersion, userId]);
 
+  const refresh = () => setRequestVersion((version) => version + 1);
+
   return {
     applications,
     errorMessage,
     isLoading,
-    retry: () => setRequestVersion((version) => version + 1),
+    refresh,
+    retry: refresh,
   };
 }
