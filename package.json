@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:pages": "tsc -b && vite build --base=/autoapply/",
     "typecheck": "tsc -b --pretty false",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify": "pnpm typecheck && vite build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.111.0",
@@ -27,4 +27,3 @@
     "vite": "^8.1.5"
   }
 }
-
