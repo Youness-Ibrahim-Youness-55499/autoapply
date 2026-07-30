@@ -17,7 +17,8 @@ export function useProfile() {
     ...emptyCandidateProfile,
     fullName: fallbackName,
   });
-  const [errorMessage, setErrorMessage] = useState("");
+  const [loadErrorMessage, setLoadErrorMessage] = useState("");
+  const [saveErrorMessage, setSaveErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -25,12 +26,12 @@ export function useProfile() {
 
   const loadProfile = useCallback(async () => {
     if (!userId) {
-      setErrorMessage("Your session is not available. Please log in again.");
+      setLoadErrorMessage("Your session is not available. Please log in again.");
       setIsLoading(false);
       return;
     }
 
-    setErrorMessage("");
+    setLoadErrorMessage("");
     setIsLoading(true);
 
     const { data, error } = await supabase
@@ -40,7 +41,7 @@ export function useProfile() {
       .maybeSingle();
 
     if (error) {
-      setErrorMessage(error.message);
+      setLoadErrorMessage(error.message);
       setIsLoading(false);
       return;
     }
@@ -55,11 +56,11 @@ export function useProfile() {
 
   async function saveProfile(nextProfile: CandidateProfile) {
     if (!userId) {
-      setErrorMessage("Your session is not available. Please log in again.");
+      setSaveErrorMessage("Your session is not available. Please log in again.");
       return false;
     }
 
-    setErrorMessage("");
+    setSaveErrorMessage("");
     setSuccessMessage("");
     setIsSaving(true);
 
@@ -73,7 +74,7 @@ export function useProfile() {
       .single();
 
     if (error) {
-      setErrorMessage(error.message);
+      setSaveErrorMessage(error.message);
       setIsSaving(false);
       return false;
     }
@@ -85,11 +86,12 @@ export function useProfile() {
   }
 
   return {
-    errorMessage,
     isLoading,
     isSaving,
+    loadErrorMessage,
     profile,
     retry: () => setRequestVersion((version) => version + 1),
+    saveErrorMessage,
     saveProfile,
     successMessage,
   };
