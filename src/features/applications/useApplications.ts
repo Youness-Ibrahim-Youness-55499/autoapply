@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import {
   isApplicationStatus,
   type Application,
+  type ApplicationStatus,
 } from "./types";
 
 type ApplicationsState = {
@@ -12,6 +13,7 @@ type ApplicationsState = {
   isLoading: boolean;
   refresh: () => void;
   retry: () => void;
+  updateStatusLocally: (id: string, status: ApplicationStatus) => void;
 };
 
 function isNullableString(value: unknown): value is string | null {
@@ -100,11 +102,20 @@ export function useApplications(): ApplicationsState {
 
   const refresh = () => setRequestVersion((version) => version + 1);
 
+  function updateStatusLocally(id: string, status: ApplicationStatus) {
+    setApplications((currentApplications) =>
+      currentApplications.map((application) =>
+        application.id === id ? { ...application, status } : application,
+      ),
+    );
+  }
+
   return {
     applications,
     errorMessage,
     isLoading,
     refresh,
     retry: refresh,
+    updateStatusLocally,
   };
 }
