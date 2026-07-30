@@ -29,9 +29,13 @@ export function ApplicationsPage() {
     refresh();
   }
 
-  function openCreateForm() {
-    setEditingApplication(null);
-    setIsCreateFormOpen((isOpen) => !isOpen);
+  function toggleCreateForm() {
+    if (isFormOpen) {
+      closeForm();
+      return;
+    }
+
+    setIsCreateFormOpen(true);
   }
 
   function openEditForm(application: Application) {
@@ -63,10 +67,10 @@ export function ApplicationsPage() {
         <div className="mt-7">
           <Button
             aria-controls="application-form"
-            aria-expanded={isCreateFormOpen}
-            onClick={openCreateForm}
+            aria-expanded={isFormOpen}
+            onClick={toggleCreateForm}
           >
-            {isCreateFormOpen ? "Close form" : "Add application"}
+            {isFormOpen ? "Close form" : "Add application"}
           </Button>
         </div>
 
