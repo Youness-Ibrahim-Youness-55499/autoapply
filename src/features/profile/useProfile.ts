@@ -66,15 +66,15 @@ export function useProfile() {
 
     const { data, error } = await supabase
       .from("profiles")
-      .upsert(
-        { id: userId, ...profileToRow(nextProfile) },
-        { onConflict: "id" },
-      )
+      .update(profileToRow(nextProfile))
+      .eq("id", userId)
       .select(profileColumns)
-      .single();
+      .maybeSingle();
 
-    if (error) {
-      setSaveErrorMessage(error.message);
+    if (error || !data) {
+      setSaveErrorMessage(
+        error?.message ?? "Your profile record could not be found.",
+      );
       setIsSaving(false);
       return false;
     }
