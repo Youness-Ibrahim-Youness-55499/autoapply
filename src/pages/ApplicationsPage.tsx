@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ProductPageHeader } from "../components/app/ProductPageHeader";
 import { Seo } from "../components/Seo";
 import { PageContainer } from "../components/layout/PageContainer";
@@ -6,6 +6,10 @@ import { EmptyState } from "../components/states/EmptyState";
 import { ErrorState } from "../components/states/ErrorState";
 import { LoadingState } from "../components/states/LoadingState";
 import { Button } from "../components/ui/Button";
+import {
+  ApplicationFilters,
+  type ApplicationStatusFilter,
+} from "../features/applications/ApplicationFilters";
 import { ApplicationForm } from "../features/applications/ApplicationForm";
 import { ApplicationList } from "../features/applications/ApplicationList";
 import { DeleteApplicationDialog } from "../features/applications/DeleteApplicationDialog";
@@ -18,6 +22,9 @@ export function ApplicationsPage() {
     useState<Application | null>(null);
   const [deletingApplication, setDeletingApplication] =
     useState<Application | null>(null);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] =
+    useState<ApplicationStatusFilter>("all");
   const {
     applications,
     errorMessage,
@@ -29,9 +36,34 @@ export function ApplicationsPage() {
   } = useApplications();
   const isFormOpen = isCreateFormOpen || Boolean(editingApplication);
 
+  const visibleApplications = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase();
+
+    return applications.filter((application) => {
+      const matchesStatus =
+        statusFilter === "all" || application.status === statusFilter;
+      const searchableText = [
+        application.job_title,
+        application.company_name,
+        application.location ?? "",
+      ]
+        .join(" ")
+        .toLocaleLowerCase();
+      const matchesQuery =
+        normalizedQuery.length === 0 || searchableText.includes(normalizedQuery);
+
+      return matchesStatus && matchesQuery;
+    });
+  }, [applications, query, statusFilter]);
+
   function closeForm() {
     setIsCreateFormOpen(false);
     setEditingApplication(null);
+  }
+
+  function clearFilters() {
+    setQuery("");
+    setStatusFilter("all");
   }
 
   function handleSaved() {
@@ -127,12 +159,34 @@ export function ApplicationsPage() {
           )}
 
           {!isLoading && !errorMessage && applications.length > 0 && (
-            <ApplicationList
-              applications={applications}
-              onDelete={setDeletingApplication}
-              onEdit={openEditForm}
-              onStatusUpdated={updateStatusLocally}
-            />
+            <>
+              <ApplicationFilters
+                onQueryChange={setQuery}
+                onReset={clearFilters}
+                onStatusChange={setStatusFilter}
+                query={query}
+                status={statusFilter}
+              />
+
+              {visibleApplications.length > 0 ? (
+                <ApplicationList
+                  applications={visibleApplications}
+                  onDelete={setDeletingApplication}
+                  onEdit={openEditForm}
+                  onStatusUpdated={updateStatusLocally}
+                />
+              ) : (
+                <EmptyState
+                  action={
+                    <Button onClick={clearFilters} variant="secondary">
+                      Clear filters
+                    </Button>
+                  }
+                  description="Try a different role, company, location, or application status."
+                  title="No matching applications"
+                />
+              )}
+            </>
           )}
         </div>
       </PageContainer>
