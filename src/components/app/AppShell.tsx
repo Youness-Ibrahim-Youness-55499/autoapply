@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
@@ -8,6 +8,11 @@ type NavigationItem = {
   icon: ReactNode;
   label: string;
   to: string;
+};
+
+type WorkspaceLinksProps = {
+  onNavigate?: () => void;
+  tone: "dark" | "light";
 };
 
 function NavigationIcon({ children }: { children: ReactNode }) {
@@ -73,9 +78,39 @@ const navigationItems: NavigationItem[] = [
 
 const pageTitles = new Map(navigationItems.map((item) => [item.to, item.label]));
 
+function WorkspaceLinks({ onNavigate, tone }: WorkspaceLinksProps) {
+  return (
+    <ul className="mt-3 space-y-1">
+      {navigationItems.map((item) => (
+        <li key={item.to}>
+          <NavLink
+            className={({ isActive }) => {
+              if (tone === "dark") {
+                return `flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${isActive ? "bg-white text-brand-950 shadow-sm" : "text-white/68 hover:bg-white/8 hover:text-white"}`;
+              }
+
+              return `flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${isActive ? "bg-brand-50 text-brand-900" : "text-ink-muted hover:bg-canvas hover:text-ink"}`;
+            }}
+            end={item.to === "/app"}
+            onClick={onNavigate}
+            to={item.to}
+          >
+            {item.icon}
+            {item.label}
+          </NavLink>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function AppShell() {
   const { session } = useAuth();
   const location = useLocation();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState("");
   const pageTitle = pageTitles.get(location.pathname) ?? "Overview";
@@ -85,6 +120,53 @@ export function AppShell() {
       ? metadataName.trim()
       : "Your account";
   const initial = name.charAt(0).toUpperCase();
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isMenuOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+        menuButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab" || !mobileMenuRef.current) {
+        return;
+      }
+
+      const focusableElements = mobileMenuRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      const firstElement = focusableElements.item(0);
+      const lastElement = focusableElements.item(focusableElements.length - 1);
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement?.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement?.focus();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isMenuOpen]);
 
   async function handleSignOut() {
     setSignOutError("");
@@ -97,6 +179,37 @@ export function AppShell() {
       setIsSigningOut(false);
     }
   }
+
+  function closeMenu() {
+    setIsMenuOpen(false);
+    menuButtonRef.current?.focus();
+  }
+
+  const accountCard = (mobile = false) => (
+    <div className={`flex items-center gap-3 rounded-xl p-3 ${mobile ? "border border-line bg-canvas" : "bg-white/6"}`}>
+      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-400 text-sm font-bold text-brand-950">
+        {initial}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold">{name}</p>
+        <p className={`truncate text-xs ${mobile ? "text-ink-muted" : "text-white/48"}`}>
+          {session?.user.email}
+        </p>
+      </div>
+      <button
+        aria-label="Log out"
+        className={`rounded-lg p-2 transition disabled:opacity-50 ${mobile ? "text-ink-muted hover:bg-surface hover:text-ink" : "text-white/55 hover:bg-white/10 hover:text-white"}`}
+        disabled={isSigningOut}
+        onClick={handleSignOut}
+        title="Log out"
+        type="button"
+      >
+        <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
+          <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4m5-4 3-3-3-3m3 3H9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+        </svg>
+      </button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-canvas lg:grid lg:grid-cols-[17rem_minmax(0,1fr)]">
@@ -112,22 +225,7 @@ export function AppShell() {
           <p className="px-3 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-white/45">
             Workspace
           </p>
-          <ul className="mt-3 space-y-1">
-            {navigationItems.map((item) => (
-              <li key={item.to}>
-                <NavLink
-                  className={({ isActive }) =>
-                    `flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${isActive ? "bg-white text-brand-950 shadow-sm" : "text-white/68 hover:bg-white/8 hover:text-white"}`
-                  }
-                  end={item.to === "/app"}
-                  to={item.to}
-                >
-                  {item.icon}
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+          <WorkspaceLinks tone="dark" />
         </nav>
 
         <div className="border-t border-white/10 p-4">
@@ -136,43 +234,35 @@ export function AppShell() {
               {signOutError}
             </p>
           )}
-          <div className="flex items-center gap-3 rounded-xl bg-white/6 p-3">
-            <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-400 text-sm font-bold text-brand-950">
-              {initial}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">{name}</p>
-              <p className="truncate text-xs text-white/48">{session?.user.email}</p>
-            </div>
-            <button
-              aria-label="Log out"
-              className="rounded-lg p-2 text-white/55 transition hover:bg-white/10 hover:text-white disabled:opacity-50"
-              disabled={isSigningOut}
-              onClick={handleSignOut}
-              title="Log out"
-              type="button"
-            >
-              <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
-                <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4m5-4 3-3-3-3m3 3H9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-              </svg>
-            </button>
-          </div>
+          {accountCard()}
         </div>
       </aside>
 
       <div className="min-w-0">
         <header className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur">
-          <div className="flex min-h-20 items-center justify-between px-5 sm:px-8 lg:px-10">
-            <div>
+          <div className="flex min-h-20 items-center justify-between gap-4 px-5 sm:px-8 lg:px-10">
+            <div className="min-w-0">
               <p className="text-xs font-semibold text-ink-muted">Workspace</p>
-              <h1 className="mt-0.5 text-xl font-semibold tracking-[-0.025em]">{pageTitle}</h1>
+              <h1 className="mt-0.5 truncate text-xl font-semibold tracking-[-0.025em]">{pageTitle}</h1>
             </div>
-            <Link className="text-lg font-bold tracking-[-0.03em] text-brand-900 lg:hidden" to="/app">
-              autoapply
-            </Link>
-            <div className="hidden items-center gap-2 text-sm text-ink-muted sm:flex">
-              <span className="size-2 rounded-full bg-emerald-500" />
-              Account connected
+            <div className="flex items-center gap-3">
+              <div className="hidden items-center gap-2 text-sm text-ink-muted sm:flex">
+                <span className="size-2 rounded-full bg-emerald-500" />
+                Account connected
+              </div>
+              <button
+                aria-controls="mobile-workspace-navigation"
+                aria-expanded={isMenuOpen}
+                aria-label="Open workspace navigation"
+                className="grid size-11 place-items-center rounded-xl border border-line bg-surface text-brand-950 shadow-sm transition hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 lg:hidden"
+                onClick={() => setIsMenuOpen(true)}
+                ref={menuButtonRef}
+                type="button"
+              >
+                <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
+                  <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+                </svg>
+              </button>
             </div>
           </div>
         </header>
@@ -181,6 +271,58 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            aria-label="Close workspace navigation"
+            className="absolute inset-0 bg-brand-950/45 backdrop-blur-[2px]"
+            onClick={closeMenu}
+            type="button"
+          />
+          <aside
+            aria-label="Workspace navigation"
+            aria-modal="true"
+            className="absolute inset-y-0 right-0 flex w-[min(22rem,88vw)] flex-col border-l border-line bg-surface shadow-2xl"
+            id="mobile-workspace-navigation"
+            ref={mobileMenuRef}
+            role="dialog"
+          >
+            <div className="flex min-h-20 items-center justify-between border-b border-line px-5">
+              <Link className="text-xl font-bold tracking-[-0.035em] text-brand-900" onClick={closeMenu} to="/app">
+                autoapply
+              </Link>
+              <button
+                aria-label="Close workspace navigation"
+                className="grid size-11 place-items-center rounded-xl text-ink-muted transition hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700"
+                onClick={closeMenu}
+                ref={closeButtonRef}
+                type="button"
+              >
+                <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
+                  <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+                </svg>
+              </button>
+            </div>
+
+            <nav className="flex-1 overflow-y-auto px-4 py-6">
+              <p className="px-3 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-ink-muted">
+                Workspace
+              </p>
+              <WorkspaceLinks onNavigate={closeMenu} tone="light" />
+            </nav>
+
+            <div className="border-t border-line p-4">
+              {signOutError && (
+                <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs leading-relaxed text-red-800" role="alert">
+                  {signOutError}
+                </p>
+              )}
+              {accountCard(true)}
+            </div>
+          </aside>
+        </div>
+      )}
     </div>
   );
 }
