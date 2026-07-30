@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 
 type RouteGuardProps = {
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 function SessionLoading() {
@@ -26,10 +26,11 @@ export function RequireAuth({ children }: RouteGuardProps) {
   }
 
   if (!session) {
-    return <Navigate replace state={{ from: location.pathname }} to="/login" />;
+    const from = `${location.pathname}${location.search}${location.hash}`;
+    return <Navigate replace state={{ from }} to="/login" />;
   }
 
-  return children;
+  return children ?? <Outlet />;
 }
 
 export function PublicOnly({ children }: RouteGuardProps) {

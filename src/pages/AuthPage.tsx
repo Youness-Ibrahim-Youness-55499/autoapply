@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Seo } from "../components/Seo";
 import { SkipLink } from "../components/SkipLink";
 import { PageContainer } from "../components/layout/PageContainer";
@@ -12,6 +12,15 @@ type AuthPageProps = {
 export function AuthPage({ mode }: AuthPageProps) {
   const isSignup = mode === "signup";
   const navigate = useNavigate();
+  const location = useLocation();
+  const requestedPath =
+    typeof location.state === "object" &&
+    location.state !== null &&
+    "from" in location.state &&
+    typeof location.state.from === "string" &&
+    location.state.from.startsWith("/app")
+      ? location.state.from
+      : "/app";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -69,7 +78,7 @@ export function AuthPage({ mode }: AuthPageProps) {
         return;
       }
 
-      navigate("/app", { replace: true });
+      navigate(requestedPath, { replace: true });
     } catch {
       setErrorMessage("Something went wrong. Please try again.");
     } finally {
