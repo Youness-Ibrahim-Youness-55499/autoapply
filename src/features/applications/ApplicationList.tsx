@@ -1,7 +1,9 @@
+import { Button } from "../../components/ui/Button";
 import type { Application, ApplicationStatus } from "./types";
 
 type ApplicationListProps = {
   applications: Application[];
+  onEdit: (application: Application) => void;
 };
 
 const statusDetails: Record<
@@ -70,7 +72,7 @@ function JobTitle({ application }: { application: Application }) {
   );
 }
 
-export function ApplicationList({ applications }: ApplicationListProps) {
+export function ApplicationList({ applications, onEdit }: ApplicationListProps) {
   return (
     <section aria-labelledby="application-list-title">
       <div className="mb-4 flex items-end justify-between gap-4">
@@ -93,6 +95,7 @@ export function ApplicationList({ applications }: ApplicationListProps) {
               <th className="px-6 py-4 font-semibold" scope="col">Location</th>
               <th className="px-6 py-4 font-semibold" scope="col">Status</th>
               <th className="px-6 py-4 font-semibold" scope="col">Added</th>
+              <th className="px-6 py-4 text-right font-semibold" scope="col">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
@@ -110,6 +113,16 @@ export function ApplicationList({ applications }: ApplicationListProps) {
                 </td>
                 <td className="px-6 py-5 text-sm text-ink-muted">
                   <time dateTime={application.created_at}>{formatDate(application.created_at)}</time>
+                </td>
+                <td className="px-6 py-5 text-right">
+                  <Button
+                    aria-label={`Edit ${application.job_title} at ${application.company_name}`}
+                    onClick={() => onEdit(application)}
+                    size="sm"
+                    variant="secondary"
+                  >
+                    Edit
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -139,6 +152,14 @@ export function ApplicationList({ applications }: ApplicationListProps) {
                 </dd>
               </div>
             </dl>
+            <Button
+              className="mt-5 w-full"
+              onClick={() => onEdit(application)}
+              size="sm"
+              variant="secondary"
+            >
+              Edit application
+            </Button>
           </li>
         ))}
       </ul>
