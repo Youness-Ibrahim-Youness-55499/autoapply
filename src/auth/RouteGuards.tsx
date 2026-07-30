@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { LoadingState } from "../components/states/LoadingState";
 import { useAuth } from "./AuthProvider";
 
 type RouteGuardProps = {
@@ -8,12 +9,11 @@ type RouteGuardProps = {
 
 function SessionLoading() {
   return (
-    <main
-      aria-busy="true"
-      className="grid min-h-screen place-items-center bg-canvas px-5"
-    >
-      <p className="text-sm font-semibold text-ink-muted">Opening your workspace...</p>
-    </main>
+    <LoadingState
+      description="Checking your secure session and preparing your workspace."
+      fullScreen
+      title="Opening your workspace"
+    />
   );
 }
 
