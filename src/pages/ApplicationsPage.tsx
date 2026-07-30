@@ -6,17 +6,44 @@ import { EmptyState } from "../components/states/EmptyState";
 import { ErrorState } from "../components/states/ErrorState";
 import { LoadingState } from "../components/states/LoadingState";
 import { Button } from "../components/ui/Button";
-import { AddApplicationForm } from "../features/applications/AddApplicationForm";
+import { ApplicationForm } from "../features/applications/ApplicationForm";
 import { ApplicationList } from "../features/applications/ApplicationList";
+import type { Application } from "../features/applications/types";
 import { useApplications } from "../features/applications/useApplications";
 
 export function ApplicationsPage() {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const { applications, errorMessage, isLoading, refresh, retry } = useApplications();
+  const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
+  const [editingApplication, setEditingApplication] =
+    useState<Application | null>(null);
+  const { applications, errorMessage, isLoading, refresh, retry } =
+    useApplications();
+  const isFormOpen = isCreateFormOpen || Boolean(editingApplication);
 
-  function handleCreated() {
-    setIsFormOpen(false);
+  function closeForm() {
+    setIsCreateFormOpen(false);
+    setEditingApplication(null);
+  }
+
+  function handleSaved() {
+    closeForm();
     refresh();
+  }
+
+  function openCreateForm() {
+    setEditingApplication(null);
+    setIsCreateFormOpen((isOpen) => !isOpen);
+  }
+
+  function openEditForm(application: Application) {
+    setIsCreateFormOpen(false);
+    setEditingApplication(application);
+
+    requestAnimationFrame(() => {
+      document.getElementById("application-form")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
   }
 
   return (
@@ -35,18 +62,20 @@ export function ApplicationsPage() {
 
         <div className="mt-7">
           <Button
-            aria-controls="add-application-form"
-            aria-expanded={isFormOpen}
-            onClick={() => setIsFormOpen((isOpen) => !isOpen)}
+            aria-controls="application-form"
+            aria-expanded={isCreateFormOpen}
+            onClick={openCreateForm}
           >
-            {isFormOpen ? "Close form" : "Add application"}
+            {isCreateFormOpen ? "Close form" : "Add application"}
           </Button>
         </div>
 
         {isFormOpen && (
-          <AddApplicationForm
-            onCancel={() => setIsFormOpen(false)}
-            onCreated={handleCreated}
+          <ApplicationForm
+            application={editingApplication ?? undefined}
+            key={editingApplication?.id ?? "create"}
+            onCancel={closeForm}
+            onSaved={handleSaved}
           />
         )}
 
@@ -74,7 +103,7 @@ export function ApplicationsPage() {
           )}
 
           {!isLoading && !errorMessage && applications.length > 0 && (
-            <ApplicationList applications={applications} />
+            <ApplicationList applications={applications} onEdit={openEditForm} />
           )}
         </div>
       </PageContainer>
