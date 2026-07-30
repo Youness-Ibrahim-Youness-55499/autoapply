@@ -8,6 +8,7 @@ import { LoadingState } from "../components/states/LoadingState";
 import { Button } from "../components/ui/Button";
 import { ApplicationForm } from "../features/applications/ApplicationForm";
 import { ApplicationList } from "../features/applications/ApplicationList";
+import { DeleteApplicationDialog } from "../features/applications/DeleteApplicationDialog";
 import type { Application } from "../features/applications/types";
 import { useApplications } from "../features/applications/useApplications";
 
@@ -15,11 +16,14 @@ export function ApplicationsPage() {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [editingApplication, setEditingApplication] =
     useState<Application | null>(null);
+  const [deletingApplication, setDeletingApplication] =
+    useState<Application | null>(null);
   const {
     applications,
     errorMessage,
     isLoading,
     refresh,
+    removeLocally,
     retry,
     updateStatusLocally,
   } = useApplications();
@@ -33,6 +37,16 @@ export function ApplicationsPage() {
   function handleSaved() {
     closeForm();
     refresh();
+  }
+
+  function handleDeleted(id: string) {
+    removeLocally(id);
+
+    if (editingApplication?.id === id) {
+      closeForm();
+    }
+
+    setDeletingApplication(null);
   }
 
   function toggleCreateForm() {
@@ -115,12 +129,21 @@ export function ApplicationsPage() {
           {!isLoading && !errorMessage && applications.length > 0 && (
             <ApplicationList
               applications={applications}
+              onDelete={setDeletingApplication}
               onEdit={openEditForm}
               onStatusUpdated={updateStatusLocally}
             />
           )}
         </div>
       </PageContainer>
+
+      {deletingApplication && (
+        <DeleteApplicationDialog
+          application={deletingApplication}
+          onCancel={() => setDeletingApplication(null)}
+          onDeleted={handleDeleted}
+        />
+      )}
     </>
   );
 }
