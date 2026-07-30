@@ -35,7 +35,10 @@ export function AuthPage({ mode }: AuthPageProps) {
           password,
           options: {
             data: { name },
-            emailRedirectTo: new URL(\n              "app",\n              new URL(import.meta.env.BASE_URL, window.location.origin),\n            ).href,
+            emailRedirectTo: new URL(
+              "app",
+              new URL(import.meta.env.BASE_URL, window.location.origin),
+            ).href,
           },
         });
 
