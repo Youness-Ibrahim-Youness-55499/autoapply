@@ -2,26 +2,17 @@ import { useState, type FormEvent } from "react";
 import { useAuth } from "../../auth/AuthProvider";
 import { Button } from "../../components/ui/Button";
 import { supabase } from "../../lib/supabase";
+import { applicationStatusDetails } from "./applicationStatus";
 import {
   applicationStatuses,
   isApplicationStatus,
   type Application,
-  type ApplicationStatus,
 } from "./types";
 
 type ApplicationFormProps = {
   application?: Application;
   onCancel: () => void;
   onSaved: () => void;
-};
-
-const statusLabels: Record<ApplicationStatus, string> = {
-  saved: "Saved",
-  applied: "Applied",
-  interview: "Interview",
-  offer: "Offer",
-  rejected: "Rejected",
-  withdrawn: "Withdrawn",
 };
 
 const inputClasses =
@@ -217,7 +208,7 @@ export function ApplicationForm({
               >
                 {applicationStatuses.map((status) => (
                   <option key={status} value={status}>
-                    {statusLabels[status]}
+                    {applicationStatusDetails[status].label}
                   </option>
                 ))}
               </select>
