@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { Seo } from "../components/Seo";
 import { PageContainer } from "../components/layout/PageContainer";
+import { EmptyState } from "../components/states/EmptyState";
 
 type ProductRoutePlaceholderPageProps = {
   description: string;
@@ -22,13 +23,12 @@ export function ProductRoutePlaceholderPage({
           {title}
         </h2>
         <p className="lead mt-5 max-w-2xl">{description}</p>
-        <section className="mt-10 max-w-3xl rounded-card border border-line bg-surface p-6 shadow-card sm:p-8">
-          <h3 className="text-lg font-semibold">Route ready</h3>
-          <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-            This authenticated area is in place. Its product functionality will be added
-            in a focused development task.
-          </p>
-        </section>
+        <div className="mt-10 max-w-3xl">
+          <EmptyState
+            description="This area is ready for real product data. Its functionality will be added in a focused development task."
+            title={`No ${title.toLowerCase()} yet`}
+          />
+        </div>
       </PageContainer>
     </>
   );
