@@ -15,8 +15,14 @@ export function ApplicationsPage() {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [editingApplication, setEditingApplication] =
     useState<Application | null>(null);
-  const { applications, errorMessage, isLoading, refresh, retry } =
-    useApplications();
+  const {
+    applications,
+    errorMessage,
+    isLoading,
+    refresh,
+    retry,
+    updateStatusLocally,
+  } = useApplications();
   const isFormOpen = isCreateFormOpen || Boolean(editingApplication);
 
   function closeForm() {
@@ -107,7 +113,11 @@ export function ApplicationsPage() {
           )}
 
           {!isLoading && !errorMessage && applications.length > 0 && (
-            <ApplicationList applications={applications} onEdit={openEditForm} />
+            <ApplicationList
+              applications={applications}
+              onEdit={openEditForm}
+              onStatusUpdated={updateStatusLocally}
+            />
           )}
         </div>
       </PageContainer>

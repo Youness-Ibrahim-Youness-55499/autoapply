@@ -1,21 +1,11 @@
 import { Button } from "../../components/ui/Button";
+import { ApplicationStatusControl } from "./ApplicationStatusControl";
 import type { Application, ApplicationStatus } from "./types";
 
 type ApplicationListProps = {
   applications: Application[];
   onEdit: (application: Application) => void;
-};
-
-const statusDetails: Record<
-  ApplicationStatus,
-  { label: string; styles: string }
-> = {
-  saved: { label: "Saved", styles: "bg-slate-100 text-slate-700" },
-  applied: { label: "Applied", styles: "bg-blue-50 text-blue-700" },
-  interview: { label: "Interview", styles: "bg-violet-50 text-violet-700" },
-  offer: { label: "Offer", styles: "bg-emerald-50 text-emerald-700" },
-  rejected: { label: "Rejected", styles: "bg-red-50 text-red-700" },
-  withdrawn: { label: "Withdrawn", styles: "bg-amber-50 text-amber-800" },
+  onStatusUpdated: (id: string, status: ApplicationStatus) => void;
 };
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -42,16 +32,6 @@ function getSafeJobUrl(value: string | null) {
   }
 }
 
-function StatusBadge({ status }: { status: ApplicationStatus }) {
-  const details = statusDetails[status];
-
-  return (
-    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${details.styles}`}>
-      {details.label}
-    </span>
-  );
-}
-
 function JobTitle({ application }: { application: Application }) {
   const jobUrl = getSafeJobUrl(application.job_url);
 
@@ -72,7 +52,11 @@ function JobTitle({ application }: { application: Application }) {
   );
 }
 
-export function ApplicationList({ applications, onEdit }: ApplicationListProps) {
+export function ApplicationList({
+  applications,
+  onEdit,
+  onStatusUpdated,
+}: ApplicationListProps) {
   return (
     <section aria-labelledby="application-list-title">
       <div className="mb-4 flex items-end justify-between gap-4">
@@ -109,7 +93,10 @@ export function ApplicationList({ applications, onEdit }: ApplicationListProps) 
                   {application.location || "Not specified"}
                 </td>
                 <td className="px-6 py-5">
-                  <StatusBadge status={application.status} />
+                  <ApplicationStatusControl
+                    application={application}
+                    onUpdated={(status) => onStatusUpdated(application.id, status)}
+                  />
                 </td>
                 <td className="px-6 py-5 text-sm text-ink-muted">
                   <time dateTime={application.created_at}>{formatDate(application.created_at)}</time>
@@ -138,7 +125,10 @@ export function ApplicationList({ applications, onEdit }: ApplicationListProps) 
                 <JobTitle application={application} />
                 <p className="mt-1 truncate text-sm text-ink-muted">{application.company_name}</p>
               </div>
-              <StatusBadge status={application.status} />
+              <ApplicationStatusControl
+                    application={application}
+                    onUpdated={(status) => onStatusUpdated(application.id, status)}
+                  />
             </div>
             <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4 text-sm">
               <div>
