@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { PublicOnly, RequireAuth } from "./auth/RouteGuards";
 import { AppShell } from "./components/app/AppShell";
 import { ApplicationsPage } from "./pages/ApplicationsPage";
+import { TemplatesPage } from "./features/templates/TemplatesPage";
 import { AuthPage } from "./pages/AuthPage";
 import { DocumentsPage } from "./pages/DocumentsPage";
 import { LandingPage } from "./pages/LandingPage";
@@ -35,6 +36,7 @@ export function App() {
         <Route element={<AppShell />} path="/app">
           <Route element={<ProductHomePage />} index />
           <Route element={<ApplicationsPage />} path="applications" />
+          <Route element={<TemplatesPage />} path="templates" />
           <Route element={<ProfilePage />} path="profile" />
           <Route element={<DocumentsPage />} path="documents" />
           <Route element={<SettingsPage />} path="settings" />
