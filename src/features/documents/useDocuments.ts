@@ -3,13 +3,15 @@ import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
 import {
   acceptedDocumentTypes,
+  isDocumentCategory,
   maxDocumentSize,
   type CandidateDocument,
+  type DocumentMetadataInput,
   type DocumentStatus,
 } from "./document.types";
 
 const documentColumns =
-  "id, storage_path, original_name, mime_type, size_bytes, processing_status, created_at";
+  "id, storage_path, original_name, display_name, category, notes, is_default, mime_type, size_bytes, processing_status, created_at";
 
 function isDocumentStatus(value: unknown): value is DocumentStatus {
   return (
@@ -28,6 +30,10 @@ function normalizeDocument(value: unknown): CandidateDocument | null {
     typeof row.id !== "string" ||
     typeof row.storage_path !== "string" ||
     typeof row.original_name !== "string" ||
+    typeof row.display_name !== "string" ||
+    !isDocumentCategory(row.category) ||
+    (row.notes !== null && typeof row.notes !== "string") ||
+    typeof row.is_default !== "boolean" ||
     typeof row.mime_type !== "string" ||
     typeof row.size_bytes !== "number" ||
     !isDocumentStatus(row.processing_status) ||
@@ -37,9 +43,13 @@ function normalizeDocument(value: unknown): CandidateDocument | null {
   }
 
   return {
+    category: row.category,
     createdAt: row.created_at,
+    displayName: row.display_name,
     id: row.id,
+    isDefault: row.is_default,
     mimeType: row.mime_type,
+    notes: typeof row.notes === "string" ? row.notes : "",
     originalName: row.original_name,
     processingStatus: row.processing_status,
     sizeBytes: row.size_bytes,
@@ -107,7 +117,10 @@ export function useDocuments() {
     void loadDocuments();
   }, [loadDocuments, requestVersion]);
 
-  async function uploadDocument(file: File) {
+  async function uploadDocument(
+    file: File,
+    metadata: Pick<DocumentMetadataInput, "category" | "displayName" | "notes">,
+  ) {
     setActionErrorMessage("");
     setSuccessMessage("");
 
@@ -123,6 +136,24 @@ export function useDocuments() {
 
     if (file.size <= 0 || file.size > maxDocumentSize) {
       setActionErrorMessage("The document must be smaller than 10 MB.");
+      return false;
+    }
+
+    const displayName = metadata.displayName.trim();
+    const notes = metadata.notes.trim();
+
+    if (!displayName || displayName.length > 160) {
+      setActionErrorMessage("Document name must contain 1 to 160 characters.");
+      return false;
+    }
+
+    if (!isDocumentCategory(metadata.category)) {
+      setActionErrorMessage("Choose a valid document category.");
+      return false;
+    }
+
+    if (notes.length > 5000) {
+      setActionErrorMessage("Document notes must not exceed 5,000 characters.");
       return false;
     }
 
@@ -146,6 +177,9 @@ export function useDocuments() {
       .from("documents")
       .insert({
         mime_type: file.type,
+        category: metadata.category,
+        display_name: displayName,
+        notes: notes || null,
         original_name: file.name,
         size_bytes: file.size,
         storage_path: storagePath,
@@ -173,6 +207,79 @@ export function useDocuments() {
     setDocuments((current) => [document, ...current]);
     setSuccessMessage("Document uploaded securely.");
     setIsUploading(false);
+    return true;
+  }
+
+  async function updateDocument(
+    document: CandidateDocument,
+    metadata: DocumentMetadataInput,
+  ) {
+    if (!userId) {
+      setActionErrorMessage("Your session is not available. Please log in again.");
+      return false;
+    }
+
+    const displayName = metadata.displayName.trim();
+    const notes = metadata.notes.trim();
+
+    if (!displayName || displayName.length > 160) {
+      setActionErrorMessage("Document name must contain 1 to 160 characters.");
+      return false;
+    }
+
+    if (!isDocumentCategory(metadata.category)) {
+      setActionErrorMessage("Choose a valid document category.");
+      return false;
+    }
+
+    if (notes.length > 5000) {
+      setActionErrorMessage("Document notes must not exceed 5,000 characters.");
+      return false;
+    }
+
+    setActionErrorMessage("");
+    setSuccessMessage("");
+    setBusyDocumentId(document.id);
+
+    const shouldBeDefault = metadata.category === "cv" && metadata.isDefault;
+
+    const { data, error } = await supabase
+      .rpc("update_document_metadata", {
+        p_category: metadata.category,
+        p_display_name: displayName,
+        p_document_id: document.id,
+        p_is_default: shouldBeDefault,
+        p_notes: notes,
+      })
+      .maybeSingle();
+
+    if (error || !data) {
+      setActionErrorMessage(
+        error?.message ?? "This document could not be found or updated.",
+      );
+      setBusyDocumentId("");
+      return false;
+    }
+
+    const updated = normalizeDocument(data);
+
+    if (!updated) {
+      setActionErrorMessage("Updated document data returned in an unexpected format.");
+      setBusyDocumentId("");
+      return false;
+    }
+
+    setDocuments((current) =>
+      current.map((item) => {
+        if (item.id === updated.id) return updated;
+        if (shouldBeDefault && item.category === "cv") {
+          return { ...item, isDefault: false };
+        }
+        return item;
+      }),
+    );
+    setSuccessMessage("Document details updated.");
+    setBusyDocumentId("");
     return true;
   }
 
@@ -222,7 +329,9 @@ export function useDocuments() {
       .eq("user_id", userId);
 
     if (metadataError) {
-      setActionErrorMessage(metadataError.message);
+      setActionErrorMessage(
+        `${metadataError.message} The private file was removed; retry to clear its record.`,
+      );
       setBusyDocumentId("");
       return false;
     }
@@ -244,6 +353,8 @@ export function useDocuments() {
     openDocument,
     retry: () => setRequestVersion((version) => version + 1),
     successMessage,
+    updateDocument,
     uploadDocument,
   };
 }
+
