@@ -505,4 +505,3 @@ export function ApplicationForm({
     </section>
   );
 }
-
