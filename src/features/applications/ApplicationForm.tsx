@@ -468,89 +468,41 @@ export function ApplicationForm({
               <label className="mt-5 block text-sm font-semibold">
                 Offer notes
                 <textarea
-               …20124 tokens truncated…ue;
-  }
+                  className={`${inputClasses} min-h-24 py-3`}
+                  defaultValue={application?.offer_notes ?? ""}
+                  maxLength={5000}
+                  name="offer_notes"
+                />
+              </label>
+            </div>
+          )}
+        </fieldset>
 
-  async function toggleReminder(reminder: ApplicationReminder) {
-    if (!userId) return;
-    setErrorMessage("");
-    const { error } = await supabase
-      .from("application_reminders")
-      .update({ completed_at: reminder.completed_at ? null : new Date().toISOString() })
-      .eq("id", reminder.id)
-      .eq("user_id", userId);
-    if (error) {
-      setErrorMessage(error.message);
-      return;
-    }
-    await load();
-  }
+        {errorMessage && (
+          <p
+            className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+            role="alert"
+          >
+            {errorMessage}
+          </p>
+        )}
 
-  async function deleteReminder(id: string) {
-    if (!userId) return;
-    setErrorMessage("");
-    const { error } = await supabase
-      .from("application_reminders")
-      .delete()
-      .eq("id", id)
-      .eq("user_id", userId);
-    if (error) setErrorMessage(error.message);
-    else await load();
-  }
-
-  async function addInterview(values: {
-    location: string;
-    notes: string;
-    scheduledAt: string;
-    stage: InterviewStage;
-  }) {
-    if (!userId) return false;
-    setErrorMessage("");
-    setSuccessMessage("");
-    setIsSaving(true);
-    const { error } = await supabase.from("application_interviews").insert({
-      application_id: applicationId,
-      location: values.location.trim() || null,
-      notes: values.notes.trim() || null,
-      scheduled_at: new Date(values.scheduledAt).toISOString(),
-      stage: values.stage,
-      user_id: userId,
-    });
-    setIsSaving(false);
-    if (error) {
-      setErrorMessage(error.message);
-      return false;
-    }
-    setSuccessMessage("Interview added.");
-    await load();
-    return true;
-  }
-
-  async function deleteInterview(id: string) {
-    if (!userId) return;
-    setErrorMessage("");
-    const { error } = await supabase
-      .from("application_interviews")
-      .delete()
-      .eq("id", id)
-      .eq("user_id", userId);
-    if (error) setErrorMessage(error.message);
-    else await load();
-  }
-
-  return {
-    addInterview,
-    addReminder,
-    deleteInterview,
-    deleteReminder,
-    errorMessage,
-    history,
-    interviews,
-    isLoading,
-    isSaving,
-    reminders,
-    retry: load,
-    successMessage,
-    toggleReminder,
-  };
+        <div className="mt-6 flex flex-wrap justify-end gap-3">
+          <Button disabled={isSubmitting} onClick={onCancel} variant="secondary">
+            Cancel
+          </Button>
+          <Button disabled={isSubmitting} type="submit">
+            {isSubmitting
+              ? isEditing
+                ? "Updating..."
+                : "Saving..."
+              : isEditing
+                ? "Save changes"
+                : "Save application"}
+          </Button>
+        </div>
+      </form>
+    </section>
+  );
 }
+
