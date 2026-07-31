@@ -12,6 +12,7 @@ import {
 } from "../features/applications/ApplicationFilters";
 import { ApplicationForm } from "../features/applications/ApplicationForm";
 import { ApplicationList } from "../features/applications/ApplicationList";
+import { ApplicationWorkflowPanel } from "../features/applications/ApplicationWorkflowPanel";
 import { DeleteApplicationDialog } from "../features/applications/DeleteApplicationDialog";
 import type { Application } from "../features/applications/types";
 import { useApplications } from "../features/applications/useApplications";
@@ -21,6 +22,8 @@ export function ApplicationsPage() {
   const [editingApplication, setEditingApplication] =
     useState<Application | null>(null);
   const [deletingApplication, setDeletingApplication] =
+    useState<Application | null>(null);
+  const [workflowApplication, setWorkflowApplication] =
     useState<Application | null>(null);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] =
@@ -77,6 +80,9 @@ export function ApplicationsPage() {
     if (editingApplication?.id === id) {
       closeForm();
     }
+    if (workflowApplication?.id === id) {
+      setWorkflowApplication(null);
+    }
 
     setDeletingApplication(null);
   }
@@ -96,6 +102,16 @@ export function ApplicationsPage() {
 
     requestAnimationFrame(() => {
       document.getElementById("application-form")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }
+
+  function openWorkflow(application: Application) {
+    setWorkflowApplication(application);
+    requestAnimationFrame(() => {
+      document.getElementById("application-workflow")?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
@@ -174,6 +190,7 @@ export function ApplicationsPage() {
                   onDelete={setDeletingApplication}
                   onEdit={openEditForm}
                   onStatusUpdated={updateStatusLocally}
+                  onWorkflow={openWorkflow}
                 />
               ) : (
                 <EmptyState
@@ -188,6 +205,17 @@ export function ApplicationsPage() {
               )}
             </>
           )}
+
+          {workflowApplication && (
+            <ApplicationWorkflowPanel
+              application={
+                applications.find((item) => item.id === workflowApplication.id) ??
+                workflowApplication
+              }
+              key={workflowApplication.id}
+              onClose={() => setWorkflowApplication(null)}
+            />
+          )}
         </div>
       </PageContainer>
 
@@ -201,3 +229,4 @@ export function ApplicationsPage() {
     </>
   );
 }
+
