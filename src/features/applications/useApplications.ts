@@ -37,6 +37,19 @@ function isApplication(value: unknown): value is Application {
     isNullableString(row.location) &&
     isNullableString(row.notes) &&
     isNullableString(row.applied_at) &&
+    isNullableString(row.job_description) &&
+    isNullableString(row.salary) &&
+    isNullableString(row.deadline) &&
+    isNullableString(row.recruiter_name) &&
+    isNullableString(row.recruiter_email) &&
+    isNullableString(row.recruiter_phone) &&
+    isNullableString(row.follow_up_at) &&
+    isNullableString(row.rejection_reason) &&
+    isNullableString(row.offer_amount) &&
+    isNullableString(row.offer_date) &&
+    isNullableString(row.offer_notes) &&
+    isNullableString(row.cv_document_id) &&
+    isNullableString(row.cover_letter_document_id) &&
     typeof row.created_at === "string" &&
     typeof row.updated_at === "string"
   );
@@ -67,7 +80,7 @@ export function useApplications(): ApplicationsState {
       const { data, error } = await supabase
         .from("applications")
         .select(
-          "id, company_name, job_title, status, job_url, location, notes, applied_at, created_at, updated_at",
+          "id, company_name, job_title, status, job_url, location, notes, applied_at, job_description, salary, deadline, recruiter_name, recruiter_email, recruiter_phone, follow_up_at, rejection_reason, offer_amount, offer_date, offer_notes, cv_document_id, cover_letter_document_id, created_at, updated_at",
         )
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
@@ -127,3 +140,4 @@ export function useApplications(): ApplicationsState {
     updateStatusLocally,
   };
 }
+
