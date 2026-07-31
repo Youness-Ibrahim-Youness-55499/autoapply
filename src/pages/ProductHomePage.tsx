@@ -10,15 +10,22 @@ import { LoadingState } from "../components/states/LoadingState";
 import { ErrorState } from "../components/states/ErrorState";
 
 function StatCard({ title, value, subtitle, children }: { title: string; value: string | number; subtitle?: string; children?: React.ReactNode }) {
+  const pct = typeof value === "string" && value.endsWith("%") ? Number(value.replace("%", "")) : null;
+
   return (
-    <div className="rounded-card border border-line bg-surface p-4">
+    <div className="rounded-card border border-line bg-surface p-4 shadow-card">
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-ink-muted">{title}</p>
-          <p className="mt-1 text-2xl font-bold">{value}</p>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-ink-muted truncate">{title}</p>
+          <p className="mt-1 text-3xl font-extrabold tracking-tight">{value}</p>
           {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}
+          {pct !== null && (
+            <div className="mt-3 h-2 w-full rounded-full bg-white/6">
+              <div className="h-2 rounded-full bg-emerald-500" style={{ width: `${Math.max(0, Math.min(100, pct))}%` }} />
+            </div>
+          )}
         </div>
-        <div className="text-sm text-ink-muted">{children}</div>
+        <div className="hidden shrink-0 text-sm text-ink-muted sm:block">{children}</div>
       </div>
     </div>
   );
@@ -26,10 +33,30 @@ function StatCard({ title, value, subtitle, children }: { title: string; value: 
 
 function ListCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-card border border-line bg-surface p-4">
+    <div className="rounded-card border border-line bg-surface p-4 shadow-card">
       <h3 className="text-sm font-semibold">{title}</h3>
       <div className="mt-3 space-y-3">{children}</div>
     </div>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const color =
+    status === "applied"
+      ? "bg-amber-500"
+      : status === "interview"
+      ? "bg-sky-500"
+      : status === "offer"
+      ? "bg-emerald-500"
+      : status === "rejected"
+      ? "bg-rose-500"
+      : "bg-gray-400";
+
+  return (
+    <span className={`inline-flex items-center gap-2 rounded-full px-2 py-0.5 text-xs font-medium ${color} text-white`}>
+      <span className="size-1 rounded-full bg-white/30" />
+      {status}
+    </span>
   );
 }
 
@@ -149,8 +176,10 @@ export function ProductHomePage() {
               <ListCard title="Applications by status">
                 <div className="grid grid-cols-2 gap-3">
                   {Array.from(byStatus.entries()).map(([status, count]) => (
-                    <div key={status} className="flex items-center justify-between gap-3 rounded-md border border-line bg-white/2 px-3 py-2">
-                      <div className="text-sm font-medium">{status}</div>
+                    <div key={status} className="flex items-center justify-between gap-3 rounded-md border border-line bg-white/3 px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={status} />
+                      </div>
                       <div className="text-sm font-semibold">{count}</div>
                     </div>
                   ))}
