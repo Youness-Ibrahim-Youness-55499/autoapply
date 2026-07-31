@@ -1,14 +1,21 @@
 import { useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import {
+  documentCategoryLabels,
   formatFileSize,
   type CandidateDocument,
+  type DocumentMetadataInput,
 } from "../document.types";
+import { DocumentEditor } from "./DocumentEditor";
 
 type DocumentListProps = {
   busyDocumentId: string;
   documents: CandidateDocument[];
   onDelete: (document: CandidateDocument) => Promise<boolean>;
+  onEdit: (
+    document: CandidateDocument,
+    values: DocumentMetadataInput,
+  ) => Promise<boolean>;
   onOpen: (document: CandidateDocument) => Promise<void>;
 };
 
@@ -22,9 +29,11 @@ export function DocumentList({
   busyDocumentId,
   documents,
   onDelete,
+  onEdit,
   onOpen,
 }: DocumentListProps) {
   const [confirmingId, setConfirmingId] = useState("");
+  const [editingId, setEditingId] = useState("");
 
   async function confirmDelete(document: CandidateDocument) {
     const deleted = await onDelete(document);
@@ -63,20 +72,38 @@ export function DocumentList({
                 </span>
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">{document.originalName}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="truncate font-semibold">{document.displayName}</p>
+                    {document.isDefault && (
+                      <span className="rounded-full bg-brand-900 px-2.5 py-1 text-xs font-semibold text-white">
+                        Default CV
+                      </span>
+                    )}
+                  </div>
                   <p className="mt-1 text-sm text-ink-muted">
+                    {documentCategoryLabels[document.category]} ·{" "}
                     {formatFileSize(document.sizeBytes)} · Uploaded{" "}
                     <time dateTime={document.createdAt}>
                       {dateFormatter.format(new Date(document.createdAt))}
                     </time>
                   </p>
-                  <span className="mt-2 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">
-                    Stored privately
-                  </span>
+                  {document.notes && (
+                    <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-ink-muted">
+                      {document.notes}
+                    </p>
+                  )}
                 </div>
 
                 {!isConfirming ? (
                   <div className="flex flex-wrap gap-2">
+                    <Button
+                      disabled={isBusy}
+                      onClick={() => setEditingId(document.id)}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      Edit details
+                    </Button>
                     <Button
                       disabled={isBusy}
                       onClick={() => void onOpen(document)}
@@ -97,29 +124,29 @@ export function DocumentList({
                 ) : (
                   <div className="rounded-xl border border-red-200 bg-red-50 p-3 sm:max-w-xs">
                     <p className="text-sm font-semibold text-red-900">
-                      Delete this document permanently?
+                      Delete this document permanently? Application links to it
+                      will be cleared.
                     </p>
                     <div className="mt-3 flex gap-2">
-                      <Button
-                        disabled={isBusy}
-                        onClick={() => setConfirmingId("")}
-                        size="sm"
-                        variant="secondary"
-                      >
+                      <Button disabled={isBusy} onClick={() => setConfirmingId("")} size="sm" variant="secondary">
                         Keep
                       </Button>
-                      <Button
-                        disabled={isBusy}
-                        onClick={() => void confirmDelete(document)}
-                        size="sm"
-                        variant="danger"
-                      >
+                      <Button disabled={isBusy} onClick={() => void confirmDelete(document)} size="sm" variant="danger">
                         {isBusy ? "Deleting..." : "Delete"}
                       </Button>
                     </div>
                   </div>
                 )}
               </div>
+
+              {editingId === document.id && (
+                <DocumentEditor
+                  document={document}
+                  isSaving={isBusy}
+                  onCancel={() => setEditingId("")}
+                  onSave={onEdit}
+                />
+              )}
             </li>
           );
         })}
@@ -127,3 +154,4 @@ export function DocumentList({
     </section>
   );
 }
+
