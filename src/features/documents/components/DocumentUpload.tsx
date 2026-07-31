@@ -2,14 +2,27 @@ import { useRef, useState, type FormEvent } from "react";
 import { Button } from "../../../components/ui/Button";
 import {
   acceptedDocumentTypes,
+  documentCategories,
+  documentCategoryLabels,
   formatFileSize,
   maxDocumentSize,
+  type DocumentCategory,
 } from "../document.types";
 
 type DocumentUploadProps = {
   isUploading: boolean;
-  onUpload: (file: File) => Promise<boolean>;
+  onUpload: (
+    file: File,
+    metadata: {
+      category: DocumentCategory;
+      displayName: string;
+      notes: string;
+    },
+  ) => Promise<boolean>;
 };
+
+const inputClasses =
+  "mt-2 min-h-11 w-full rounded-xl border border-line bg-canvas px-4 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100";
 
 export function DocumentUpload({
   isUploading,
@@ -17,16 +30,26 @@ export function DocumentUpload({
 }: DocumentUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [category, setCategory] = useState<DocumentCategory>("cv");
+  const [displayName, setDisplayName] = useState("");
+  const [notes, setNotes] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!selectedFile) return;
 
-    const uploaded = await onUpload(selectedFile);
+    const uploaded = await onUpload(selectedFile, {
+      category,
+      displayName: displayName.trim() || selectedFile.name.replace(/\.[^.]+$/, ""),
+      notes,
+    });
 
     if (uploaded) {
       setSelectedFile(null);
+      setCategory("cv");
+      setDisplayName("");
+      setNotes("");
       if (inputRef.current) inputRef.current.value = "";
     }
   }
@@ -38,7 +61,7 @@ export function DocumentUpload({
     >
       <p className="eyebrow">Private source file</p>
       <h2 className="mt-2 text-2xl font-semibold" id="document-upload-title">
-        Upload your CV
+        Upload a document
       </h2>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-muted">
         Files are stored in your private workspace. Autoapply does not make them
@@ -62,26 +85,73 @@ export function DocumentUpload({
             accept={acceptedDocumentTypes.join(",")}
             className="sr-only"
             disabled={isUploading}
-            onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)}
+            onChange={(event) => {
+              const file = event.target.files?.[0] ?? null;
+              setSelectedFile(file);
+              if (file && !displayName) {
+                setDisplayName(file.name.replace(/\.[^.]+$/, ""));
+              }
+            }}
             ref={inputRef}
             type="file"
           />
         </label>
 
         {selectedFile && (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-canvas px-4 py-3">
-            <div className="min-w-0">
+          <div className="mt-4 rounded-xl border border-line bg-canvas p-4">
+            <div className="min-w-0 border-b border-line pb-4">
               <p className="truncate text-sm font-semibold">{selectedFile.name}</p>
               <p className="mt-0.5 text-xs text-ink-muted">
                 {formatFileSize(selectedFile.size)}
               </p>
             </div>
-            <Button disabled={isUploading} type="submit">
-              {isUploading ? "Uploading..." : "Upload securely"}
-            </Button>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <label className="text-sm font-semibold">
+                Display name
+                <input
+                  className={inputClasses}
+                  maxLength={160}
+                  onChange={(event) => setDisplayName(event.target.value)}
+                  required
+                  value={displayName}
+                />
+              </label>
+              <label className="text-sm font-semibold">
+                Category
+                <select
+                  className={inputClasses}
+                  onChange={(event) =>
+                    setCategory(event.target.value as DocumentCategory)
+                  }
+                  value={category}
+                >
+                  {documentCategories.map((value) => (
+                    <option key={value} value={value}>
+                      {documentCategoryLabels[value]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <label className="mt-4 block text-sm font-semibold">
+              Notes <span className="font-normal text-ink-muted">(optional)</span>
+              <textarea
+                className={`${inputClasses} min-h-24 py-3`}
+                maxLength={5000}
+                onChange={(event) => setNotes(event.target.value)}
+                placeholder="Version, language, intended roles, or other context."
+                value={notes}
+              />
+            </label>
+            <div className="mt-4 flex justify-end">
+              <Button disabled={isUploading || !displayName.trim()} type="submit">
+                {isUploading ? "Uploading..." : "Upload securely"}
+              </Button>
+            </div>
           </div>
         )}
       </form>
     </section>
   );
 }
+
