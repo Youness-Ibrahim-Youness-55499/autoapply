@@ -21,6 +21,7 @@ export function DocumentsPage() {
     openDocument,
     retry,
     successMessage,
+    updateDocument,
     uploadDocument,
   } = useDocuments();
 
@@ -34,7 +35,7 @@ export function DocumentsPage() {
       />
       <PageContainer className="py-10 sm:py-14 lg:px-10" size="wide">
         <ProductPageHeader
-          description="Keep the source CVs you approve in private storage, ready for future extraction and tailoring."
+          description="Organize CVs, cover letters, certificates, and references in your private workspace."
           title="Documents"
         />
 
@@ -82,12 +83,13 @@ export function DocumentsPage() {
                   busyDocumentId={busyDocumentId}
                   documents={documents}
                   onDelete={deleteDocument}
+                  onEdit={updateDocument}
                   onOpen={openDocument}
                 />
               ) : (
                 <div className="mt-8">
                   <EmptyState
-                    description="Upload your first CV as a PDF or DOCX file. It will remain private to your account."
+                    description="Upload your first CV, cover letter, certificate, or reference as a PDF or DOCX file."
                     title="No documents uploaded"
                   />
                 </div>
@@ -99,3 +101,4 @@ export function DocumentsPage() {
     </>
   );
 }
+
