@@ -13,15 +13,15 @@ function StatCard({ title, value, subtitle, children }: { title: string; value: 
   const pct = typeof value === "string" && value.endsWith("%") ? Number(value.replace("%", "")) : null;
 
   return (
-    <div className="rounded-card border border-line bg-surface p-4 shadow-card">
+    <div className="rounded-card border border-line bg-surface p-5 sm:p-6 shadow-card">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-ink-muted truncate">{title}</p>
-          <p className="mt-1 text-3xl font-extrabold tracking-tight">{value}</p>
-          {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}
+          <p className="mt-1 text-4xl font-extrabold tracking-tight text-ink">{value}</p>
+          {subtitle && <p className="mt-2 text-sm text-ink-muted">{subtitle}</p>}
           {pct !== null && (
-            <div className="mt-3 h-2 w-full rounded-full bg-white/6">
-              <div className="h-2 rounded-full bg-emerald-500" style={{ width: `${Math.max(0, Math.min(100, pct))}%` }} />
+            <div className="mt-4 h-2.5 w-full rounded-full bg-white/6">
+              <div className="h-2.5 rounded-full bg-emerald-500" style={{ width: `${Math.max(0, Math.min(100, pct))}%` }} />
             </div>
           )}
         </div>
@@ -33,7 +33,7 @@ function StatCard({ title, value, subtitle, children }: { title: string; value: 
 
 function ListCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-card border border-line bg-surface p-4 shadow-card">
+    <div className="rounded-card border border-line bg-surface p-5 sm:p-6 shadow-card">
       <h3 className="text-sm font-semibold">{title}</h3>
       <div className="mt-3 space-y-3">{children}</div>
     </div>
@@ -43,17 +43,17 @@ function ListCard({ title, children }: { title: string; children: React.ReactNod
 function StatusBadge({ status }: { status: string }) {
   const color =
     status === "applied"
-      ? "bg-amber-500"
+      ? "bg-amber-600"
       : status === "interview"
-      ? "bg-sky-500"
+      ? "bg-sky-600"
       : status === "offer"
-      ? "bg-emerald-500"
+      ? "bg-emerald-600"
       : status === "rejected"
-      ? "bg-rose-500"
-      : "bg-gray-400";
+      ? "bg-rose-600"
+      : "bg-ink-muted";
 
   return (
-    <span className={`inline-flex items-center gap-2 rounded-full px-2 py-0.5 text-xs font-medium ${color} text-white`}>
+    <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${color} text-white uppercase`}>
       <span className="size-1 rounded-full bg-white/30" />
       {status}
     </span>
