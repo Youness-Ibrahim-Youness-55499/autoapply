@@ -7,6 +7,7 @@ type ApplicationListProps = {
   onDelete: (application: Application) => void;
   onEdit: (application: Application) => void;
   onStatusUpdated: (id: string, status: ApplicationStatus) => void;
+  onWorkflow: (application: Application) => void;
 };
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -58,6 +59,7 @@ export function ApplicationList({
   onDelete,
   onEdit,
   onStatusUpdated,
+  onWorkflow,
 }: ApplicationListProps) {
   return (
     <section aria-labelledby="application-list-title">
@@ -105,6 +107,14 @@ export function ApplicationList({
                 </td>
                 <td className="px-6 py-5">
                   <div className="flex justify-end gap-2">
+                    <Button
+                      aria-label={`Manage workflow for ${application.job_title} at ${application.company_name}`}
+                      onClick={() => onWorkflow(application)}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      Workflow
+                    </Button>
                     <Button
                       aria-label={`Edit ${application.job_title} at ${application.company_name}`}
                       onClick={() => onEdit(application)}
@@ -154,7 +164,10 @@ export function ApplicationList({
                 </dd>
               </div>
             </dl>
-            <div className="mt-5 grid grid-cols-2 gap-3">
+            <div className="mt-5 grid grid-cols-3 gap-3">
+              <Button onClick={() => onWorkflow(application)} size="sm" variant="secondary">
+                Workflow
+              </Button>
               <Button
                 onClick={() => onEdit(application)}
                 size="sm"
@@ -176,3 +189,4 @@ export function ApplicationList({
     </section>
   );
 }
+
