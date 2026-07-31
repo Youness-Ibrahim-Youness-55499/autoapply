@@ -100,4 +100,3 @@ export function isApplicationStatus(value: unknown): value is ApplicationStatus 
     applicationStatuses.includes(value as ApplicationStatus)
   );
 }
-
