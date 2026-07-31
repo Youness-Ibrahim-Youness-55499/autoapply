@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { ProductPageHeader } from "../components/app/ProductPageHeader";
 import { Seo } from "../components/Seo";
 import { PageContainer } from "../components/layout/PageContainer";
@@ -107,6 +108,18 @@ export function ApplicationsPage() {
       });
     });
   }
+
+  const location = useLocation();
+
+  useEffect(() => {
+    // If the URL contains a hash with an application id, open its edit form.
+    const hash = location.hash?.replace("#", "");
+    if (!hash) return;
+    const target = applications.find((a) => a.id === hash);
+    if (target) {
+      openEditForm(target);
+    }
+  }, [location.hash, applications]);
 
   function openWorkflow(application: Application) {
     setWorkflowApplication(application);
