@@ -1,12 +1,14 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "../../auth/AuthProvider";
 import { Button } from "../../components/ui/Button";
+import { useDocuments } from "../documents/useDocuments";
 import { supabase } from "../../lib/supabase";
 import { applicationStatusDetails } from "./applicationStatus";
 import {
   applicationStatuses,
   isApplicationStatus,
   type Application,
+  type ApplicationStatus,
 } from "./types";
 
 type ApplicationFormProps = {
@@ -47,7 +49,19 @@ export function ApplicationForm({
   const { session } = useAuth();
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus>(
+    application?.status ?? "saved",
+  );
   const isEditing = Boolean(application);
+  const {
+    documents,
+    isLoading: areDocumentsLoading,
+    loadErrorMessage: documentsError,
+  } = useDocuments();
+  const cvDocuments = documents.filter((document) => document.category === "cv");
+  const coverLetterDocuments = documents.filter(
+    (document) => document.category === "cover_letter",
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -70,6 +84,21 @@ export function ApplicationForm({
     const status = String(formData.get("status") ?? "");
     const appliedAt = String(formData.get("applied_at") ?? "").trim();
     const notes = String(formData.get("notes") ?? "").trim();
+    const jobDescription = String(formData.get("job_description") ?? "").trim();
+    const salary = String(formData.get("salary") ?? "").trim();
+    const deadline = String(formData.get("deadline") ?? "").trim();
+    const recruiterName = String(formData.get("recruiter_name") ?? "").trim();
+    const recruiterEmail = String(formData.get("recruiter_email") ?? "").trim();
+    const recruiterPhone = String(formData.get("recruiter_phone") ?? "").trim();
+    const followUpAt = String(formData.get("follow_up_at") ?? "").trim();
+    const rejectionReason = String(formData.get("rejection_reason") ?? "").trim();
+    const offerAmount = String(formData.get("offer_amount") ?? "").trim();
+    const offerDate = String(formData.get("offer_date") ?? "").trim();
+    const offerNotes = String(formData.get("offer_notes") ?? "").trim();
+    const cvDocumentId = String(formData.get("cv_document_id") ?? "").trim();
+    const coverLetterDocumentId = String(
+      formData.get("cover_letter_document_id") ?? "",
+    ).trim();
 
     if (!companyName || !jobTitle) {
       setErrorMessage("Company and job title are required.");
@@ -86,15 +115,46 @@ export function ApplicationForm({
       return;
     }
 
+    if (recruiterEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recruiterEmail)) {
+      setErrorMessage("Enter a valid recruiter email address.");
+      return;
+    }
+
+    if (cvDocumentId && !cvDocuments.some((item) => item.id === cvDocumentId)) {
+      setErrorMessage("Choose an available CV.");
+      return;
+    }
+
+    if (
+      coverLetterDocumentId &&
+      !coverLetterDocuments.some((item) => item.id === coverLetterDocumentId)
+    ) {
+      setErrorMessage("Choose an available cover letter.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     const values = {
       applied_at: appliedAt || null,
       company_name: companyName,
+      cover_letter_document_id: coverLetterDocumentId || null,
+      cv_document_id: cvDocumentId || null,
+      deadline: deadline || null,
+      follow_up_at: followUpAt || null,
+      job_description: jobDescription || null,
       job_title: jobTitle,
       job_url: jobUrlResult.value,
       location: location || null,
       notes: notes || null,
+      offer_amount: status === "offer" ? offerAmount || null : null,
+      offer_date: status === "offer" ? offerDate || null : null,
+      offer_notes: status === "offer" ? offerNotes || null : null,
+      recruiter_email: recruiterEmail || null,
+      recruiter_name: recruiterName || null,
+      recruiter_phone: recruiterPhone || null,
+      rejection_reason: status === "rejected" ? rejectionReason || null : null,
+      salary: salary || null,
       status,
     };
 
@@ -203,8 +263,13 @@ export function ApplicationForm({
               Status
               <select
                 className={inputClasses}
-                defaultValue={application?.status ?? "saved"}
                 name="status"
+                onChange={(event) => {
+                  if (isApplicationStatus(event.target.value)) {
+                    setSelectedStatus(event.target.value);
+                  }
+                }}
+                value={selectedStatus}
               >
                 {applicationStatuses.map((status) => (
                   <option key={status} value={status}>
@@ -222,10 +287,53 @@ export function ApplicationForm({
                 type="date"
               />
             </label>
+            <label className="text-sm font-semibold">
+              Salary <span className="font-normal text-ink-muted">(optional)</span>
+              <input
+                className={inputClasses}
+                defaultValue={application?.salary ?? ""}
+                maxLength={160}
+                name="salary"
+                placeholder="€65,000–€75,000"
+              />
+            </label>
+            <label className="text-sm font-semibold">
+              Application deadline{" "}
+              <span className="font-normal text-ink-muted">(optional)</span>
+              <input
+                className={inputClasses}
+                defaultValue={application?.deadline ?? ""}
+                name="deadline"
+                type="date"
+              />
+            </label>
+            <label className="text-sm font-semibold">
+              Follow-up date{" "}
+              <span className="font-normal text-ink-muted">(optional)</span>
+              <input
+                className={inputClasses}
+                defaultValue={application?.follow_up_at ?? ""}
+                name="follow_up_at"
+                type="date"
+              />
+            </label>
           </div>
 
           <label className="mt-5 block text-sm font-semibold">
-            Notes <span className="font-normal text-ink-muted">(optional)</span>
+            Job description{" "}
+            <span className="font-normal text-ink-muted">(optional)</span>
+            <textarea
+              className={`${inputClasses} min-h-52 py-3`}
+              defaultValue={application?.job_description ?? ""}
+              maxLength={50000}
+              name="job_description"
+              placeholder="Paste the job description here. Nothing will be fetched automatically."
+            />
+          </label>
+
+          <label className="mt-5 block text-sm font-semibold">
+            Personal notes{" "}
+            <span className="font-normal text-ink-muted">(optional)</span>
             <textarea
               className={`${inputClasses} min-h-28 py-3`}
               defaultValue={application?.notes ?? ""}
@@ -234,6 +342,140 @@ export function ApplicationForm({
               placeholder="Add useful context about this opportunity."
             />
           </label>
+
+          <div className="mt-7 border-t border-line pt-6">
+            <h4 className="text-lg font-semibold">Recruiter or hiring contact</h4>
+            <div className="mt-4 grid gap-5 sm:grid-cols-3">
+              <label className="text-sm font-semibold">
+                Name
+                <input
+                  className={inputClasses}
+                  defaultValue={application?.recruiter_name ?? ""}
+                  maxLength={160}
+                  name="recruiter_name"
+                />
+              </label>
+              <label className="text-sm font-semibold">
+                Email
+                <input
+                  className={inputClasses}
+                  defaultValue={application?.recruiter_email ?? ""}
+                  maxLength={254}
+                  name="recruiter_email"
+                  type="email"
+                />
+              </label>
+              <label className="text-sm font-semibold">
+                Phone
+                <input
+                  className={inputClasses}
+                  defaultValue={application?.recruiter_phone ?? ""}
+                  maxLength={80}
+                  name="recruiter_phone"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="mt-7 border-t border-line pt-6">
+            <h4 className="text-lg font-semibold">Application documents</h4>
+            <p className="mt-1 text-sm text-ink-muted">
+              Associate private files already stored in your document workspace.
+            </p>
+            {documentsError && (
+              <p className="mt-3 text-sm text-red-700">
+                Documents could not be loaded: {documentsError}
+              </p>
+            )}
+            <div className="mt-4 grid gap-5 sm:grid-cols-2">
+              <label className="text-sm font-semibold">
+                CV
+                <select
+                  className={inputClasses}
+                  defaultValue={application?.cv_document_id ?? ""}
+                  disabled={areDocumentsLoading || Boolean(documentsError)}
+                  name="cv_document_id"
+                >
+                  <option value="">No CV selected</option>
+                  {cvDocuments.map((document) => (
+                    <option key={document.id} value={document.id}>
+                      {document.displayName}
+                      {document.isDefault ? " — Default" : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm font-semibold">
+                Cover letter
+                <select
+                  className={inputClasses}
+                  defaultValue={application?.cover_letter_document_id ?? ""}
+                  disabled={areDocumentsLoading || Boolean(documentsError)}
+                  name="cover_letter_document_id"
+                >
+                  <option value="">No cover letter selected</option>
+                  {coverLetterDocuments.map((document) => (
+                    <option key={document.id} value={document.id}>
+                      {document.displayName}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </div>
+
+          {selectedStatus === "rejected" && (
+            <label className="mt-7 block border-t border-line pt-6 text-sm font-semibold">
+              Rejection reason{" "}
+              <span className="font-normal text-ink-muted">
+                (saved only when status is Rejected)
+              </span>
+              <textarea
+                className={`${inputClasses} min-h-24 py-3`}
+                defaultValue={application?.rejection_reason ?? ""}
+                maxLength={5000}
+                name="rejection_reason"
+              />
+            </label>
+          )}
+
+          {selectedStatus === "offer" && (
+            <div className="mt-7 border-t border-line pt-6">
+              <h4 className="text-lg font-semibold">Offer details</h4>
+              <p className="mt-1 text-sm text-ink-muted">
+                These fields are saved only when the application status is Offer.
+              </p>
+              <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                <label className="text-sm font-semibold">
+                  Offer amount
+                  <input
+                    className={inputClasses}
+                    defaultValue={application?.offer_amount ?? ""}
+                    maxLength={160}
+                    name="offer_amount"
+                  />
+                </label>
+                <label className="text-sm font-semibold">
+                  Offer date
+                  <input
+                    className={inputClasses}
+                    defaultValue={application?.offer_date ?? ""}
+                    name="offer_date"
+                    type="date"
+                  />
+                </label>
+              </div>
+              <label className="mt-5 block text-sm font-semibold">
+                Offer notes
+                <textarea
+                  className={`${inputClasses} min-h-24 py-3`}
+                  defaultValue={application?.offer_notes ?? ""}
+                  maxLength={5000}
+                  name="offer_notes"
+                />
+              </label>
+            </div>
+          )}
         </fieldset>
 
         {errorMessage && (
