@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "../../i18n";
 
 type Status = "interview" | "offer" | "followUp" | "applied" | "closed";
@@ -76,6 +76,8 @@ const tabFilters: Record<TabKey, Status[] | null> = {
   offers: ["offer"],
 };
 
+const tabOrder: TabKey[] = ["all", "interviews", "offers", "applications"];
+
 const tabs: { key: TabKey; labelKey: string }[] = [
   { key: "all", labelKey: "hero.dashboard.tabAll" },
   { key: "applications", labelKey: "hero.dashboard.tabApplications" },
@@ -112,6 +114,25 @@ export function HeroDashboard() {
   const reduceMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const autoplayPaused = useRef(false);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+
+    const interval = window.setInterval(() => {
+      if (autoplayPaused.current || document.hidden) return;
+      setActiveTab((current) => {
+        const nextIndex = (tabOrder.indexOf(current) + 1) % tabOrder.length;
+        return tabOrder[nextIndex];
+      });
+    }, 3200);
+
+    return () => window.clearInterval(interval);
+  }, [reduceMotion]);
+
+  function stopAutoplay() {
+    autoplayPaused.current = true;
+  }
 
   const filters = tabFilters[activeTab];
   const visibleItems = filters ? items.filter((item) => filters.includes(item.status)) : items;
@@ -178,7 +199,10 @@ export function HeroDashboard() {
                       isActive ? "text-white" : "text-white/50 hover:text-white/80"
                     }`}
                     key={tab.key}
-                    onClick={() => setActiveTab(tab.key)}
+                    onClick={() => {
+                      stopAutoplay();
+                      setActiveTab(tab.key);
+                    }}
                     type="button"
                   >
                     {t(tab.labelKey)}
@@ -210,7 +234,10 @@ export function HeroDashboard() {
                         aria-expanded={isExpanded}
                         aria-label={t("hero.dashboard.expandLabel")}
                         className="grid w-full grid-cols-[1fr_auto] items-center gap-3 px-4 py-3 text-left transition-colors duration-[var(--duration-fast)] hover:bg-white/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-strong"
-                        onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                        onClick={() => {
+                          stopAutoplay();
+                          setExpandedId(isExpanded ? null : item.id);
+                        }}
                         type="button"
                       >
                         <div className="min-w-0">

@@ -392,6 +392,18 @@
   }
 }
 
+@keyframes hero-glow-breathe {
+  0%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.8;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
