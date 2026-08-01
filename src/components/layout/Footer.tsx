@@ -5,8 +5,6 @@ import { PageContainer } from "./PageContainer";
 const footerGroups = [
   {
     links: [
-      ["nav.features", "#features"],
-      ["nav.howItWorks", "#how-it-works"],
       ["nav.pricing", "#pricing"],
       ["nav.faq", "#faq"],
     ],
