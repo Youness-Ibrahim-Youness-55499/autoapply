@@ -2,6 +2,7 @@ import {
   applicationStatuses,
   type ApplicationStatus,
 } from "./types";
+import { useTranslation } from "../../i18n";
 
 export type ApplicationStatusFilter = ApplicationStatus | "all";
 
@@ -24,6 +25,7 @@ export function ApplicationFilters({
   query,
   status,
 }: ApplicationFiltersProps) {
+  const { t } = useTranslation();
   const hasActiveFilters = query.trim().length > 0 || status !== "all";
 
   return (
@@ -34,7 +36,7 @@ export function ApplicationFilters({
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_13rem_auto] sm:items-end">
         <label className="block">
           <span className="mb-2 block text-sm font-semibold text-ink">
-            Search applications
+            {t("search.applications")}
           </span>
           <span className="relative block">
             <svg
@@ -49,7 +51,7 @@ export function ApplicationFilters({
             <input
               className="min-h-11 w-full rounded-xl border border-line bg-canvas py-2.5 pl-11 pr-4 text-sm text-ink outline-none transition placeholder:text-ink-muted focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
               onChange={(event) => onQueryChange(event.target.value)}
-              placeholder="Role, company, or location"
+              placeholder={t("search.placeholder")}
               type="search"
               value={query}
             />
@@ -58,7 +60,7 @@ export function ApplicationFilters({
 
         <label className="block">
           <span className="mb-2 block text-sm font-semibold text-ink">
-            Status
+            {t("status.label")}
           </span>
           <select
             className="min-h-11 w-full rounded-xl border border-line bg-canvas px-4 py-2.5 text-sm text-ink outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
@@ -67,7 +69,7 @@ export function ApplicationFilters({
             }
             value={status}
           >
-            <option value="all">All statuses</option>
+            <option value="all">{t("status.all")}</option>
             {applicationStatuses.map((applicationStatus) => (
               <option key={applicationStatus} value={applicationStatus}>
                 {formatStatus(applicationStatus)}
@@ -82,7 +84,7 @@ export function ApplicationFilters({
           onClick={onReset}
           type="button"
         >
-          Clear filters
+          {t("filters.clear")}
         </button>
       </div>
     </section>

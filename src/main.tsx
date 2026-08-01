@@ -4,13 +4,16 @@ import { BrowserRouter } from "react-router-dom";
 
 import { App } from "./App";
 import { AuthProvider } from "./auth/AuthProvider";
+import { LocaleProvider } from "./i18n";
 import "./styles/global.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AuthProvider>
-        <App />
+        <LocaleProvider>
+          <App />
+        </LocaleProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

@@ -4,16 +4,18 @@ import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
 import { SkipLink } from "../SkipLink";
 import { ErrorState } from "../states/ErrorState";
+import { useTranslation } from "../../i18n";
 
 type NavigationItem = {
   icon: ReactNode;
-  label: string;
+  labelKey: string;
   to: string;
 };
 
 type WorkspaceLinksProps = {
   onNavigate?: () => void;
   tone: "dark" | "light";
+  t: (key: string) => string;
 };
 
 function NavigationIcon({ children }: { children: ReactNode }) {
@@ -31,7 +33,7 @@ function NavigationIcon({ children }: { children: ReactNode }) {
 
 const navigationItems: NavigationItem[] = [
   {
-    label: "Overview",
+    labelKey: "nav.overview",
     to: "/app",
     icon: (
       <NavigationIcon>
@@ -40,7 +42,7 @@ const navigationItems: NavigationItem[] = [
     ),
   },
   {
-    label: "Applications",
+    labelKey: "nav.applications",
     to: "/app/applications",
     icon: (
       <NavigationIcon>
@@ -49,7 +51,7 @@ const navigationItems: NavigationItem[] = [
     ),
   },
   {
-    label: "Profile",
+    labelKey: "nav.profile",
     to: "/app/profile",
     icon: (
       <NavigationIcon>
@@ -58,7 +60,7 @@ const navigationItems: NavigationItem[] = [
     ),
   },
   {
-    label: "Documents",
+    labelKey: "nav.documents",
     to: "/app/documents",
     icon: (
       <NavigationIcon>
@@ -67,7 +69,7 @@ const navigationItems: NavigationItem[] = [
     ),
   },
   {
-    label: "Settings",
+    labelKey: "nav.settings",
     to: "/app/settings",
     icon: (
       <NavigationIcon>
@@ -77,9 +79,9 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
-const pageTitles = new Map(navigationItems.map((item) => [item.to, item.label]));
+const pageTitles = new Map(navigationItems.map((item) => [item.to, item.labelKey]));
 
-function WorkspaceLinks({ onNavigate, tone }: WorkspaceLinksProps) {
+function WorkspaceLinks({ onNavigate, tone, t }: WorkspaceLinksProps) {
   return (
     <ul className="mt-3 space-y-1">
       {navigationItems.map((item) => (
@@ -97,7 +99,7 @@ function WorkspaceLinks({ onNavigate, tone }: WorkspaceLinksProps) {
             to={item.to}
           >
             {item.icon}
-            {item.label}
+            {t(item.labelKey)}
           </NavLink>
         </li>
       ))}
@@ -107,6 +109,7 @@ function WorkspaceLinks({ onNavigate, tone }: WorkspaceLinksProps) {
 
 export function AppShell() {
   const { session } = useAuth();
+  const { locale, setLocale, t } = useTranslation();
   const location = useLocation();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -114,7 +117,7 @@ export function AppShell() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState("");
-  const pageTitle = pageTitles.get(location.pathname) ?? "Overview";
+  const pageTitle = t(pageTitles.get(location.pathname) ?? "nav.overview");
   const metadataName = session?.user.user_metadata.name;
   const name =
     typeof metadataName === "string" && metadataName.trim()
@@ -198,11 +201,11 @@ export function AppShell() {
         </p>
       </div>
       <button
-        aria-label="Log out"
+        aria-label={t("header.logOut")}
         className={`rounded-lg p-2 transition disabled:opacity-50 ${mobile ? "text-ink-muted hover:bg-surface hover:text-ink" : "text-white/55 hover:bg-white/10 hover:text-white"}`}
         disabled={isSigningOut}
         onClick={handleSignOut}
-        title="Log out"
+        title={t("header.logOut")}
         type="button"
       >
         <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
@@ -222,11 +225,11 @@ export function AppShell() {
           </Link>
         </div>
 
-        <nav aria-label="Workspace" className="flex-1 px-4 py-7">
+        <nav aria-label={t("workspace")} className="flex-1 px-4 py-7">
           <p className="px-3 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-white/45">
-            Workspace
+            {t("workspace")}
           </p>
-          <WorkspaceLinks tone="dark" />
+          <WorkspaceLinks tone="dark" t={t} />
         </nav>
 
         <div className="border-t border-white/10 p-4">
@@ -235,7 +238,7 @@ export function AppShell() {
               <ErrorState
                 compact
                 description={signOutError}
-                title="Could not log out"
+                title={t("errors.signOut")}
               />
             </div>
           )}
@@ -253,12 +256,26 @@ export function AppShell() {
             <div className="flex items-center gap-3">
               <div className="hidden items-center gap-2 text-sm text-ink-muted sm:flex">
                 <span className="size-2 rounded-full bg-emerald-500" />
-                Account connected
+                {t("workspace")}
+              </div>
+              <div className="hidden items-center gap-2 rounded-full border border-line bg-surface px-3 py-2 text-sm text-ink-muted sm:flex">
+                <label htmlFor="locale-select" className="sr-only">
+                  {t("language.label")}
+                </label>
+                <select
+                  id="locale-select"
+                  value={locale}
+                  onChange={(event) => setLocale(event.target.value as "en" | "de")}
+                  className="bg-transparent text-sm text-ink-muted outline-none"
+                >
+                  <option value="en">{t("language.english")}</option>
+                  <option value="de">{t("language.german")}</option>
+                </select>
               </div>
               <button
                 aria-controls="mobile-workspace-navigation"
                 aria-expanded={isMenuOpen}
-                aria-label="Open workspace navigation"
+                aria-label={t("nav.openWorkspace")}
                 className="grid size-11 place-items-center rounded-xl border border-line bg-surface text-brand-950 shadow-sm transition hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 lg:hidden"
                 onClick={() => setIsMenuOpen(true)}
                 ref={menuButtonRef}
@@ -298,7 +315,7 @@ export function AppShell() {
                 autoapply
               </Link>
               <button
-                aria-label="Close workspace navigation"
+                aria-label={t("nav.closeWorkspace")}
                 className="grid size-11 place-items-center rounded-xl text-ink-muted transition hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700"
                 onClick={closeMenu}
                 ref={closeButtonRef}
@@ -312,9 +329,9 @@ export function AppShell() {
 
             <nav className="flex-1 overflow-y-auto px-4 py-6">
               <p className="px-3 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-ink-muted">
-                Workspace
+                {t("workspace")}
               </p>
-              <WorkspaceLinks onNavigate={closeMenu} tone="light" />
+              <WorkspaceLinks onNavigate={closeMenu} tone="light" t={t} />
             </nav>
 
             <div className="border-t border-line p-4">
@@ -323,7 +340,7 @@ export function AppShell() {
                   <ErrorState
                     compact
                     description={signOutError}
-                    title="Could not log out"
+                    title={t("errors.signOut")}
                   />
                 </div>
               )}

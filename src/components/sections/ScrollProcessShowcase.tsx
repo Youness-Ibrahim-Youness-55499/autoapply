@@ -1,10 +1,12 @@
 import { useMotionValueEvent, useReducedMotion, useScroll } from "framer-motion";
 import { useRef, useState } from "react";
+import { useTranslation } from "../../i18n";
 import { PageContainer } from "../layout/PageContainer";
 import { ProcessTabs, processStages } from "./scroll-process/ProcessTabs";
 import { MobileStagePreview, StagePreview } from "./scroll-process/StagePreview";
 
 export function ScrollProcessShowcase() {
+  const { t } = useTranslation();
   const sectionRef = useRef<HTMLElement>(null);
   const [activeStage, setActiveStage] = useState(0);
   const reduceMotion = useReducedMotion();
@@ -31,11 +33,10 @@ export function ScrollProcessShowcase() {
 
           <div className="mt-5 flex items-start justify-between gap-8 border-b border-line pb-5">
             <p className="max-w-4xl text-lg leading-7 text-ink-muted">
-              From finding the right role to organizing every reply, Autoapply keeps
-              each stage visible, reviewable, and under your control.
+              {t("scrollProcess.description")}
             </p>
             <p className="shrink-0 text-xs font-semibold text-brand-700">
-              Stage {activeStage + 1} of 4
+              {t("scrollProcess.stageCount", { current: activeStage + 1, total: processStages.length })}
             </p>
           </div>
 
@@ -57,10 +58,10 @@ export function ScrollProcessShowcase() {
 
       <PageContainer className="space-y-16 py-20 lg:hidden">
         <div>
-          <p className="eyebrow">The complete application process</p>
-          <h2 className="section-title mt-4">Four stages. Nothing gets skipped.</h2>
+          <p className="eyebrow">{t("scrollProcess.eyebrow")}</p>
+          <h2 className="section-title mt-4">{t("scrollProcess.title")}</h2>
           <p className="lead mt-5 max-w-2xl">
-            Each stage stays readable in the normal page flow on smaller screens.
+            {t("scrollProcess.mobileDescription")}
           </p>
         </div>
         {processStages.map((stage, index) => (
