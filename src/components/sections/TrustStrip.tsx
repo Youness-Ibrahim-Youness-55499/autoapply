@@ -15,7 +15,7 @@ export function TrustStrip() {
   return (
     <Section
       aria-labelledby="trust-strip-title"
-      className="border-y border-line bg-surface"
+      className="border-y border-line"
       spacing="compact"
     >
       <PageContainer>

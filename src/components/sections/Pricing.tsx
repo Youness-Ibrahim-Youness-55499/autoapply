@@ -58,10 +58,10 @@ export function Pricing() {
         <div className="mt-12 grid gap-5 lg:grid-cols-3">
           {plans.map((plan) => (
             <article
-              className={`flex flex-col rounded-card border p-6 sm:p-8 ${
+              className={`flex flex-col rounded-card border p-6 transition-[border-color,transform] duration-[var(--duration-fast)] ease-[var(--easing-standard)] hover:-translate-y-0.5 sm:p-8 ${
                 plan.featured
-                  ? "border-brand-900 bg-brand-950 text-white shadow-card"
-                  : "border-line bg-surface"
+                  ? "border-brand-900 bg-brand-950 text-white shadow-card hover:border-brand-700"
+                  : "border-line bg-surface hover:border-brand-200"
               }`}
               key={plan.nameKey}
             >
@@ -112,7 +112,7 @@ export function Pricing() {
                 className={`mt-8 inline-flex min-h-11 items-center justify-center rounded-full border px-5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 ${
                   plan.featured
                     ? "border-white bg-white text-brand-950 hover:bg-brand-50"
-                    : "border-brand-900 bg-brand-900 text-white hover:bg-brand-800"
+                    : "border-ink bg-ink text-white hover:bg-ink/90"
                 }`}
                 to="/signup"
               >

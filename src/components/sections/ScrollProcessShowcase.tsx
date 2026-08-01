@@ -1,4 +1,4 @@
-import { useMotionValueEvent, useReducedMotion, useScroll } from "framer-motion";
+import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll } from "framer-motion";
 import { useRef, useState } from "react";
 import { useTranslation } from "../../i18n";
 import { PageContainer } from "../layout/PageContainer";
@@ -23,7 +23,7 @@ export function ScrollProcessShowcase() {
 
   return (
     <section
-      className="relative border-y border-line bg-surface-soft lg:h-[500vh]"
+      className="relative border-y border-line lg:h-[500vh]"
       id="automation"
       ref={sectionRef}
     >
@@ -31,27 +31,35 @@ export function ScrollProcessShowcase() {
         <PageContainer className="flex h-full flex-col py-6" size="wide">
           <ProcessTabs activeStage={reduceMotion ? 0 : activeStage} />
 
+          <div className="mt-4 h-px w-full bg-line">
+            <motion.div
+              className="h-px bg-brand-500"
+              style={{ scaleX: scrollYProgress, transformOrigin: "left" }}
+            />
+          </div>
+
           <div className="mt-5 flex items-start justify-between gap-8 border-b border-line pb-5">
             <p className="max-w-4xl text-lg leading-7 text-ink-muted">
               {t("scrollProcess.description")}
             </p>
-            <p className="shrink-0 text-xs font-semibold text-brand-700">
+            <p className="meta-label shrink-0">
               {t("scrollProcess.stageCount", { current: activeStage + 1, total: processStages.length })}
             </p>
           </div>
 
           <div className="relative mt-5 min-h-0 flex-1">
-            {processStages.map((stage, index) => (
-              <div
-                aria-hidden={index !== activeStage}
-                className={`absolute inset-0 transition-opacity duration-300 ${
-                  index === activeStage ? "z-10 opacity-100" : "pointer-events-none z-0 opacity-0"
-                }`}
-                key={stage}
+            <AnimatePresence mode="wait">
+              <motion.div
+                animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                className="absolute inset-0"
+                exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+                initial={reduceMotion ? undefined : { opacity: 0, y: 8 }}
+                key={activeStage}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               >
-                <StagePreview stage={index} />
-              </div>
-            ))}
+                <StagePreview stage={activeStage} />
+              </motion.div>
+            </AnimatePresence>
           </div>
         </PageContainer>
       </div>

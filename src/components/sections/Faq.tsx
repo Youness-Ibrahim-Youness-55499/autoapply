@@ -29,7 +29,7 @@ export function Faq() {
   const { t } = useTranslation();
 
   return (
-    <Section className="bg-surface" id="faq" spacing="spacious">
+    <Section id="faq" spacing="spacious">
       <PageContainer>
         <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div>

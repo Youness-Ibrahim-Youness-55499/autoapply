@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "../../i18n";
 
 type Status = "interview" | "offer" | "followUp" | "applied" | "closed";
@@ -76,6 +76,8 @@ const tabFilters: Record<TabKey, Status[] | null> = {
   offers: ["offer"],
 };
 
+const tabOrder: TabKey[] = ["all", "interviews", "offers", "applications"];
+
 const tabs: { key: TabKey; labelKey: string }[] = [
   { key: "all", labelKey: "hero.dashboard.tabAll" },
   { key: "applications", labelKey: "hero.dashboard.tabApplications" },
@@ -112,6 +114,25 @@ export function HeroDashboard() {
   const reduceMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const autoplayPaused = useRef(false);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+
+    const interval = window.setInterval(() => {
+      if (autoplayPaused.current || document.hidden) return;
+      setActiveTab((current) => {
+        const nextIndex = (tabOrder.indexOf(current) + 1) % tabOrder.length;
+        return tabOrder[nextIndex];
+      });
+    }, 3200);
+
+    return () => window.clearInterval(interval);
+  }, [reduceMotion]);
+
+  function stopAutoplay() {
+    autoplayPaused.current = true;
+  }
 
   const filters = tabFilters[activeTab];
   const visibleItems = filters ? items.filter((item) => filters.includes(item.status)) : items;
@@ -130,7 +151,7 @@ export function HeroDashboard() {
       >
         <div className="grid lg:grid-cols-[15rem_1fr]">
           <nav className="hidden border-r border-white/10 p-4 lg:block">
-            <p className="px-2 font-mono text-xs uppercase tracking-wide text-white/40">autoapply</p>
+            <p className="meta-label px-2 text-white/40">autoapply</p>
             <ul className="mt-4 space-y-1">
               {navItems.map((item) => (
                 <li key={item.key}>
@@ -145,9 +166,7 @@ export function HeroDashboard() {
               ))}
             </ul>
 
-            <p className="mt-6 px-2 font-mono text-xs uppercase tracking-wide text-white/40">
-              {t("hero.dashboard.favoritesLabel")}
-            </p>
+            <p className="meta-label mt-6 px-2 text-white/40">{t("hero.dashboard.favoritesLabel")}</p>
             <ul className="mt-2 space-y-1">
               <li>
                 <span className="block rounded-md px-3 py-2 text-sm text-white/55">
@@ -180,7 +199,10 @@ export function HeroDashboard() {
                       isActive ? "text-white" : "text-white/50 hover:text-white/80"
                     }`}
                     key={tab.key}
-                    onClick={() => setActiveTab(tab.key)}
+                    onClick={() => {
+                      stopAutoplay();
+                      setActiveTab(tab.key);
+                    }}
                     type="button"
                   >
                     {t(tab.labelKey)}
@@ -192,9 +214,7 @@ export function HeroDashboard() {
               })}
             </div>
 
-            <p className="mt-4 font-mono text-xs uppercase tracking-wide text-white/40">
-              {t("hero.dashboard.groupThisWeek")}
-            </p>
+            <p className="meta-label mt-4 text-white/40">{t("hero.dashboard.groupThisWeek")}</p>
 
             <div className="mt-2 space-y-2">
               <AnimatePresence initial={false}>
@@ -214,7 +234,10 @@ export function HeroDashboard() {
                         aria-expanded={isExpanded}
                         aria-label={t("hero.dashboard.expandLabel")}
                         className="grid w-full grid-cols-[1fr_auto] items-center gap-3 px-4 py-3 text-left transition-colors duration-[var(--duration-fast)] hover:bg-white/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-strong"
-                        onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                        onClick={() => {
+                          stopAutoplay();
+                          setExpandedId(isExpanded ? null : item.id);
+                        }}
                         type="button"
                       >
                         <div className="min-w-0">
@@ -270,15 +293,9 @@ export function HeroDashboard() {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-white/[0.03] px-5 py-4">
-          <span className="font-mono text-xs uppercase tracking-wide text-white/40">
-            {t("hero.dashboard.metricActive")}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-wide text-white/40">
-            {t("hero.dashboard.metricOffers")}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-wide text-white/40">
-            {t("hero.dashboard.metricInterviews")}
-          </span>
+          <span className="meta-label text-white/40">{t("hero.dashboard.metricActive")}</span>
+          <span className="meta-label text-white/40">{t("hero.dashboard.metricOffers")}</span>
+          <span className="meta-label text-white/40">{t("hero.dashboard.metricInterviews")}</span>
         </div>
       </div>
     </div>

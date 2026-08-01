@@ -1,6 +1,8 @@
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "../../i18n";
+import { navEntrance } from "../../lib/motion";
 import { PageContainer } from "./PageContainer";
 
 const navigationItems = [
@@ -12,7 +14,19 @@ const navigationItems = [
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    function onScroll() {
+      setIsScrolled(window.scrollY > 8);
+    }
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!isMenuOpen) {
@@ -50,9 +64,22 @@ export function Header() {
   const { locale, setLocale, t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-canvas/95 backdrop-blur-md">
+    <motion.header
+      animate="visible"
+      className={`sticky top-0 z-40 border-b transition-colors duration-[var(--duration-standard)] ${
+        isScrolled
+          ? "border-line/80 bg-canvas/95 backdrop-blur-md"
+          : "border-transparent bg-transparent"
+      }`}
+      initial={reduceMotion ? undefined : "hidden"}
+      variants={navEntrance}
+    >
       <PageContainer>
-        <div className="flex min-h-18 items-center justify-between gap-6">
+        <div
+          className={`flex items-center justify-between gap-6 transition-[min-height] duration-[var(--duration-standard)] ${
+            isScrolled ? "min-h-16" : "min-h-18"
+          }`}
+        >
           <a
             className="text-lg font-bold tracking-[-0.03em] text-brand-900"
             href="#top"
@@ -62,11 +89,11 @@ export function Header() {
 
           <nav
             aria-label="Primary navigation"
-            className="hidden items-center gap-7 md:flex"
+            className="hidden items-center gap-1 md:flex"
           >
             {navigationItems.map((item) => (
               <a
-                className="text-sm font-medium text-ink-muted transition-colors hover:text-ink focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
+                className="rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-[var(--duration-fast)] hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
                 href={item.href}
                 key={item.href}
               >
@@ -175,7 +202,7 @@ export function Header() {
           </nav>
         )}
       </PageContainer>
-    </header>
+    </motion.header>
   );
 }
 
