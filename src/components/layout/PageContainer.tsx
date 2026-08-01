@@ -1,8 +1,9 @@
 import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 
-type ContainerSize = "wide" | "default" | "narrow";
+type ContainerSize = "full" | "wide" | "default" | "narrow";
 
 const sizeClasses: Record<ContainerSize, string> = {
+  full: "max-w-none",
   wide: "max-w-[90rem]",
   default: "max-w-7xl",
   narrow: "max-w-5xl",
