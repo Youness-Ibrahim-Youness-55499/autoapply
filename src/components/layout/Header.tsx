@@ -74,7 +74,7 @@ export function Header() {
       initial={reduceMotion ? undefined : "hidden"}
       variants={navEntrance}
     >
-      <PageContainer>
+      <PageContainer size="full">
         <div
           className={`flex items-center justify-between gap-6 transition-[min-height] duration-[var(--duration-standard)] ${
             isScrolled ? "min-h-16" : "min-h-18"
