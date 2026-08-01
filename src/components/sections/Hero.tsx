@@ -20,11 +20,7 @@ export function Hero() {
           initial={reduceMotion ? "visible" : "hidden"}
           variants={heroStagger}
         >
-          <motion.p className="eyebrow" variants={fadeUpSmall}>
-            {t("hero.eyebrow")}
-          </motion.p>
-
-          <div className="mx-auto mt-5 overflow-hidden">
+          <div className="mx-auto overflow-hidden">
             <motion.h1 className="hero-heading mx-auto" variants={headlineLine}>
               {t("hero.heading")}
             </motion.h1>
