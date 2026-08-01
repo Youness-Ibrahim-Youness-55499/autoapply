@@ -11,6 +11,7 @@ export const ease: Record<"soft" | "expo" | "standard", CubicBezier> = {
 export const duration = {
   micro: 0.16,
   hover: 0.18,
+  smallReveal: 0.55,
   reveal: 0.75,
   headline: 0.85,
   dashboard: 1.1,
@@ -31,7 +32,7 @@ export const navEntrance: Variants = {
 
 export const fadeUpSmall: Variants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: duration.micro, ease: ease.soft } },
+  visible: { opacity: 1, y: 0, transition: { duration: duration.smallReveal, ease: ease.soft } },
 };
 
 export const headlineLine: Variants = {
@@ -57,7 +58,7 @@ export const dashboardReveal: Variants = {
 
 export const heroStagger: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
+  visible: { transition: { staggerChildren: 0.14, delayChildren: 0.1 } },
 };
 
 export const headlineStagger: Variants = {
