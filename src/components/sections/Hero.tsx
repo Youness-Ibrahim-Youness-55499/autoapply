@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import dashboardHero from "../../assets/autoapply-dashboard-hero-midnight.png";
 import { useTranslation } from "../../i18n";
 import { PageContainer } from "../layout/PageContainer";
 import { ButtonLink } from "../ui/Button";
 import { Section } from "../ui/Section";
+import { HeroDashboard } from "./HeroDashboard";
 
 export function Hero() {
   const { t } = useTranslation();
@@ -48,36 +48,7 @@ export function Hero() {
           </ul>
         </div>
 
-        <div className="relative mx-auto mt-14 max-w-6xl">
-          <div
-            aria-hidden="true"
-            className="absolute -left-10 -top-10 h-44 w-44 rounded-full bg-brand-200/40 blur-3xl"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute -right-14 top-0 h-72 w-72 rounded-full bg-brand-300/15 blur-3xl"
-          />
-          <div className="relative overflow-hidden rounded-[2rem] border border-line bg-surface shadow-card">
-            <img
-              alt="Autoapply dashboard showing active roles, interviews, follow-ups, and an organized application list"
-              className="relative w-full"
-              decoding="async"
-              loading="eager"
-              src={dashboardHero}
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-white/70 px-5 py-4 backdrop-blur-sm">
-              <span className="rounded-full bg-brand-100 px-3 py-1 text-[0.75rem] font-semibold text-brand-800">
-                {t("hero.metricOne")}
-              </span>
-              <span className="rounded-full bg-brand-100 px-3 py-1 text-[0.75rem] font-semibold text-brand-800">
-                {t("hero.metricTwo")}
-              </span>
-              <span className="rounded-full bg-brand-100 px-3 py-1 text-[0.75rem] font-semibold text-brand-800">
-                {t("hero.metricThree")}
-              </span>
-            </div>
-          </div>
-        </div>
+        <HeroDashboard />
       </PageContainer>
     </Section>
   );
