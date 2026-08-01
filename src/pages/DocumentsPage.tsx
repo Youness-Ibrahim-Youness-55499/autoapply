@@ -8,6 +8,7 @@ import { Button } from "../components/ui/Button";
 import { DocumentList } from "../features/documents/components/DocumentList";
 import { DocumentUpload } from "../features/documents/components/DocumentUpload";
 import { useDocuments } from "../features/documents/useDocuments";
+import { useTranslation } from "../i18n";
 
 export function DocumentsPage() {
   const {
@@ -25,33 +26,35 @@ export function DocumentsPage() {
     uploadDocument,
   } = useDocuments();
 
+  const { t } = useTranslation();
+
   return (
     <>
       <Seo
-        description="Manage the private source documents used for your applications."
+        description={t("seo.documentsDescription")}
         noIndex
         path="/app/documents"
-        title="Documents"
+        title={t("documents.title")}
       />
       <PageContainer className="py-10 sm:py-14 lg:px-10" size="wide">
         <ProductPageHeader
-          description="Organize CVs, cover letters, certificates, and references in your private workspace."
-          title="Documents"
+          description={t("documents.description")}
+          title={t("documents.title")}
         />
 
         <div className="mt-10 max-w-5xl">
           {isLoading && (
             <LoadingState
-              description="Loading your private document records."
-              title="Loading documents"
+              description={t("loading.documentsDescription")}
+              title={t("loading.documents")}
             />
           )}
 
           {!isLoading && loadErrorMessage && (
             <ErrorState
-              action={<Button onClick={retry}>Try again</Button>}
+              action={<Button onClick={retry}>{t("tryAgain")}</Button>}
               description={loadErrorMessage}
-              title="Documents could not be loaded"
+              title={t("errors.documentsLoad")}
             />
           )}
 

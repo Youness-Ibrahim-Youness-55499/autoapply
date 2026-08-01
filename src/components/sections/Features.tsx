@@ -1,45 +1,43 @@
 import { PageContainer } from "../layout/PageContainer";
 import { Section } from "../ui/Section";
+import { useTranslation } from "../../i18n";
 
 const features = [
   {
-    description:
-      "See every opportunity, status, and next action in one calm workspace instead of scattered tabs.",
-    eyebrow: "Stay oriented",
-    title: "One view for every application",
+    eyebrowKey: "features.one.eyebrow",
+    titleKey: "features.one.title",
+    descriptionKey: "features.one.description",
   },
   {
-    description:
-      "Keep role-specific resumes, cover letters, notes, and links attached to the right opportunity.",
-    eyebrow: "Keep context",
-    title: "Materials that stay organized",
+    eyebrowKey: "features.two.eyebrow",
+    titleKey: "features.two.title",
+    descriptionKey: "features.two.description",
   },
   {
-    description:
-      "Turn important dates and conversations into simple reminders so promising leads do not go quiet.",
-    eyebrow: "Follow through",
-    title: "Next steps you can trust",
+    eyebrowKey: "features.three.eyebrow",
+    titleKey: "features.three.title",
+    descriptionKey: "features.three.description",
   },
   {
-    description:
-      "Understand where your search is moving, where it stalls, and what deserves your attention next.",
-    eyebrow: "Learn and adjust",
-    title: "Progress without guesswork",
+    eyebrowKey: "features.four.eyebrow",
+    titleKey: "features.four.title",
+    descriptionKey: "features.four.description",
   },
 ];
 
 export function Features() {
+  const { t } = useTranslation();
+
   return (
     <Section className="bg-surface" id="features" spacing="spacious">
       <PageContainer>
         <div className="mx-auto max-w-3xl text-center">
-          <p className="eyebrow">Everything in its place</p>
+          <p className="eyebrow">{t("features.eyebrow")}</p>
           <h2 className="section-title mx-auto mt-4">
-            Less searching for details. More thoughtful applications.
+            {t("features.title")}
           </h2>
           <p className="lead mx-auto mt-6 max-w-2xl">
-            Autoapply gives your job search enough structure to stay useful
-            without turning it into another complicated project.
+            {t("features.description")}
           </p>
         </div>
 
@@ -47,17 +45,17 @@ export function Features() {
           {features.map((feature, index) => (
             <article
               className="group overflow-hidden rounded-card border border-line bg-canvas"
-              key={feature.title}
+              key={feature.titleKey}
             >
               <div className="p-6 sm:p-8">
                 <p className="eyebrow">
-                  {String(index + 1).padStart(2, "0")} - {feature.eyebrow}
+                  {String(index + 1).padStart(2, "0")} - {t(feature.eyebrowKey)}
                 </p>
                 <h3 className="mt-4 max-w-md text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
-                  {feature.title}
+                  {t(feature.titleKey)}
                 </h3>
                 <p className="body-copy mt-3 max-w-lg">
-                  {feature.description}
+                  {t(feature.descriptionKey)}
                 </p>
               </div>
 
@@ -89,26 +87,28 @@ function FeaturePreview({ feature }: FeaturePreviewProps) {
 }
 
 function TrackingPreview() {
+  const { t } = useTranslation();
+
   return (
     <>
       <div className="flex items-center justify-between border-b border-line pb-4">
         <div>
-          <p className="text-xs font-semibold text-ink">Applications</p>
-          <p className="mt-1 text-[0.65rem] text-ink-muted">12 active roles</p>
+          <p className="text-xs font-semibold text-ink">{t("features.preview.applications")}</p>
+          <p className="mt-1 text-[0.65rem] text-ink-muted">{t("features.preview.activeRoles")}</p>
         </div>
         <span className="rounded-full bg-brand-900 px-3 py-1.5 text-[0.65rem] font-semibold text-white">
-          Add role
+          {t("features.preview.addRole")}
         </span>
       </div>
       <div className="mt-4 space-y-2">
         {[
-          ["Juniper Studio", "Interview"],
-          ["Field Notes", "Applied"],
-          ["Northline", "Preparing"],
-        ].map(([company, status], index) => (
+          "features.preview.statusInterview",
+          "features.preview.statusApplied",
+          "features.preview.statusPreparing",
+        ].map((statusKey, index) => (
           <div
             className="grid grid-cols-[1fr_auto] items-center gap-3 rounded-lg bg-canvas px-3 py-3"
-            key={company}
+            key={statusKey}
           >
             <div className="flex items-center gap-3">
               <span
@@ -116,9 +116,9 @@ function TrackingPreview() {
                   index === 0 ? "bg-brand-300" : "bg-surface-muted"
                 }`}
               />
-              <span className="text-xs font-semibold">{company}</span>
+              <span className="text-xs font-semibold">{t(statusKey)}</span>
             </div>
-            <span className="text-[0.65rem] text-ink-muted">{status}</span>
+            <span className="text-[0.65rem] text-ink-muted">{t("features.preview.statusPlaceholder")}</span>
           </div>
         ))}
       </div>
@@ -127,63 +127,69 @@ function TrackingPreview() {
 }
 
 function DocumentsPreview() {
+  const { t } = useTranslation();
+
   return (
     <div className="grid h-full gap-3 sm:grid-cols-[0.8fr_1.2fr]">
       <div className="rounded-lg bg-brand-950 p-4 text-white">
         <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-brand-300">
-          Role folder
+          {t("features.preview.roleFolder")}
         </p>
-        <p className="mt-3 text-sm font-semibold">Product Designer</p>
+        <p className="mt-3 text-sm font-semibold">{t("features.preview.productDesigner")}</p>
         <div className="mt-5 space-y-2 text-[0.65rem] text-white/60">
-          <p>Resume</p>
-          <p>Cover letter</p>
-          <p>Research notes</p>
+          <p>{t("features.preview.resume")}</p>
+          <p>{t("features.preview.coverLetter")}</p>
+          <p>{t("features.preview.researchNotes")}</p>
         </div>
       </div>
       <div className="space-y-2">
-        {["Product resume.pdf", "Role notes.txt", "Portfolio links"].map(
-          (document, index) => (
-            <div
-              className="flex items-center gap-3 rounded-lg border border-line p-3"
-              key={document}
-            >
-              <span className="flex size-8 items-center justify-center rounded-md bg-brand-100 text-[0.65rem] font-bold text-brand-800">
-                {index + 1}
-              </span>
-              <div>
-                <p className="text-xs font-semibold">{document}</p>
-                <p className="mt-1 text-[0.65rem] text-ink-muted">
-                  Updated today
-                </p>
-              </div>
+        {[
+          "features.preview.productResumePdf",
+          "features.preview.roleNotesTxt",
+          "features.preview.portfolioLinks",
+        ].map((document, index) => (
+          <div
+            className="flex items-center gap-3 rounded-lg border border-line p-3"
+            key={document}
+          >
+            <span className="flex size-8 items-center justify-center rounded-md bg-brand-100 text-[0.65rem] font-bold text-brand-800">
+              {index + 1}
+            </span>
+            <div>
+              <p className="text-xs font-semibold">{t(document)}</p>
+              <p className="mt-1 text-[0.65rem] text-ink-muted">
+                {t("features.preview.updatedToday")}
+              </p>
             </div>
-          ),
-        )}
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
 function ReminderPreview() {
+  const { t } = useTranslation();
+
   return (
     <div className="mx-auto max-w-sm">
       <div className="rounded-xl border border-brand-200 bg-brand-50 p-4">
         <div className="flex items-center justify-between">
           <span className="rounded-full bg-brand-900 px-2.5 py-1 text-[0.65rem] font-semibold text-white">
-            Today
+            {t("features.preview.today")}
           </span>
-          <span className="text-[0.65rem] text-brand-800">9:30 AM</span>
+          <span className="text-[0.65rem] text-brand-800">{t("features.preview.timeNineThirty")}</span>
         </div>
-        <p className="mt-5 text-sm font-semibold">Send interview thank-you</p>
+        <p className="mt-5 text-sm font-semibold">{t("features.preview.sendThankYou")}</p>
         <p className="mt-2 text-xs leading-relaxed text-ink-muted">
-          Follow up with Maya after the product design conversation.
+          {t("features.preview.followUpDetails")}
         </p>
         <div className="mt-5 flex gap-2">
           <span className="rounded-full bg-brand-900 px-3 py-1.5 text-[0.65rem] font-semibold text-white">
-            Complete
+            {t("features.preview.complete")}
           </span>
           <span className="rounded-full border border-line bg-surface px-3 py-1.5 text-[0.65rem] font-semibold">
-            Reschedule
+            {t("features.preview.reschedule")}
           </span>
         </div>
       </div>
@@ -192,6 +198,7 @@ function ReminderPreview() {
 }
 
 function InsightsPreview() {
+  const { t } = useTranslation();
   const bars = [42, 68, 50, 82, 61, 92];
 
   return (
@@ -199,14 +206,14 @@ function InsightsPreview() {
       <div className="flex items-end justify-between">
         <div>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-ink-muted">
-            Search activity
+            {t("features.preview.searchActivity")}
           </p>
           <p className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
-            8 responses
+            {t("features.preview.responses")}
           </p>
         </div>
         <span className="rounded-full bg-brand-100 px-3 py-1.5 text-[0.65rem] font-semibold text-brand-800">
-          +24% this month
+          {t("features.preview.monthChange")}
         </span>
       </div>
       <div className="mt-6 flex h-28 items-end gap-3">

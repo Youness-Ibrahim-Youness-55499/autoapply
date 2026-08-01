@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "../../i18n";
 import { PageContainer } from "./PageContainer";
 
 const navigationItems = [
-  { href: "#features", label: "Features" },
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#faq", label: "FAQ" },
+  { href: "#features", labelKey: "nav.features" },
+  { href: "#how-it-works", labelKey: "nav.howItWorks" },
+  { href: "#pricing", labelKey: "nav.pricing" },
+  { href: "#faq", labelKey: "nav.faq" },
 ];
 
 export function Header() {
@@ -46,6 +47,8 @@ export function Header() {
     setIsMenuOpen(false);
   }
 
+  const { locale, setLocale, t } = useTranslation();
+
   return (
     <header className="sticky top-0 z-40 border-b border-line/80 bg-canvas/95 backdrop-blur-md">
       <PageContainer>
@@ -67,23 +70,37 @@ export function Header() {
                 href={item.href}
                 key={item.href}
               >
-                {item.label}
+                {t(item.labelKey)}
               </a>
             ))}
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
+            <div className="hidden items-center gap-2 rounded-full border border-line bg-surface px-3 py-2 text-sm text-ink-muted md:flex">
+              <label htmlFor="locale-select" className="sr-only">
+                {t("language.label")}
+              </label>
+              <select
+                id="locale-select"
+                value={locale}
+                onChange={(event) => setLocale(event.target.value as "en" | "de")}
+                className="bg-transparent text-sm text-ink-muted outline-none"
+              >
+                <option value="en">{t("language.english")}</option>
+                <option value="de">{t("language.german")}</option>
+              </select>
+            </div>
             <Link
               className="rounded-full px-3 py-2 text-sm font-semibold text-ink transition-colors hover:text-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
               to="/login"
             >
-              Log in
+              {t("header.logIn")}
             </Link>
             <Link
               className="inline-flex min-h-10 items-center justify-center rounded-full border border-brand-900 bg-brand-900 px-5 text-sm font-semibold text-white shadow-button transition-colors hover:border-brand-800 hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
               to="/signup"
             >
-              Get started
+              {t("header.signUp")}
             </Link>
           </div>
 
@@ -91,7 +108,7 @@ export function Header() {
             aria-controls="mobile-navigation"
             aria-expanded={isMenuOpen}
             aria-label={
-              isMenuOpen ? "Close navigation menu" : "Open navigation menu"
+              isMenuOpen ? t("nav.closeMobile") : t("nav.openMobile")
             }
             className="inline-flex size-10 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 md:hidden"
             onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
@@ -135,7 +152,7 @@ export function Header() {
                   key={item.href}
                   onClick={closeMenu}
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </a>
               ))}
               <div className="mt-3 grid grid-cols-2 gap-3 border-t border-line pt-4">
@@ -144,14 +161,14 @@ export function Header() {
                   onClick={closeMenu}
                   to="/login"
                 >
-                  Log in
+                  {t("header.logIn")}
                 </Link>
                 <Link
                   className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-900 px-4 text-sm font-semibold text-white"
                   onClick={closeMenu}
                   to="/signup"
                 >
-                  Get started
+                  {t("header.signUp")}
                 </Link>
               </div>
             </div>

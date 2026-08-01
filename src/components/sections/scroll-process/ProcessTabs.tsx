@@ -1,13 +1,22 @@
-export const processStages = ["Find", "Prep", "Apply", "Track"] as const;
+import { useTranslation } from "../../../i18n";
+
+export const processStages = [
+  "processStages.find",
+  "processStages.prep",
+  "processStages.apply",
+  "processStages.track",
+] as const;
 
 type ProcessTabsProps = {
   activeStage: number;
 };
 
 export function ProcessTabs({ activeStage }: ProcessTabsProps) {
+  const { t } = useTranslation();
+
   return (
     <ol
-      aria-label="Application automation stages"
+      aria-label={t("processTabs.ariaLabel")}
       className="flex items-center"
     >
         {processStages.map((stage, index) => (
@@ -29,7 +38,7 @@ export function ProcessTabs({ activeStage }: ProcessTabsProps) {
               >
                 0{index + 1}
               </span>
-              {stage}
+              {t(stage)}
             </span>
 
             {index < processStages.length - 1 ? (

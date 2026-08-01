@@ -4,6 +4,7 @@ import { Seo } from "../components/Seo";
 import { SkipLink } from "../components/SkipLink";
 import { PageContainer } from "../components/layout/PageContainer";
 import { supabase } from "../lib/supabase";
+import { useTranslation } from "../i18n";
 
 type AuthPageProps = {
   mode: "login" | "signup";
@@ -24,6 +25,7 @@ export function AuthPage({ mode }: AuthPageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const { t } = useTranslation();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -61,9 +63,7 @@ export function AuthPage({ mode }: AuthPageProps) {
           return;
         }
 
-        setSuccessMessage(
-          "Check your email and follow the confirmation link to finish creating your account.",
-        );
+        setSuccessMessage(t("auth.signupSuccess"));
         form.reset();
         return;
       }
@@ -80,7 +80,7 @@ export function AuthPage({ mode }: AuthPageProps) {
 
       navigate(requestedPath, { replace: true });
     } catch {
-      setErrorMessage("Something went wrong. Please try again.");
+      setErrorMessage(t("auth.error.generic"));
     } finally {
       setIsSubmitting(false);
     }
@@ -91,12 +91,12 @@ export function AuthPage({ mode }: AuthPageProps) {
       <Seo
         description={
           isSignup
-            ? "Create your Autoapply workspace and bring every job-search step into one organized place."
-            : "Log in to Autoapply to continue organizing applications, materials, and follow-ups."
+            ? t("auth.signupSeo")
+            : t("auth.loginSeo")
         }
         noIndex
         path={`/${mode}`}
-        title={isSignup ? "Create your account" : "Log in"}
+        title={isSignup ? t("auth.signupTitle") : t("auth.loginTitle")}
       />
       <SkipLink />
       <header className="border-b border-line bg-surface">
@@ -112,7 +112,7 @@ export function AuthPage({ mode }: AuthPageProps) {
               className="text-sm font-semibold text-brand-800 hover:text-brand-600"
               to={isSignup ? "/login" : "/signup"}
             >
-              {isSignup ? "Already have an account? Log in" : "New here? Sign up"}
+              {isSignup ? t("auth.alreadyHaveAccount") : t("auth.newHere")}
             </Link>
           </div>
         </PageContainer>
@@ -121,16 +121,16 @@ export function AuthPage({ mode }: AuthPageProps) {
       <main id="main-content">
         <PageContainer className="grid min-h-[calc(100vh-4.5rem)] items-center gap-12 py-16 lg:grid-cols-[1fr_0.8fr]">
           <div className="max-w-xl">
-            <p className="eyebrow">{isSignup ? "Create your workspace" : "Welcome back"}</p>
+            <p className="eyebrow">{isSignup ? t("auth.signupEyebrow") : t("auth.loginEyebrow")}</p>
             <h1 className="mt-4 text-5xl font-semibold tracking-[-0.055em] sm:text-6xl">
               {isSignup
-                ? "Bring your job search into focus."
-                : "Continue where you left off."}
+                ? t("auth.signupHeadline")
+                : t("auth.loginHeadline")}
             </h1>
             <p className="lead mt-6">
               {isSignup
-                ? "Start with one organized place for opportunities, tailored materials, and every next step."
-                : "Open your workspace to review applications, prepare materials, and follow up with confidence."}
+                ? t("auth.signupSubhead")
+                : t("auth.loginSubhead")}
             </p>
           </div>
 
@@ -139,50 +139,50 @@ export function AuthPage({ mode }: AuthPageProps) {
             className="rounded-card border border-line bg-surface p-6 shadow-card sm:p-8"
           >
             <h2 className="text-2xl font-semibold" id={`${mode}-title`}>
-              {isSignup ? "Create an account" : "Log in"}
+              {isSignup ? t("auth.createAccount") : t("auth.logIn")}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-ink-muted">
               {isSignup
-                ? "Use your email to create a secure Autoapply account."
-                : "Enter the email and password connected to your account."}
+                ? t("auth.signupDescription")
+                : t("auth.loginDescription")}
             </p>
 
             <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
               {isSignup && (
                 <label className="block text-sm font-semibold">
-                  Name
+                  {t("auth.nameLabel")}
                   <input
                     autoComplete="name"
                     className="mt-2 min-h-12 w-full rounded-xl border border-line bg-canvas px-4 font-normal outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                     disabled={isSubmitting}
                     name="name"
-                    placeholder="Your name"
+                    placeholder={t("auth.namePlaceholder")}
                     required
                     type="text"
                   />
                 </label>
               )}
               <label className="block text-sm font-semibold">
-                Email
+                {t("auth.emailLabel")}
                 <input
                   autoComplete="email"
                   className="mt-2 min-h-12 w-full rounded-xl border border-line bg-canvas px-4 font-normal outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                   disabled={isSubmitting}
                   name="email"
-                  placeholder="you@example.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   required
                   type="email"
                 />
               </label>
               <label className="block text-sm font-semibold">
-                Password
+                {t("auth.passwordLabel")}
                 <input
                   autoComplete={isSignup ? "new-password" : "current-password"}
                   className="mt-2 min-h-12 w-full rounded-xl border border-line bg-canvas px-4 font-normal outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                   disabled={isSubmitting}
                   name="password"
                   minLength={8}
-                  placeholder="At least 8 characters"
+                  placeholder={t("auth.passwordPlaceholder")}
                   required
                   type="password"
                 />
@@ -209,11 +209,11 @@ export function AuthPage({ mode }: AuthPageProps) {
               >
                 {isSubmitting
                   ? isSignup
-                    ? "Creating account..."
-                    : "Logging in..."
+                    ? t("auth.creatingAccount")
+                    : t("auth.loggingIn")
                   : isSignup
-                    ? "Create account"
-                    : "Log in"}
+                    ? t("auth.createAccount")
+                    : t("auth.logIn")}
               </button>
             </form>
           </section>

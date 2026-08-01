@@ -1,14 +1,17 @@
 import { PageContainer } from "../layout/PageContainer";
 import { Section } from "../ui/Section";
+import { useTranslation } from "../../i18n";
 
 const jobSearchContexts = [
-  "Career changes",
-  "First professional roles",
-  "Returning to work",
-  "High-volume searches",
+  "trustStrip.context.careerChanges",
+  "trustStrip.context.firstRoles",
+  "trustStrip.context.returningToWork",
+  "trustStrip.context.highVolume",
 ];
 
 export function TrustStrip() {
+  const { t } = useTranslation();
+
   return (
     <Section
       aria-labelledby="trust-strip-title"
@@ -18,20 +21,20 @@ export function TrustStrip() {
       <PageContainer>
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:items-center">
           <div>
-            <p className="eyebrow">Designed around real job searches</p>
+            <p className="eyebrow">{t("trustStrip.eyebrow")}</p>
             <h2
               className="mt-3 max-w-md text-2xl font-semibold tracking-[-0.04em] sm:text-3xl"
               id="trust-strip-title"
             >
-              Useful wherever you are in your career.
+              {t("trustStrip.title")}
             </h2>
           </div>
 
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {jobSearchContexts.map((context, index) => (
+            {jobSearchContexts.map((contextKey, index) => (
               <li
                 className="flex min-h-24 flex-col justify-between rounded-xl border border-line bg-canvas p-4"
-                key={context}
+                key={contextKey}
               >
                 <span
                   aria-hidden="true"
@@ -40,7 +43,7 @@ export function TrustStrip() {
                   {index + 1}
                 </span>
                 <span className="mt-5 text-sm font-semibold leading-snug">
-                  {context}
+                  {t(contextKey)}
                 </span>
               </li>
             ))}

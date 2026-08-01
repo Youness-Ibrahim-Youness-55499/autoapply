@@ -1,53 +1,50 @@
 import { PageContainer } from "../layout/PageContainer";
 import { Section } from "../ui/Section";
+import { useTranslation } from "../../i18n";
 
 const questions = [
   {
-    answer:
-      "No. Autoapply is designed to help you organize and improve your own applications, not submit them without your review.",
-    question: "Does Autoapply apply to jobs for me?",
+    answerKey: "faq.q1.answer",
+    questionKey: "faq.q1.question",
   },
   {
-    answer:
-      "You can store the opportunity, status, notes, deadlines, links, and the documents prepared for that specific role.",
-    question: "What can I keep with each application?",
+    answerKey: "faq.q2.answer",
+    questionKey: "faq.q2.question",
   },
   {
-    answer:
-      "Yes. The Starter plan is intended to let you organize a focused search before deciding whether you need more capacity.",
-    question: "Can I begin for free?",
+    answerKey: "faq.q3.answer",
+    questionKey: "faq.q3.question",
   },
   {
-    answer:
-      "The experience is designed for desktop and mobile layouts, so you can review progress and next steps wherever you work.",
-    question: "Can I use it on my phone?",
+    answerKey: "faq.q4.answer",
+    questionKey: "faq.q4.question",
   },
   {
-    answer:
-      "Your application information remains yours. Detailed privacy controls will be documented before account features launch.",
-    question: "How will my application data be handled?",
+    answerKey: "faq.q5.answer",
+    questionKey: "faq.q5.question",
   },
 ];
 
 export function Faq() {
+  const { t } = useTranslation();
+
   return (
     <Section className="bg-surface" id="faq" spacing="spacious">
       <PageContainer>
         <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <p className="eyebrow">Frequently asked questions</p>
-            <h2 className="section-title mt-4">The practical details.</h2>
+            <p className="eyebrow">{t("faq.eyebrow")}</p>
+            <h2 className="section-title mt-4">{t("faq.title")}</h2>
             <p className="lead mt-6 max-w-md">
-              Clear answers about what Autoapply is designed to do and what
-              remains under your control.
+              {t("faq.description")}
             </p>
           </div>
 
           <div className="border-t border-line">
             {questions.map((item) => (
-              <details className="group border-b border-line py-1" key={item.question}>
+              <details className="group border-b border-line py-1" key={item.questionKey}>
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-lg py-6 text-lg font-semibold marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2">
-                  {item.question}
+                  {t(item.questionKey)}
                   <span
                     aria-hidden="true"
                     className="flex size-8 shrink-0 items-center justify-center rounded-full border border-line text-xl font-normal transition-transform group-open:rotate-45"
@@ -55,7 +52,9 @@ export function Faq() {
                     +
                   </span>
                 </summary>
-                <p className="body-copy max-w-2xl pb-6 pr-12">{item.answer}</p>
+                <p className="body-copy max-w-2xl pb-6 pr-12">
+                  {t(item.answerKey)}
+                </p>
               </details>
             ))}
           </div>

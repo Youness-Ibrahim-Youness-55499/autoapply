@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "../../i18n";
 import { Template, TemplateKind, TemplateCategory } from "./useTemplates";
 import { Button } from "../../components/ui/Button";
 
@@ -29,31 +30,33 @@ export function TemplateEditor({ template, categories, onCancel, onSave }: Props
     }
   }
 
+  const { t } = useTranslation();
+
   return (
     <section className="rounded-card border border-line bg-surface p-6 shadow-card">
       <div>
-        <h3 className="text-lg font-semibold">{template ? "Edit template" : "New template"}</h3>
+        <h3 className="text-lg font-semibold">{template ? t("editor.edit") : t("editor.new")}</h3>
       </div>
 
       <div className="mt-4 grid gap-4">
         <label className="text-sm font-semibold">
-          Title
+          {t("editor.title")}
           <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-2 block w-full rounded-xl border border-line bg-canvas px-4 py-2 text-sm" />
         </label>
 
         <label className="text-sm font-semibold">
-          Kind
+          {t("editor.kind")}
           <select value={kind} onChange={(e) => setKind(e.target.value as TemplateKind)} className="mt-2 block w-full rounded-xl border border-line bg-canvas px-4 py-2 text-sm">
-            <option value="cover_letter">Cover letter</option>
-            <option value="screening">Screening answer</option>
-            <option value="paragraph">Personal paragraph</option>
+            <option value="cover_letter">{t("editor.kind.cover_letter")}</option>
+            <option value="screening">{t("editor.kind.screening")}</option>
+            <option value="paragraph">{t("editor.kind.paragraph")}</option>
           </select>
         </label>
 
         <label className="text-sm font-semibold">
-          Category
+          {t("editor.category")}
           <select value={categoryId ?? ""} onChange={(e) => setCategoryId(e.target.value || null)} className="mt-2 block w-full rounded-xl border border-line bg-canvas px-4 py-2 text-sm">
-            <option value="">(No category)</option>
+            <option value="">{t("editor.noCategory")}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -61,13 +64,13 @@ export function TemplateEditor({ template, categories, onCancel, onSave }: Props
         </label>
 
         <label className="text-sm font-semibold">
-          Content
+          {t("editor.content")}
           <textarea value={content} onChange={(e) => setContent(e.target.value)} className="mt-2 block w-full min-h-44 rounded-xl border border-line bg-canvas px-4 py-3 text-sm" />
         </label>
 
         <div className="flex justify-end gap-3">
-          <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button onClick={handleSave} disabled={isSaving || title.trim().length === 0}>{isSaving ? "Saving..." : "Save"}</Button>
+          <Button variant="secondary" onClick={onCancel}>{t("editor.cancel")}</Button>
+          <Button onClick={handleSave} disabled={isSaving || title.trim().length === 0}>{isSaving ? t("editor.save") : t("editor.save")}</Button>
         </div>
       </div>
     </section>

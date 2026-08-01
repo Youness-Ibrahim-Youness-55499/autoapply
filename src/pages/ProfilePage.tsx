@@ -7,6 +7,7 @@ import { Button } from "../components/ui/Button";
 import { ProfileForm } from "../features/profile/components/ProfileForm";
 import { ProfileProgress } from "../features/profile/components/ProfileProgress";
 import { useProfile } from "../features/profile/useProfile";
+import { useTranslation } from "../i18n";
 
 export function ProfilePage() {
   const {
@@ -19,26 +20,27 @@ export function ProfilePage() {
     saveProfile,
     successMessage,
   } = useProfile();
+  const { t } = useTranslation();
 
   return (
     <>
       <Seo
-        description="Build the candidate profile Autoapply uses for matching and application materials."
+        description={t("seo.profileDescription")}
         noIndex
         path="/app/profile"
-        title="Profile"
+        title={t("profile.title")}
       />
       <PageContainer className="py-10 sm:py-14 lg:px-10" size="wide">
         <ProductPageHeader
-          description="Create one reliable source for your target roles, preferences, skills, experience, and education."
-          title="Candidate profile"
+          description={t("profile.description")}
+          title={t("profile.title")}
         />
 
         {isLoading && (
           <div className="mt-10 max-w-4xl">
             <LoadingState
-              description="Loading your private candidate information."
-              title="Loading profile"
+              description={t("loading.profileDescription")}
+              title={t("loading.profile")}
             />
           </div>
         )}
@@ -46,9 +48,9 @@ export function ProfilePage() {
         {!isLoading && loadErrorMessage && (
           <div className="mt-10 max-w-4xl">
             <ErrorState
-              action={<Button onClick={retry}>Try again</Button>}
+              action={<Button onClick={retry}>{t("tryAgain")}</Button>}
               description={loadErrorMessage}
-              title="Profile could not be loaded"
+              title={t("errors.profileLoad")}
             />
           </div>
         )}

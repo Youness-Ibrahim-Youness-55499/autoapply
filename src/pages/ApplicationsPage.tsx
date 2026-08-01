@@ -17,6 +17,7 @@ import { ApplicationWorkflowPanel } from "../features/applications/ApplicationWo
 import { DeleteApplicationDialog } from "../features/applications/DeleteApplicationDialog";
 import type { Application } from "../features/applications/types";
 import { useApplications } from "../features/applications/useApplications";
+import { useTranslation } from "../i18n";
 
 export function ApplicationsPage() {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
@@ -110,6 +111,7 @@ export function ApplicationsPage() {
   }
 
   const location = useLocation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // If the URL contains a hash with an application id, open its edit form.
@@ -134,15 +136,15 @@ export function ApplicationsPage() {
   return (
     <>
       <Seo
-        description="Organize and review your job applications."
+        description={t("seo.applicationsDescription")}
         noIndex
         path="/app/applications"
-        title="Applications"
+        title={t("applications.title")}
       />
       <PageContainer className="py-10 sm:py-14 lg:px-10" size="wide">
         <ProductPageHeader
-          description="Review the opportunities saved in your private workspace and see where each application stands."
-          title="Applications"
+          description={t("applications.description")}
+          title={t("applications.title")}
         />
 
         <div className="mt-7">
@@ -151,7 +153,7 @@ export function ApplicationsPage() {
             aria-expanded={isFormOpen}
             onClick={toggleCreateForm}
           >
-            {isFormOpen ? "Close form" : "Add application"}
+            {isFormOpen ? t("applications.closeForm") : t("applications.addApplication")}
           </Button>
         </div>
 
@@ -167,23 +169,23 @@ export function ApplicationsPage() {
         <div className="mt-10 max-w-6xl">
           {isLoading && (
             <LoadingState
-              description="Loading your private application records."
-              title="Loading applications"
+              description={t("loading.applicationsDescription")}
+              title={t("loading.applications")}
             />
           )}
 
           {!isLoading && errorMessage && (
             <ErrorState
-              action={<Button onClick={retry}>Try again</Button>}
+              action={<Button onClick={retry}>{t("tryAgain")}</Button>}
               description={errorMessage}
-              title="Applications could not be loaded"
+              title={t("errors.applicationsLoad")}
             />
           )}
 
           {!isLoading && !errorMessage && applications.length === 0 && (
             <EmptyState
-              description="There are no application records in your workspace yet. Use Add application to save your first opportunity."
-              title="No applications yet"
+              description={t("applications.noApplicationsDescription")}
+              title={t("table.noApplications")}
             />
           )}
 
@@ -209,11 +211,11 @@ export function ApplicationsPage() {
                 <EmptyState
                   action={
                     <Button onClick={clearFilters} variant="secondary">
-                      Clear filters
+                      {t("filters.clear")}
                     </Button>
                   }
-                  description="Try a different role, company, location, or application status."
-                  title="No matching applications"
+                  description={t("applications.noMatchingDescription")}
+                  title={t("table.noMatching")}
                 />
               )}
             </>

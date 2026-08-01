@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
+import { useTranslation } from "../i18n";
 import { useAuth } from "../auth/AuthProvider";
 import { ProductPageHeader } from "../components/app/ProductPageHeader";
 import { Seo } from "../components/Seo";
@@ -79,6 +80,7 @@ const startingPoints = [
 ];
 
 export function ProductHomePage() {
+  const { t } = useTranslation();
   const { session } = useAuth();
   const metadataName = session?.user.user_metadata.name;
   const name =
@@ -158,22 +160,22 @@ export function ProductHomePage() {
       />
       <PageContainer className="py-10 sm:py-14 lg:px-10" size="wide">
         <ProductPageHeader
-          description="Your daily control center: quick metrics, upcoming items, and recent activity."
-          eyebrow="Workspace overview"
-          title={`Welcome, ${name}.`}
+          description={t("overview.description")}
+          eyebrow={t("workspace")}
+          title={t("overview.title", { name })}
         />
 
         <section className="mt-8 max-w-6xl">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard title="Total applications" value={total} />
-            <StatCard title="Added this week" value={addedThisWeek} />
-            <StatCard title="Response rate" value={total ? `${Math.round((responseCount / total) * 100)}%` : "—"} subtitle="Responses, rejections, and withdrawals" />
-            <StatCard title="Interview rate" value={total ? `${Math.round((interviewCount / total) * 100)}%` : "—"} />
+            <StatCard title={t("dashboard.totalApplications")} value={total} />
+            <StatCard title={t("dashboard.addedThisWeek")} value={addedThisWeek} />
+            <StatCard title={t("dashboard.responseRate")} value={total ? `${Math.round((responseCount / total) * 100)}%` : "—"} subtitle={t("dashboard.responseRateSubtitle")} />
+            <StatCard title={t("dashboard.interviewRate")} value={total ? `${Math.round((interviewCount / total) * 100)}%` : "—"} />
           </div>
 
           <div className="mt-6 grid gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <ListCard title="Applications by status">
+              <ListCard title={t("dashboard.applicationsByStatus")}>
                 <div className="grid grid-cols-2 gap-3">
                   {Array.from(byStatus.entries()).map(([status, count]) => (
                     <div key={status} className="flex items-center justify-between gap-3 rounded-md border border-line bg-white/3 px-3 py-2">
@@ -187,9 +189,9 @@ export function ProductHomePage() {
               </ListCard>
 
               <div className="mt-4">
-                <ListCard title="Recent status activity">
+                <ListCard title={t("dashboard.recentStatusActivity")}>
                   {recentActivity.length === 0 ? (
-                    <p className="text-sm text-ink-muted">No recent activity</p>
+                    <p className="text-sm text-ink-muted">{t("dashboard.noRecentActivity")}</p>
                   ) : (
                     recentActivity.map((a) => (
                       <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
@@ -208,9 +210,9 @@ export function ProductHomePage() {
             </div>
 
             <div>
-              <ListCard title="Upcoming deadlines">
+              <ListCard title={t("dashboard.upcomingDeadlines")}>
                 {upcomingDeadlines.length === 0 ? (
-                  <p className="text-sm text-ink-muted">No upcoming deadlines in the next 14 days.</p>
+                  <p className="text-sm text-ink-muted">{t("dashboard.noUpcomingDeadlines")}</p>
                 ) : (
                   upcomingDeadlines.map((a) => (
                     <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
@@ -224,9 +226,9 @@ export function ProductHomePage() {
               </ListCard>
 
               <div className="mt-4">
-                <ListCard title="Overdue follow-ups">
+                <ListCard title={t("dashboard.overdueFollowUps")}>
                   {overdueFollowUps.length === 0 ? (
-                    <p className="text-sm text-ink-muted">No overdue follow-ups.</p>
+                    <p className="text-sm text-ink-muted">{t("dashboard.noOverdueFollowUps")}</p>
                   ) : (
                     overdueFollowUps.map((a) => (
                       <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
@@ -243,9 +245,9 @@ export function ProductHomePage() {
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <ListCard title="Upcoming interviews">
+            <ListCard title={t("dashboard.upcomingInterviews")}>
               {upcomingInterviews.length === 0 ? (
-                <p className="text-sm text-ink-muted">No upcoming interviews scheduled.</p>
+                <p className="text-sm text-ink-muted">{t("dashboard.noUpcomingInterviews")}</p>
               ) : (
                 upcomingInterviews.map((a) => (
                   <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
@@ -258,9 +260,9 @@ export function ProductHomePage() {
               )}
             </ListCard>
 
-            <ListCard title="Incomplete reminders">
+            <ListCard title={t("dashboard.incompleteReminders")}>
               {incompleteReminders.length === 0 ? (
-                <p className="text-sm text-ink-muted">No incomplete reminders.</p>
+                <p className="text-sm text-ink-muted">{t("dashboard.noIncompleteReminders")}</p>
               ) : (
                 incompleteReminders.map((a) => (
                   <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
@@ -276,11 +278,11 @@ export function ProductHomePage() {
 
           <div className="mt-6">
             {isLoading ? (
-              <LoadingState title="Loading overview" description="Collecting metrics and items from your workspace." />
+              <LoadingState title={t("dashboard.loadingOverviewTitle")} description={t("dashboard.loadingOverviewDescription")} />
             ) : errorMessage ? (
-              <ErrorState title="Could not load overview" description={errorMessage} />
+              <ErrorState title={t("dashboard.errorOverviewTitle")} description={errorMessage} />
             ) : total === 0 ? (
-              <EmptyState title="No applications yet" description="You don't have any applications yet. Add one on the Applications page to populate this dashboard." />
+              <EmptyState title={t("dashboard.noApplicationsYet")} description={t("dashboard.noApplicationsYetDescription")} />
             ) : null}
           </div>
         </section>

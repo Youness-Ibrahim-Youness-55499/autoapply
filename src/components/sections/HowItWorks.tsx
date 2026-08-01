@@ -1,47 +1,45 @@
 import { PageContainer } from "../layout/PageContainer";
 import { Section } from "../ui/Section";
+import { useTranslation } from "../../i18n";
 
 const workflowSteps = [
   {
-    description:
-      "Capture the role, company, source link, and deadline before details get lost across tabs.",
-    label: "Collect",
-    title: "Save the opportunity",
+    labelKey: "howItWorks.stepCollect.label",
+    titleKey: "howItWorks.stepCollect.title",
+    descriptionKey: "howItWorks.stepCollect.description",
   },
   {
-    description:
-      "Keep the right resume, notes, and supporting materials beside the application they belong to.",
-    label: "Prepare",
-    title: "Tailor your materials",
+    labelKey: "howItWorks.stepPrepare.label",
+    titleKey: "howItWorks.stepPrepare.title",
+    descriptionKey: "howItWorks.stepPrepare.description",
   },
   {
-    description:
-      "Move each application through a simple status flow and always know what changed.",
-    label: "Track",
-    title: "Follow every stage",
+    labelKey: "howItWorks.stepTrack.label",
+    titleKey: "howItWorks.stepTrack.title",
+    descriptionKey: "howItWorks.stepTrack.description",
   },
   {
-    description:
-      "Turn interviews, thank-you notes, and recruiter check-ins into clear next actions.",
-    label: "Continue",
-    title: "Plan the follow-up",
+    labelKey: "howItWorks.stepContinue.label",
+    titleKey: "howItWorks.stepContinue.title",
+    descriptionKey: "howItWorks.stepContinue.description",
   },
 ];
 
 export function HowItWorks() {
+  const { t } = useTranslation();
+
   return (
     <Section id="how-it-works" spacing="spacious">
       <PageContainer>
         <div className="grid gap-8 border-b border-line pb-12 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.75fr)] lg:items-end">
           <div>
-            <p className="eyebrow">A focused workflow</p>
+            <p className="eyebrow">{t("howItWorks.eyebrow")}</p>
             <h2 className="section-title mt-4">
-              Four stages. One clear place to work.
+              {t("howItWorks.title")}
             </h2>
           </div>
           <p className="lead max-w-xl lg:justify-self-end">
-            Autoapply helps you turn scattered job-search activity into a
-            repeatable process you can understand at a glance.
+            {t("howItWorks.description")}
           </p>
         </div>
 
@@ -49,21 +47,21 @@ export function HowItWorks() {
           {workflowSteps.map((step, index) => (
             <li
               className="overflow-hidden rounded-card border border-line bg-surface shadow-card"
-              key={step.label}
+              key={step.labelKey}
             >
               <div className="p-6 sm:p-8">
                 <div className="flex items-center justify-between gap-4">
                   <p className="eyebrow">
-                    {String(index + 1).padStart(2, "0")} - {step.label}
+                    {String(index + 1).padStart(2, "0")} - {t(step.labelKey)}
                   </p>
                   <span className="text-xs font-semibold text-ink-muted">
-                    Step {index + 1} of {workflowSteps.length}
+                    {t("howItWorks.stepCount", { current: index + 1, total: workflowSteps.length })}
                   </span>
                 </div>
                 <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
-                  {step.title}
+                  {t(step.titleKey)}
                 </h3>
-                <p className="body-copy mt-3 max-w-lg">{step.description}</p>
+                <p className="body-copy mt-3 max-w-lg">{t(step.descriptionKey)}</p>
               </div>
 
               <WorkflowPreview step={index} />
@@ -80,6 +78,8 @@ type WorkflowPreviewProps = {
 };
 
 function WorkflowPreview({ step }: WorkflowPreviewProps) {
+  const { t } = useTranslation();
+
   return (
     <div
       aria-hidden="true"
@@ -87,33 +87,39 @@ function WorkflowPreview({ step }: WorkflowPreviewProps) {
     >
       {step === 0 && (
         <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p className="text-xs font-semibold text-brand-300">New opportunity</p>
+          <p className="text-xs font-semibold text-brand-300">
+            {t("howItWorks.preview.newOpportunity")}
+          </p>
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <PreviewField label="Company" value="Juniper Studio" />
-            <PreviewField label="Role" value="Product Designer" />
-            <PreviewField label="Source" value="Company careers" />
-            <PreviewField label="Deadline" value="Friday" />
+            <PreviewField label={t("howItWorks.preview.company")} value={t("howItWorks.preview.companyValue")} />
+            <PreviewField label={t("howItWorks.preview.role")} value={t("howItWorks.preview.productDesigner")} />
+            <PreviewField label={t("howItWorks.preview.source")} value={t("howItWorks.preview.sourceValue")} />
+            <PreviewField label={t("howItWorks.preview.deadline")} value={t("howItWorks.preview.deadlineValueFriday")} />
           </div>
         </div>
       )}
 
       {step === 1 && (
         <div className="space-y-3">
-          <PreviewDocument name="Product resume" status="Ready" />
-          <PreviewDocument name="Portfolio notes" status="Review" />
-          <PreviewDocument name="Cover letter" status="Draft" />
+          <PreviewDocument name={t("howItWorks.preview.productResume")} status={t("howItWorks.preview.statusReady")} />
+          <PreviewDocument name={t("howItWorks.preview.portfolioNotes")} status={t("howItWorks.preview.statusReview")} />
+          <PreviewDocument name={t("howItWorks.preview.coverLetter")} status={t("howItWorks.preview.statusDraft")} />
         </div>
       )}
 
       {step === 2 && (
         <div className="grid grid-cols-3 gap-2">
-          {["Saved", "Applied", "Interview"].map((status, statusIndex) => (
+          {[
+            "howItWorks.preview.statusSaved",
+            "howItWorks.preview.statusApplied",
+            "howItWorks.preview.statusInterview",
+          ].map((statusKey, statusIndex) => (
             <div
               className="rounded-lg border border-white/10 bg-white/5 p-3"
-              key={status}
+              key={statusKey}
             >
               <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-white/50">
-                {status}
+                {t(statusKey)}
               </p>
               <div
                 className={`mt-4 rounded-md p-3 text-xs font-semibold ${
@@ -122,7 +128,7 @@ function WorkflowPreview({ step }: WorkflowPreviewProps) {
                     : "bg-white/10"
                 }`}
               >
-                Design role
+                {t("howItWorks.preview.designRole")}
               </div>
             </div>
           ))}
@@ -131,9 +137,9 @@ function WorkflowPreview({ step }: WorkflowPreviewProps) {
 
       {step === 3 && (
         <div className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-4">
-          <PreviewTask date="Today" label="Send interview thank-you" />
-          <PreviewTask date="Thu" label="Check in with recruiter" />
-          <PreviewTask date="Mon" label="Prepare portfolio examples" />
+          <PreviewTask date={t("howItWorks.preview.today")} label={t("howItWorks.preview.taskSendThankYou")} />
+          <PreviewTask date={t("howItWorks.preview.thu")} label={t("howItWorks.preview.taskCheckRecruiter")} />
+          <PreviewTask date={t("howItWorks.preview.mon")} label={t("howItWorks.preview.taskPreparePortfolio")} />
         </div>
       )}
     </div>

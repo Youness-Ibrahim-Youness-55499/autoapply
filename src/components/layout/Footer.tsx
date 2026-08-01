@@ -1,35 +1,38 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "../../i18n";
 import { PageContainer } from "./PageContainer";
 
 const footerGroups = [
   {
     links: [
-      ["Features", "#features"],
-      ["How it works", "#how-it-works"],
-      ["Pricing", "#pricing"],
-      ["FAQ", "#faq"],
+      ["nav.features", "#features"],
+      ["nav.howItWorks", "#how-it-works"],
+      ["nav.pricing", "#pricing"],
+      ["nav.faq", "#faq"],
     ],
-    title: "Product",
+    titleKey: "footer.group.product",
   },
   {
     links: [
-      ["Contact", "mailto:hello@autoapply.app"],
-      ["FAQ", "#faq"],
-      ["Back to top", "#top"],
+      ["footer.link.contact", "mailto:hello@autoapply.app"],
+      ["nav.faq", "#faq"],
+      ["footer.link.backToTop", "#top"],
     ],
-    title: "Help",
+    titleKey: "footer.group.help",
   },
   {
     links: [
-      ["Privacy", "/privacy"],
-      ["Terms", "/terms"],
-      ["Legal notice", "/legal-notice"],
+      ["footer.link.privacy", "/privacy"],
+      ["footer.link.terms", "/terms"],
+      ["footer.link.legalNotice", "/legal-notice"],
     ],
-    title: "Legal",
+    titleKey: "footer.group.legal",
   },
 ];
 
 export function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t border-line bg-surface" id="footer">
       <PageContainer>
@@ -42,36 +45,35 @@ export function Footer() {
               autoapply
             </a>
             <p className="body-copy mt-4 max-w-sm">
-              A calmer workspace for organizing and improving every job
-              application.
+              {t("footer.description")}
             </p>
             <a
               className="mt-6 inline-block text-sm font-semibold text-brand-800 underline decoration-brand-200 underline-offset-4"
               href="mailto:hello@autoapply.app"
             >
-              hello@autoapply.app
+              {t("footer.contactEmail")}
             </a>
           </div>
 
           {footerGroups.map((group) => (
-            <nav aria-label={`${group.title} links`} key={group.title}>
-              <p className="text-sm font-semibold">{group.title}</p>
+            <nav aria-label={`${t(group.titleKey)} links`} key={group.titleKey}>
+              <p className="text-sm font-semibold">{t(group.titleKey)}</p>
               <ul className="mt-4 space-y-3">
-                {group.links.map(([label, href]) => (
-                  <li key={label}>
+                {group.links.map(([labelKey, href]) => (
+                  <li key={labelKey}>
                     {href.startsWith("/") ? (
                       <Link
                         className="text-sm text-ink-muted hover:text-brand-800"
                         to={href}
                       >
-                        {label}
+                        {t(labelKey)}
                       </Link>
                     ) : (
                       <a
                         className="text-sm text-ink-muted hover:text-brand-800"
                         href={href}
                       >
-                        {label}
+                        {t(labelKey)}
                       </a>
                     )}
                   </li>
@@ -82,8 +84,8 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-3 border-t border-line py-6 text-xs text-ink-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>Copyright 2026 Autoapply.</p>
-          <p>Built for thoughtful job searches.</p>
+          <p>{t("footer.copyright")}</p>
+          <p>{t("footer.tagline")}</p>
         </div>
       </PageContainer>
     </footer>
