@@ -29,7 +29,7 @@ export function Features() {
   const { t } = useTranslation();
 
   return (
-    <Section className="bg-surface" id="features" spacing="spacious">
+    <Section id="features" spacing="spacious">
       <PageContainer>
         <div className="mx-auto max-w-3xl text-center">
           <p className="eyebrow">{t("features.eyebrow")}</p>
@@ -44,12 +44,12 @@ export function Features() {
         <div className="mt-14 grid gap-5 lg:grid-cols-2">
           {features.map((feature, index) => (
             <article
-              className="group overflow-hidden rounded-card border border-line bg-canvas"
+              className="group overflow-hidden rounded-card border border-line bg-canvas transition-[border-color,transform] duration-[var(--duration-fast)] ease-[var(--easing-standard)] hover:-translate-y-0.5 hover:border-brand-200"
               key={feature.titleKey}
             >
               <div className="p-6 sm:p-8">
-                <p className="eyebrow">
-                  {String(index + 1).padStart(2, "0")} - {t(feature.eyebrowKey)}
+                <p className="meta-label">
+                  {String(index + 1).padStart(2, "0")} — {t(feature.eyebrowKey)}
                 </p>
                 <h3 className="mt-4 max-w-md text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
                   {t(feature.titleKey)}

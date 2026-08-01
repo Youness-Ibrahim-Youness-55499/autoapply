@@ -62,11 +62,11 @@ export function Header() {
 
           <nav
             aria-label="Primary navigation"
-            className="hidden items-center gap-7 md:flex"
+            className="hidden items-center gap-1 md:flex"
           >
             {navigationItems.map((item) => (
               <a
-                className="text-sm font-medium text-ink-muted transition-colors hover:text-ink focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
+                className="rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-[var(--duration-fast)] hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
                 href={item.href}
                 key={item.href}
               >

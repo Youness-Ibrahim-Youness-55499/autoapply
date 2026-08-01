@@ -130,7 +130,7 @@ export function HeroDashboard() {
       >
         <div className="grid lg:grid-cols-[15rem_1fr]">
           <nav className="hidden border-r border-white/10 p-4 lg:block">
-            <p className="px-2 font-mono text-xs uppercase tracking-wide text-white/40">autoapply</p>
+            <p className="meta-label px-2 text-white/40">autoapply</p>
             <ul className="mt-4 space-y-1">
               {navItems.map((item) => (
                 <li key={item.key}>
@@ -145,9 +145,7 @@ export function HeroDashboard() {
               ))}
             </ul>
 
-            <p className="mt-6 px-2 font-mono text-xs uppercase tracking-wide text-white/40">
-              {t("hero.dashboard.favoritesLabel")}
-            </p>
+            <p className="meta-label mt-6 px-2 text-white/40">{t("hero.dashboard.favoritesLabel")}</p>
             <ul className="mt-2 space-y-1">
               <li>
                 <span className="block rounded-md px-3 py-2 text-sm text-white/55">
@@ -192,9 +190,7 @@ export function HeroDashboard() {
               })}
             </div>
 
-            <p className="mt-4 font-mono text-xs uppercase tracking-wide text-white/40">
-              {t("hero.dashboard.groupThisWeek")}
-            </p>
+            <p className="meta-label mt-4 text-white/40">{t("hero.dashboard.groupThisWeek")}</p>
 
             <div className="mt-2 space-y-2">
               <AnimatePresence initial={false}>
@@ -270,15 +266,9 @@ export function HeroDashboard() {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-white/[0.03] px-5 py-4">
-          <span className="font-mono text-xs uppercase tracking-wide text-white/40">
-            {t("hero.dashboard.metricActive")}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-wide text-white/40">
-            {t("hero.dashboard.metricOffers")}
-          </span>
-          <span className="font-mono text-xs uppercase tracking-wide text-white/40">
-            {t("hero.dashboard.metricInterviews")}
-          </span>
+          <span className="meta-label text-white/40">{t("hero.dashboard.metricActive")}</span>
+          <span className="meta-label text-white/40">{t("hero.dashboard.metricOffers")}</span>
+          <span className="meta-label text-white/40">{t("hero.dashboard.metricInterviews")}</span>
         </div>
       </div>
     </div>

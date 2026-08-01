@@ -22,7 +22,7 @@ export function Hero() {
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-brand-900 bg-brand-900 px-6 text-base font-semibold text-white shadow-button transition-colors duration-200 hover:border-brand-800 hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-ink bg-ink px-6 text-base font-semibold text-white shadow-button transition-colors duration-200 hover:border-ink/90 hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
               to="/signup"
             >
               {t("hero.primaryCta")}

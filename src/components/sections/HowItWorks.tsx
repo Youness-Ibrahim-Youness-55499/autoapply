@@ -46,15 +46,15 @@ export function HowItWorks() {
         <ol className="mt-12 grid gap-5 md:grid-cols-2">
           {workflowSteps.map((step, index) => (
             <li
-              className="overflow-hidden rounded-card border border-line bg-surface shadow-card"
+              className="overflow-hidden rounded-card border border-line bg-surface shadow-card transition-[border-color,transform] duration-[var(--duration-fast)] ease-[var(--easing-standard)] hover:-translate-y-0.5 hover:border-brand-200"
               key={step.labelKey}
             >
               <div className="p-6 sm:p-8">
                 <div className="flex items-center justify-between gap-4">
-                  <p className="eyebrow">
-                    {String(index + 1).padStart(2, "0")} - {t(step.labelKey)}
+                  <p className="meta-label">
+                    {String(index + 1).padStart(2, "0")} — {t(step.labelKey)}
                   </p>
-                  <span className="text-xs font-semibold text-ink-muted">
+                  <span className="meta-label">
                     {t("howItWorks.stepCount", { current: index + 1, total: workflowSteps.length })}
                   </span>
                 </div>

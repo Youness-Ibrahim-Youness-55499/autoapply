@@ -12,7 +12,7 @@ export function FinalCta() {
         <div className="relative overflow-hidden rounded-card bg-brand-950 px-6 py-16 text-white shadow-card sm:px-12 sm:py-20 lg:px-20">
           <div
             aria-hidden="true"
-            className="absolute -right-24 -top-32 size-96 rounded-full bg-brand-600/30 blur-3xl"
+            className="absolute inset-0 [background-image:radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:22px_22px]"
           />
           <div className="relative max-w-3xl">
             <p className="eyebrow text-white/65">
