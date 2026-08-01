@@ -81,7 +81,7 @@ export function Header() {
           }`}
         >
           <a
-            className="text-lg font-bold tracking-[-0.03em] text-brand-900"
+            className="ml-3 text-lg font-bold tracking-[-0.03em] text-brand-900"
             href="#top"
           >
             autoapply
