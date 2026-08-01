@@ -12,9 +12,9 @@ export const duration = {
   micro: 0.16,
   hover: 0.18,
   smallReveal: 0.55,
-  reveal: 0.75,
-  headline: 0.85,
-  dashboard: 1.1,
+  reveal: 1.0,
+  headline: 1.3,
+  dashboard: 1.4,
   section: 0.85,
 } as const;
 
@@ -52,13 +52,13 @@ export const dashboardReveal: Variants = {
     y: 0,
     scale: 1,
     filter: "blur(0px)",
-    transition: { duration: duration.dashboard, delay: 0.35, ease: ease.expo },
+    transition: { duration: duration.dashboard, delay: 0.9, ease: ease.expo },
   },
 };
 
 export const heroStagger: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.14, delayChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.4, delayChildren: 0.4 } },
 };
 
 export const headlineStagger: Variants = {
