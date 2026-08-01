@@ -2,6 +2,8 @@ import { useState, type FormEvent } from "react";
 import { useAuth } from "../../auth/AuthProvider";
 import { Button } from "../../components/ui/Button";
 import { useDocuments } from "../documents/useDocuments";
+import { useTemplates } from "../templates/useTemplates";
+import { useApplicationChecklist } from "../checklists/useApplicationChecklist";
 import { supabase } from "../../lib/supabase";
 import { applicationStatusDetails } from "./applicationStatus";
 import {
@@ -58,6 +60,9 @@ export function ApplicationForm({
     isLoading: areDocumentsLoading,
     loadErrorMessage: documentsError,
   } = useDocuments();
+  const { templates } = useTemplates();
+
+  const { checklist, createOrUpdate: updateChecklist } = useApplicationChecklist(application?.id);
   const cvDocuments = documents.filter((document) => document.category === "cv");
   const coverLetterDocuments = documents.filter(
     (document) => document.category === "cover_letter",
@@ -421,6 +426,64 @@ export function ApplicationForm({
                   ))}
                 </select>
               </label>
+            </div>
+            <div className="mt-6 border-t border-line pt-6">
+              <h4 className="text-lg font-semibold">Preparation checklist</h4>
+              <p className="mt-1 text-sm text-ink-muted">Track application preparation progress.</p>
+
+              {application ? (
+                <div className="mt-4 grid gap-3">
+                  {[
+                    ["cv_selected", "CV selected"],
+                    ["cover_letter_prepared", "Cover letter prepared"],
+                    ["contact_details_reviewed", "Contact details reviewed"],
+                    ["screening_completed", "Screening questions completed"],
+                    ["job_description_saved", "Job description saved"],
+                    ["final_review_completed", "Final review completed"],
+                    ["submission_confirmed", "Submission confirmed"],
+                  ].map(([key, label]) => {
+                    const k = key as keyof typeof checklist & string;
+                    const checked = (checklist as any)?.[k] ?? false;
+
+                    return (
+                      <label key={String(key)} className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={async (e) => {
+                            try {
+                              await updateChecklist({ [k]: e.target.checked });
+                            } catch (err) {
+                              // eslint-disable-next-line no-console
+                              console.error(err);
+                            }
+                          }}
+                        />
+                        <span className="text-sm">{label}</span>
+                      </label>
+                    );
+                  })}
+
+                  <div className="mt-2 text-sm text-ink-muted">
+                    Completion: {application ? (() => {
+                      const items = [
+                        checklist?.cv_selected,
+                        checklist?.cover_letter_prepared,
+                        checklist?.contact_details_reviewed,
+                        checklist?.screening_completed,
+                        checklist?.job_description_saved,
+                        checklist?.final_review_completed,
+                        checklist?.submission_confirmed,
+                      ];
+                      const done = items.filter(Boolean).length;
+                      const total = items.length;
+                      return `${done}/${total} (${Math.round((done/total)*100)}%)`;
+                    })() : "—"}
+                  </div>
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-ink-muted">Save the application to enable the preparation checklist.</p>
+              )}
             </div>
           </div>
 
