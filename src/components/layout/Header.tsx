@@ -87,48 +87,49 @@ export function Header() {
             autoapply
           </a>
 
-          <nav
-            aria-label="Primary navigation"
-            className="hidden items-center gap-1 md:flex"
-          >
-            {navigationItems.map((item) => (
-              <a
-                className="rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-[var(--duration-fast)] hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
-                href={item.href}
-                key={item.href}
-              >
-                {t(item.labelKey)}
-              </a>
-            ))}
-          </nav>
+          <div className="hidden items-center gap-1 md:flex">
+            <nav aria-label="Primary navigation" className="flex items-center gap-1">
+              {navigationItems.map((item) => (
+                <a
+                  className="rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-[var(--duration-fast)] hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
+                  href={item.href}
+                  key={item.href}
+                >
+                  {t(item.labelKey)}
+                </a>
+              ))}
+            </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
-            <div className="hidden items-center gap-2 rounded-full border border-line bg-surface px-3 py-2 text-sm text-ink-muted md:flex">
-              <label htmlFor="locale-select" className="sr-only">
-                {t("language.label")}
-              </label>
-              <select
-                id="locale-select"
-                value={locale}
-                onChange={(event) => setLocale(event.target.value as "en" | "de")}
-                className="bg-transparent text-sm text-ink-muted outline-none"
+            <span aria-hidden="true" className="mx-2 h-5 w-px bg-line" />
+
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-2 text-sm text-ink-muted">
+                <label htmlFor="locale-select" className="sr-only">
+                  {t("language.label")}
+                </label>
+                <select
+                  id="locale-select"
+                  value={locale}
+                  onChange={(event) => setLocale(event.target.value as "en" | "de")}
+                  className="bg-transparent text-sm text-ink-muted outline-none"
+                >
+                  <option value="en">{t("language.english")}</option>
+                  <option value="de">{t("language.german")}</option>
+                </select>
+              </div>
+              <Link
+                className="rounded-full px-3 py-2 text-sm font-semibold text-ink transition-colors hover:text-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
+                to="/login"
               >
-                <option value="en">{t("language.english")}</option>
-                <option value="de">{t("language.german")}</option>
-              </select>
+                {t("header.logIn")}
+              </Link>
+              <Link
+                className="inline-flex min-h-10 items-center justify-center rounded-full border border-brand-900 bg-brand-900 px-5 text-sm font-semibold text-white shadow-button transition-colors hover:border-brand-800 hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
+                to="/signup"
+              >
+                {t("header.signUp")}
+              </Link>
             </div>
-            <Link
-              className="rounded-full px-3 py-2 text-sm font-semibold text-ink transition-colors hover:text-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
-              to="/login"
-            >
-              {t("header.logIn")}
-            </Link>
-            <Link
-              className="inline-flex min-h-10 items-center justify-center rounded-full border border-brand-900 bg-brand-900 px-5 text-sm font-semibold text-white shadow-button transition-colors hover:border-brand-800 hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2"
-              to="/signup"
-            >
-              {t("header.signUp")}
-            </Link>
           </div>
 
           <button
