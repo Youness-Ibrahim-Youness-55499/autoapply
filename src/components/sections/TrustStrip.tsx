@@ -22,10 +22,7 @@ export function TrustStrip() {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:items-center">
           <div>
             <p className="eyebrow">{t("trustStrip.eyebrow")}</p>
-            <h2
-              className="mt-3 max-w-md text-2xl font-semibold tracking-[-0.04em] sm:text-3xl"
-              id="trust-strip-title"
-            >
+            <h2 className="section-heading mt-3" id="trust-strip-title">
               {t("trustStrip.title")}
             </h2>
           </div>
@@ -42,7 +39,7 @@ export function TrustStrip() {
                 >
                   {index + 1}
                 </span>
-                <span className="mt-5 text-sm font-semibold leading-snug">
+                <span className="mt-5 body-small font-semibold leading-snug">
                   {t(contextKey)}
                 </span>
               </li>

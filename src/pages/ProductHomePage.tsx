@@ -17,9 +17,9 @@ function StatCard({ title, value, subtitle, children }: { title: string; value: 
     <div className="rounded-card border border-line bg-surface p-5 sm:p-6 shadow-card">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-ink-muted truncate">{title}</p>
-          <p className="mt-1 text-4xl font-extrabold tracking-tight text-ink">{value}</p>
-          {subtitle && <p className="mt-2 text-sm text-ink-muted">{subtitle}</p>}
+          <p className="dashboard-heading truncate">{title}</p>
+          <p className="dashboard-value mt-1 text-ink">{value}</p>
+          {subtitle && <p className="dashboard-meta mt-2">{subtitle}</p>}
           {pct !== null && (
             <div className="mt-4 h-2.5 w-full rounded-full bg-white/6">
               <div className="h-2.5 rounded-full bg-emerald-500" style={{ width: `${Math.max(0, Math.min(100, pct))}%` }} />
@@ -182,7 +182,7 @@ export function ProductHomePage() {
                       <div className="flex items-center gap-2">
                         <StatusBadge status={status} />
                       </div>
-                      <div className="text-sm font-semibold">{count}</div>
+                      <div className="dashboard-value">{count}</div>
                     </div>
                   ))}
                 </div>
@@ -268,7 +268,7 @@ export function ProductHomePage() {
                   <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
                     <div className="flex items-center justify-between">
                       <div className="text-sm">{a.job_title}</div>
-                      <div className="text-xs text-ink-muted">{new Date(a.follow_up_at!).toLocaleDateString()}</div>
+                      <div className="dashboard-meta">{new Date(a.follow_up_at!).toLocaleDateString()}</div>
                     </div>
                   </Link>
                 ))

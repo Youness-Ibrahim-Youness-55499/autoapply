@@ -13,7 +13,7 @@ export function Hero() {
       <PageContainer>
         <div className="mx-auto max-w-4xl text-center">
           <p className="eyebrow">{t("hero.eyebrow")}</p>
-          <h1 className="display-title mx-auto mt-5 max-w-[14ch]">
+          <h1 className="hero-heading mx-auto mt-5">
             {t("hero.heading")}
           </h1>
           <p className="lead mx-auto mt-6 max-w-2xl">
@@ -51,15 +51,32 @@ export function Hero() {
         <div className="relative mx-auto mt-14 max-w-6xl">
           <div
             aria-hidden="true"
-            className="absolute inset-x-16 -top-8 h-48 rounded-full bg-brand-200/50 blur-3xl"
+            className="absolute -left-10 -top-10 h-44 w-44 rounded-full bg-brand-200/40 blur-3xl"
           />
-          <img
-            alt="Autoapply dashboard showing active roles, interviews, follow-ups, and an organized application list"
-            className="relative w-full rounded-card border border-line bg-surface shadow-card"
-            decoding="async"
-            loading="eager"
-            src={dashboardHero}
+          <div
+            aria-hidden="true"
+            className="absolute -right-14 top-0 h-72 w-72 rounded-full bg-brand-300/15 blur-3xl"
           />
+          <div className="relative overflow-hidden rounded-[2rem] border border-line bg-surface shadow-card">
+            <img
+              alt="Autoapply dashboard showing active roles, interviews, follow-ups, and an organized application list"
+              className="relative w-full"
+              decoding="async"
+              loading="eager"
+              src={dashboardHero}
+            />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-white/70 px-5 py-4 backdrop-blur-sm">
+              <span className="rounded-full bg-brand-100 px-3 py-1 text-[0.75rem] font-semibold text-brand-800">
+                {t("hero.metricOne")}
+              </span>
+              <span className="rounded-full bg-brand-100 px-3 py-1 text-[0.75rem] font-semibold text-brand-800">
+                {t("hero.metricTwo")}
+              </span>
+              <span className="rounded-full bg-brand-100 px-3 py-1 text-[0.75rem] font-semibold text-brand-800">
+                {t("hero.metricThree")}
+              </span>
+            </div>
+          </div>
         </div>
       </PageContainer>
     </Section>

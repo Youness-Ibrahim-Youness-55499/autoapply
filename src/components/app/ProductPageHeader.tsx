@@ -12,9 +12,7 @@ export function ProductPageHeader({
   return (
     <header>
       <p className="eyebrow">{eyebrow}</p>
-      <h2 className="mt-4 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
-        {title}
-      </h2>
+      <h2 className="page-heading mt-4">{title}</h2>
       <p className="lead mt-5 max-w-2xl">{description}</p>
     </header>
   );

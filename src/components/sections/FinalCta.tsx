@@ -15,13 +15,13 @@ export function FinalCta() {
             className="absolute -right-24 -top-32 size-96 rounded-full bg-brand-600/30 blur-3xl"
           />
           <div className="relative max-w-3xl">
-            <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand-300">
+            <p className="eyebrow text-white/65">
               {t("finalCta.banner")}
             </p>
-            <h2 className="mt-5 text-4xl font-semibold leading-[0.98] tracking-[-0.055em] sm:text-6xl">
+            <h2 className="hero-heading mt-5 text-white">
               {t("finalCta.title")}
             </h2>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/65 sm:text-lg">
+            <p className="lead mt-6 max-w-xl text-white/65">
               {t("finalCta.description")}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
