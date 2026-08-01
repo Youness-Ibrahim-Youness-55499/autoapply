@@ -81,7 +81,7 @@ function FindPanel() {
 
   return (
     <div className="grid h-full min-h-0 gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-      <div className="flex min-h-0 flex-col rounded-2xl bg-[#11172a] p-4 text-white">
+      <div className="flex min-h-0 flex-col rounded-2xl bg-surface-strong p-4 text-white">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-white/70">{t("stagePreview.find.newOpportunities")}</p>
@@ -129,7 +129,7 @@ function PrepPanel() {
           </div>
         </LightCard>
       </div>
-      <div className="flex min-h-0 flex-col rounded-2xl bg-[#11172a] p-4 text-white">
+      <div className="flex min-h-0 flex-col rounded-2xl bg-surface-strong p-4 text-white">
         <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand-300">{t("stagePreview.prep.documentPreviewLabel")}</p>
         <h4 className="mt-2 text-xl font-semibold">{t("stagePreview.prep.documentPreviewTitle")}</h4>
         <div className="mt-3 min-h-0 flex-1 rounded-xl bg-white p-4 text-ink">
@@ -156,7 +156,7 @@ function ApplyPanel() {
 
   return (
     <div className="grid h-full min-h-0 gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-      <div className="flex min-h-0 flex-col rounded-2xl bg-[#11172a] p-4 text-white">
+      <div className="flex min-h-0 flex-col rounded-2xl bg-surface-strong p-4 text-white">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand-300">{t("stagePreview.apply.reviewLabel")}</p>
@@ -196,7 +196,7 @@ function TrackPanel() {
 
   return (
     <div className="grid h-full min-h-0 gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-      <div className="flex min-h-0 flex-col rounded-2xl bg-[#11172a] p-4 text-white">
+      <div className="flex min-h-0 flex-col rounded-2xl bg-surface-strong p-4 text-white">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand-300">{t("stagePreview.track.pipelineLabel")}</p>

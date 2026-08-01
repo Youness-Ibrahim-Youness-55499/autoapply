@@ -23,7 +23,7 @@ export function ScrollProcessShowcase() {
 
   return (
     <section
-      className="relative border-y border-line bg-[#fafafa] lg:h-[500vh]"
+      className="relative border-y border-line bg-surface-soft lg:h-[500vh]"
       id="automation"
       ref={sectionRef}
     >

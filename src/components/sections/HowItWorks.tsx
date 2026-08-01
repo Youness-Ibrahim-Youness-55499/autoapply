@@ -34,11 +34,11 @@ export function HowItWorks() {
         <div className="grid gap-8 border-b border-line pb-12 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.75fr)] lg:items-end">
           <div>
             <p className="eyebrow">{t("howItWorks.eyebrow")}</p>
-            <h2 className="section-title mt-4">
+            <h2 className="section-heading mt-4">
               {t("howItWorks.title")}
             </h2>
           </div>
-          <p className="lead max-w-xl lg:justify-self-end">
+          <p className="body-large max-w-xl lg:justify-self-end">
             {t("howItWorks.description")}
           </p>
         </div>
@@ -58,7 +58,7 @@ export function HowItWorks() {
                     {t("howItWorks.stepCount", { current: index + 1, total: workflowSteps.length })}
                   </span>
                 </div>
-                <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
+                <h3 className="subsection-heading mt-5">
                   {t(step.titleKey)}
                 </h3>
                 <p className="body-copy mt-3 max-w-lg">{t(step.descriptionKey)}</p>
