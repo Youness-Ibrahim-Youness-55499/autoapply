@@ -6,8 +6,6 @@ import { navEntrance } from "../../lib/motion";
 import { PageContainer } from "./PageContainer";
 
 const navigationItems = [
-  { href: "#features", labelKey: "nav.features" },
-  { href: "#how-it-works", labelKey: "nav.howItWorks" },
   { href: "#pricing", labelKey: "nav.pricing" },
   { href: "#faq", labelKey: "nav.faq" },
 ];

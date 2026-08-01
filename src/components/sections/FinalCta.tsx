@@ -33,7 +33,7 @@ export function FinalCta() {
               </Link>
               <a
                 className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/25 px-6 text-base font-semibold text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-950"
-                href="#how-it-works"
+                href="#automation"
               >
                 {t("finalCta.secondaryCta")}
               </a>
