@@ -34,7 +34,8 @@ function ExtractionStatus({ document }: { document: CandidateDocument }) {
   if (document.processingStatus === "failed") {
     return (
       <p className="mt-2 text-xs font-semibold text-red-700">
-        Automatic reading failed. You can retry below.
+        Automatic reading failed
+        {document.extractionError ? `: ${document.extractionError}` : "."} You can retry below.
       </p>
     );
   }

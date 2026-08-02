@@ -35,6 +35,11 @@ export type CandidateDocument = {
   createdAt: string;
   displayName: string;
   extraction: CvExtractionSummary | null;
+  // Not persisted -- only populated in local state right after a
+  // triggerExtraction() call fails, so the user (or developer) sees why
+  // instead of just "failed." Lost on reload, same as any other local-
+  // only UI state; the durable signal is processingStatus.
+  extractionError: string;
   id: string;
   isDefault: boolean;
   mimeType: string;

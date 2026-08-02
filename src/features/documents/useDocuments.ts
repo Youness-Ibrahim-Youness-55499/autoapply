@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
 import {
@@ -38,6 +39,29 @@ function normalizeExtractionSummary(value: unknown): CvExtractionSummary | null 
   };
 }
 
+// FunctionsHttpError's own .message is always the generic "Edge Function
+// returned a non-2xx status code" -- the actual { error: "..." } body
+// index.ts sends back lives on error.context, the raw Response object
+// (confirmed directly against the installed @supabase/functions-js
+// source, not assumed from the type name). Falls back to the generic
+// message for FunctionsFetchError (e.g. the function isn't deployed at
+// all) and FunctionsRelayError, which don't carry a structured body.
+async function resolveFunctionsErrorMessage(error: unknown): Promise<string> {
+  if (error instanceof FunctionsHttpError) {
+    try {
+      const body = await error.context.json();
+      if (typeof body?.error === "string") {
+        return body.error;
+      }
+    } catch {
+      // Response body wasn't JSON or was already consumed -- fall
+      // through to the generic message below.
+    }
+  }
+
+  return error instanceof Error ? error.message : "Extraction failed.";
+}
+
 function isDocumentStatus(value: unknown): value is DocumentStatus {
   return (
     value === "uploaded" ||
@@ -72,6 +96,7 @@ function normalizeDocument(value: unknown): CandidateDocument | null {
     createdAt: row.created_at,
     displayName: row.display_name,
     extraction: normalizeExtractionSummary(row.structured_data),
+    extractionError: "",
     id: row.id,
     isDefault: row.is_default,
     mimeType: row.mime_type,
@@ -249,7 +274,9 @@ export function useDocuments() {
   async function triggerExtraction(documentId: string) {
     setDocuments((current) =>
       current.map((item) =>
-        item.id === documentId ? { ...item, processingStatus: "processing" } : item,
+        item.id === documentId
+          ? { ...item, extractionError: "", processingStatus: "processing" }
+          : item,
       ),
     );
 
@@ -258,9 +285,12 @@ export function useDocuments() {
     });
 
     if (error) {
+      const message = await resolveFunctionsErrorMessage(error);
       setDocuments((current) =>
         current.map((item) =>
-          item.id === documentId ? { ...item, processingStatus: "failed" } : item,
+          item.id === documentId
+            ? { ...item, extractionError: message, processingStatus: "failed" }
+            : item,
         ),
       );
       return;
@@ -272,7 +302,9 @@ export function useDocuments() {
 
     setDocuments((current) =>
       current.map((item) =>
-        item.id === documentId ? { ...item, extraction, processingStatus: "ready" } : item,
+        item.id === documentId
+          ? { ...item, extraction, extractionError: "", processingStatus: "ready" }
+          : item,
       ),
     );
   }
