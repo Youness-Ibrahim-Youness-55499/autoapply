@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
 import {
-  applicationStatuses,
   interviewStages,
+  isApplicationStatus,
   reminderTypes,
   type ApplicationInterview,
   type ApplicationReminder,
@@ -12,18 +12,14 @@ import {
   type StatusHistory,
 } from "./types";
 
-function isStatus(value: unknown) {
-  return typeof value === "string" && applicationStatuses.includes(value as never);
-}
-
 function normalizeHistory(value: unknown): StatusHistory | null {
   if (!value || typeof value !== "object") return null;
   const row = value as Record<string, unknown>;
   if (
     typeof row.id !== "string" ||
     typeof row.created_at !== "string" ||
-    !isStatus(row.to_status) ||
-    (row.from_status !== null && !isStatus(row.from_status))
+    !isApplicationStatus(row.to_status) ||
+    (row.from_status !== null && !isApplicationStatus(row.from_status))
   ) return null;
   return row as StatusHistory;
 }
