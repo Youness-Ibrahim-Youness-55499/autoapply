@@ -4,7 +4,7 @@
 // lets them be verified today even though this project has no Deno CLI
 // available and no test runner wired up yet.
 
-import type { Confidence, ExtractedCV, ExtractedField, ExtractionMethod } from "./types";
+import type { Confidence, ExtractedCV, ExtractedField, ExtractionMethod } from "./types.ts";
 
 // EN + DE tokens meaning "this is still ongoing" -- matches the source
 // spec's "Present"/"Heute" requirement. Matched case-insensitively against
