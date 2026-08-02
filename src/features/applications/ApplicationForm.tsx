@@ -6,6 +6,7 @@ import { useTemplates } from "../templates/useTemplates";
 import { useApplicationChecklist } from "../checklists/useApplicationChecklist";
 import { supabase } from "../../lib/supabase";
 import { applicationStatusDetails } from "./applicationStatus";
+import { parseApplicationFormInput } from "./applicationFormInput";
 import {
   applicationStatuses,
   isApplicationStatus,
@@ -21,27 +22,6 @@ type ApplicationFormProps = {
 
 const inputClasses =
   "mt-2 min-h-11 w-full rounded-xl border border-line bg-canvas px-4 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100 disabled:cursor-not-allowed disabled:opacity-60";
-
-function getSafeOptionalUrl(value: string) {
-  if (!value) {
-    return { error: "", value: null };
-  }
-
-  try {
-    const url = new URL(value);
-
-    if (url.protocol !== "http:" && url.protocol !== "https:") {
-      return { error: "Use an HTTP or HTTPS job link.", value: null };
-    }
-
-    return { error: "", value: url.href };
-  } catch {
-    return {
-      error: "Enter a complete job link, such as https://example.com/job.",
-      value: null,
-    };
-  }
-}
 
 export function ApplicationForm({
   application,
@@ -80,88 +60,19 @@ export function ApplicationForm({
     }
 
     const formData = new FormData(event.currentTarget);
-    const companyName = String(formData.get("company_name") ?? "").trim();
-    const jobTitle = String(formData.get("job_title") ?? "").trim();
-    const location = String(formData.get("location") ?? "").trim();
-    const jobUrlResult = getSafeOptionalUrl(
-      String(formData.get("job_url") ?? "").trim(),
-    );
-    const status = String(formData.get("status") ?? "");
-    const appliedAt = String(formData.get("applied_at") ?? "").trim();
-    const notes = String(formData.get("notes") ?? "").trim();
-    const jobDescription = String(formData.get("job_description") ?? "").trim();
-    const salary = String(formData.get("salary") ?? "").trim();
-    const deadline = String(formData.get("deadline") ?? "").trim();
-    const recruiterName = String(formData.get("recruiter_name") ?? "").trim();
-    const recruiterEmail = String(formData.get("recruiter_email") ?? "").trim();
-    const recruiterPhone = String(formData.get("recruiter_phone") ?? "").trim();
-    const followUpAt = String(formData.get("follow_up_at") ?? "").trim();
-    const rejectionReason = String(formData.get("rejection_reason") ?? "").trim();
-    const offerAmount = String(formData.get("offer_amount") ?? "").trim();
-    const offerDate = String(formData.get("offer_date") ?? "").trim();
-    const offerNotes = String(formData.get("offer_notes") ?? "").trim();
-    const cvDocumentId = String(formData.get("cv_document_id") ?? "").trim();
-    const coverLetterDocumentId = String(
-      formData.get("cover_letter_document_id") ?? "",
-    ).trim();
+    const parseResult = parseApplicationFormInput(formData, {
+      availableCoverLetterDocumentIds: coverLetterDocuments.map((document) => document.id),
+      availableCvDocumentIds: cvDocuments.map((document) => document.id),
+    });
 
-    if (!companyName || !jobTitle) {
-      setErrorMessage("Company and job title are required.");
-      return;
-    }
-
-    if (!isApplicationStatus(status)) {
-      setErrorMessage("Choose a valid application status.");
-      return;
-    }
-
-    if (jobUrlResult.error) {
-      setErrorMessage(jobUrlResult.error);
-      return;
-    }
-
-    if (recruiterEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recruiterEmail)) {
-      setErrorMessage("Enter a valid recruiter email address.");
-      return;
-    }
-
-    if (cvDocumentId && !cvDocuments.some((item) => item.id === cvDocumentId)) {
-      setErrorMessage("Choose an available CV.");
-      return;
-    }
-
-    if (
-      coverLetterDocumentId &&
-      !coverLetterDocuments.some((item) => item.id === coverLetterDocumentId)
-    ) {
-      setErrorMessage("Choose an available cover letter.");
+    if (!parseResult.success) {
+      setErrorMessage(parseResult.error);
       return;
     }
 
     setIsSubmitting(true);
 
-    const values = {
-      applied_at: appliedAt || null,
-      company_name: companyName,
-      cover_letter_document_id: coverLetterDocumentId || null,
-      cv_document_id: cvDocumentId || null,
-      deadline: deadline || null,
-      follow_up_at: followUpAt || null,
-      job_description: jobDescription || null,
-      job_title: jobTitle,
-      job_url: jobUrlResult.value,
-      location: location || null,
-      notes: notes || null,
-      offer_amount: status === "offer" ? offerAmount || null : null,
-      offer_date: status === "offer" ? offerDate || null : null,
-      offer_notes: status === "offer" ? offerNotes || null : null,
-      recruiter_email: recruiterEmail || null,
-      recruiter_name: recruiterName || null,
-      recruiter_phone: recruiterPhone || null,
-      rejection_reason: status === "rejected" ? rejectionReason || null : null,
-      salary: salary || null,
-      status,
-    };
+    const values = parseResult.values;
 
     if (application) {
       const { data, error } = await supabase
