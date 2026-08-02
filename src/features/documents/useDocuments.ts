@@ -6,12 +6,37 @@ import {
   isDocumentCategory,
   maxDocumentSize,
   type CandidateDocument,
+  type CvExtractionSummary,
   type DocumentMetadataInput,
   type DocumentStatus,
 } from "./document.types";
 
 const documentColumns =
-  "id, storage_path, original_name, display_name, category, notes, is_default, mime_type, size_bytes, processing_status, created_at";
+  "id, storage_path, original_name, display_name, category, notes, is_default, mime_type, size_bytes, processing_status, structured_data, created_at";
+
+// structured_data defaults to '{}' until extraction has run (see the
+// documents table migration), so an empty object means "not processed
+// yet," not "processed with nothing found."
+function normalizeExtractionSummary(value: unknown): CvExtractionSummary | null {
+  if (!value || typeof value !== "object") return null;
+  const data = value as Record<string, unknown>;
+
+  if (
+    typeof data.needsReview !== "boolean" ||
+    !Array.isArray(data.experience) ||
+    !Array.isArray(data.education) ||
+    !Array.isArray(data.skills)
+  ) {
+    return null;
+  }
+
+  return {
+    educationCount: data.education.length,
+    experienceCount: data.experience.length,
+    needsReview: data.needsReview,
+    skillsCount: data.skills.length,
+  };
+}
 
 function isDocumentStatus(value: unknown): value is DocumentStatus {
   return (
@@ -46,6 +71,7 @@ function normalizeDocument(value: unknown): CandidateDocument | null {
     category: row.category,
     createdAt: row.created_at,
     displayName: row.display_name,
+    extraction: normalizeExtractionSummary(row.structured_data),
     id: row.id,
     isDefault: row.is_default,
     mimeType: row.mime_type,
@@ -207,7 +233,48 @@ export function useDocuments() {
     setDocuments((current) => [document, ...current]);
     setSuccessMessage("Document uploaded securely.");
     setIsUploading(false);
+
+    if (metadata.category === "cv") {
+      void triggerExtraction(document.id);
+    }
+
     return true;
+  }
+
+  // Fires the extract-cv Edge Function for a just-uploaded CV and folds
+  // the result back into local state. Deliberately not awaited by the
+  // caller: extraction shouldn't block the upload flow from completing,
+  // and its own success/failure is reflected via processingStatus
+  // instead of the upload's own error state.
+  async function triggerExtraction(documentId: string) {
+    setDocuments((current) =>
+      current.map((item) =>
+        item.id === documentId ? { ...item, processingStatus: "processing" } : item,
+      ),
+    );
+
+    const { data, error } = await supabase.functions.invoke("extract-cv", {
+      body: { documentId },
+    });
+
+    if (error) {
+      setDocuments((current) =>
+        current.map((item) =>
+          item.id === documentId ? { ...item, processingStatus: "failed" } : item,
+        ),
+      );
+      return;
+    }
+
+    const extraction = normalizeExtractionSummary(
+      data && typeof data === "object" ? (data as Record<string, unknown>).data : null,
+    );
+
+    setDocuments((current) =>
+      current.map((item) =>
+        item.id === documentId ? { ...item, extraction, processingStatus: "ready" } : item,
+      ),
+    );
   }
 
   async function updateDocument(
@@ -342,6 +409,11 @@ export function useDocuments() {
     return true;
   }
 
+  async function retryExtraction(document: CandidateDocument) {
+    if (document.category !== "cv") return;
+    await triggerExtraction(document.id);
+  }
+
   return {
     actionErrorMessage,
     busyDocumentId,
@@ -350,6 +422,7 @@ export function useDocuments() {
     isLoading,
     isUploading,
     loadErrorMessage,
+    retryExtraction,
     openDocument,
     retry: () => setRequestVersion((version) => version + 1),
     successMessage,

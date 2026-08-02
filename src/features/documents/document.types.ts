@@ -14,10 +14,27 @@ export const documentCategories = [
 ] as const;
 export type DocumentCategory = (typeof documentCategories)[number];
 
+// A lightweight summary derived from the extract-cv Edge Function's
+// output, not the full ExtractedCV contract (see
+// supabase/functions/extract-cv/domain/types.ts) -- the frontend only
+// needs enough to show "N entries found, needs review or not," not every
+// field. Kept as its own type rather than importing the Edge Function's
+// domain type directly: that file targets Deno, this one targets the
+// browser/Vite build, and treating structured_data as untyped JSON to be
+// validated at the boundary matches how every other Supabase response in
+// this codebase is handled (see normalizeDocument below).
+export type CvExtractionSummary = {
+  educationCount: number;
+  experienceCount: number;
+  needsReview: boolean;
+  skillsCount: number;
+};
+
 export type CandidateDocument = {
   category: DocumentCategory;
   createdAt: string;
   displayName: string;
+  extraction: CvExtractionSummary | null;
   id: string;
   isDefault: boolean;
   mimeType: string;

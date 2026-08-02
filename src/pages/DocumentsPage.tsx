@@ -21,6 +21,7 @@ export function DocumentsPage() {
     loadErrorMessage,
     openDocument,
     retry,
+    retryExtraction,
     successMessage,
     updateDocument,
     uploadDocument,
@@ -88,6 +89,7 @@ export function DocumentsPage() {
                   onDelete={deleteDocument}
                   onEdit={updateDocument}
                   onOpen={openDocument}
+                  onRetryExtraction={retryExtraction}
                 />
               ) : (
                 <div className="mt-8">

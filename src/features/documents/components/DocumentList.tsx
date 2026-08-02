@@ -17,7 +17,46 @@ type DocumentListProps = {
     values: DocumentMetadataInput,
   ) => Promise<boolean>;
   onOpen: (document: CandidateDocument) => Promise<void>;
+  onRetryExtraction: (document: CandidateDocument) => Promise<void>;
 };
+
+function ExtractionStatus({ document }: { document: CandidateDocument }) {
+  if (document.category !== "cv") return null;
+
+  if (document.processingStatus === "processing") {
+    return (
+      <p className="mt-2 text-xs font-semibold text-ink-muted">
+        Reading your CV…
+      </p>
+    );
+  }
+
+  if (document.processingStatus === "failed") {
+    return (
+      <p className="mt-2 text-xs font-semibold text-red-700">
+        Automatic reading failed. You can retry below.
+      </p>
+    );
+  }
+
+  if (document.processingStatus === "ready" && document.extraction) {
+    const { educationCount, experienceCount, needsReview, skillsCount } = document.extraction;
+    return (
+      <p className="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-ink-muted">
+        <span>
+          {experienceCount} experience · {educationCount} education · {skillsCount} skills found
+        </span>
+        {needsReview && (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-800">
+            Needs review
+          </span>
+        )}
+      </p>
+    );
+  }
+
+  return null;
+}
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   day: "numeric",
@@ -31,6 +70,7 @@ export function DocumentList({
   onDelete,
   onEdit,
   onOpen,
+  onRetryExtraction,
 }: DocumentListProps) {
   const [confirmingId, setConfirmingId] = useState("");
   const [editingId, setEditingId] = useState("");
@@ -92,10 +132,21 @@ export function DocumentList({
                       {document.notes}
                     </p>
                   )}
+                  <ExtractionStatus document={document} />
                 </div>
 
                 {!isConfirming ? (
                   <div className="flex flex-wrap gap-2">
+                    {document.category === "cv" && document.processingStatus === "failed" && (
+                      <Button
+                        disabled={isBusy}
+                        onClick={() => void onRetryExtraction(document)}
+                        size="sm"
+                        variant="secondary"
+                      >
+                        Retry reading
+                      </Button>
+                    )}
                     <Button
                       disabled={isBusy}
                       onClick={() => setEditingId(document.id)}
