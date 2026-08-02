@@ -1,84 +1,158 @@
 import { Link } from "react-router-dom";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "../i18n";
 import { useAuth } from "../auth/AuthProvider";
 import { ProductPageHeader } from "../components/app/ProductPageHeader";
 import { Seo } from "../components/Seo";
 import { PageContainer } from "../components/layout/PageContainer";
-import { calculateDashboardStats } from "../features/applications/applicationStats";
+import { applicationStatusDetails } from "../features/applications/applicationStatus";
+import type { Application } from "../features/applications/types";
 import { useApplications } from "../features/applications/useApplications";
+import { mockJobs, type MockJob } from "../features/jobs/mockJobs";
+import { getProfileCompletion } from "../features/profile/profile.utils";
+import { useProfile } from "../features/profile/useProfile";
 import { EmptyState } from "../components/states/EmptyState";
 import { LoadingState } from "../components/states/LoadingState";
 import { ErrorState } from "../components/states/ErrorState";
 
-function StatCard({ title, value, subtitle, children }: { title: string; value: string | number; subtitle?: string; children?: React.ReactNode }) {
-  const pct = typeof value === "string" && value.endsWith("%") ? Number(value.replace("%", "")) : null;
+// Alternating pastel tints for match cards -- two existing shades of the
+// brand scale, not new colors, matching the design's "two-tone rotation"
+// idea without introducing hues outside the current palette.
+const cardTints = ["bg-brand-50", "bg-brand-100"] as const;
+
+const filterChips = [
+  { active: false, key: "date", labelKey: "dashboard.filterDate" },
+  { active: true, key: "location", labelKey: "dashboard.filterLocation" },
+  { active: false, key: "workplace", labelKey: "dashboard.filterWorkplace" },
+  { active: false, key: "companies", labelKey: "dashboard.filterCompanies" },
+  { active: false, key: "jobType", labelKey: "dashboard.filterJobType" },
+] as const;
+
+function InsightBanner({ percentage }: { percentage: number }) {
+  const { t } = useTranslation();
 
   return (
-    <div className="rounded-card border border-line bg-surface p-5 sm:p-6 shadow-card">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="dashboard-heading truncate">{title}</p>
-          <p className="dashboard-value mt-1 text-ink">{value}</p>
-          {subtitle && <p className="dashboard-meta mt-2">{subtitle}</p>}
-          {pct !== null && (
-            <div className="mt-4 h-2.5 w-full rounded-full bg-white/6">
-              <div className="h-2.5 rounded-full bg-emerald-500" style={{ width: `${Math.max(0, Math.min(100, pct))}%` }} />
-            </div>
-          )}
+    <div className="mb-5 flex items-center gap-3 rounded-card bg-brand-50 px-5 py-4">
+      <span aria-hidden="true" className="text-lg">
+        ✨
+      </span>
+      <div className="text-sm text-brand-900">
+        {percentage >= 100
+          ? t("dashboard.insightMessageComplete")
+          : t("dashboard.insightMessage", { percent: percentage })}
+      </div>
+      <Link
+        className="ml-auto shrink-0 rounded-full bg-brand-700 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-800"
+        to="/app/profile"
+      >
+        {t("dashboard.insightReview")}
+      </Link>
+    </div>
+  );
+}
+
+function MatchCard({
+  isApplied,
+  job,
+  onApply,
+  tint,
+}: {
+  isApplied: boolean;
+  job: MockJob;
+  onApply: () => void;
+  tint: (typeof cardTints)[number];
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <div className={`flex min-h-52 flex-col gap-3 rounded-2xl ${tint} p-[18px]`}>
+      <div className="flex items-start justify-between">
+        <div className="text-xs font-semibold text-ink-muted">
+          {job.location}
+          <br />
+          <span className="font-medium text-ink-muted/80">{job.posted}</span>
         </div>
-        <div className="hidden shrink-0 text-sm text-ink-muted sm:block">{children}</div>
+        <div className="flex size-[52px] flex-col items-center justify-center rounded-full border-[3px] border-ink/15 bg-white text-center leading-none">
+          <div className="text-xs font-extrabold">{job.matchPercent}%</div>
+          <div className="text-[8px] font-bold text-ink-muted">{t("dashboard.matchLabel")}</div>
+        </div>
+      </div>
+
+      <div className="flex-1 text-base font-bold leading-tight">{job.title}</div>
+
+      <div className="flex flex-wrap gap-1.5">
+        {job.tags.map((tag) => (
+          <span
+            className="rounded-lg bg-white/55 px-2.5 py-1 text-[11px] font-semibold text-ink"
+            key={tag}
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <div className="flex-1 truncate text-sm font-semibold">{job.company}</div>
+        <button
+          className="shrink-0 rounded-full bg-white/60 px-3.5 py-2 text-xs font-bold transition-colors hover:bg-white/80"
+          type="button"
+        >
+          {t("dashboard.pass")}
+        </button>
+        <button
+          className={`shrink-0 rounded-full px-3.5 py-2 text-xs font-bold text-white transition-colors ${
+            isApplied ? "bg-ink-muted" : "bg-brand-700 hover:bg-brand-800"
+          }`}
+          disabled={isApplied}
+          onClick={onApply}
+          type="button"
+        >
+          {isApplied ? t("dashboard.applied") : t("dashboard.apply")}
+        </button>
       </div>
     </div>
   );
 }
 
-function ListCard({ title, children }: { title: string; children: React.ReactNode }) {
+function ApplicationsTable({ applications }: { applications: Application[] }) {
+  const { t } = useTranslation();
+
   return (
-    <div className="rounded-card border border-line bg-surface p-5 sm:p-6 shadow-card">
-      <h3 className="text-sm font-semibold">{title}</h3>
-      <div className="mt-3 space-y-3">{children}</div>
+    <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+      <div className="grid grid-cols-[2fr_1fr_1fr_1fr] gap-2 border-b border-line px-5 py-3 text-xs font-bold uppercase tracking-wide text-ink-muted">
+        <div>{t("dashboard.tableRole")}</div>
+        <div>{t("dashboard.tableCompany")}</div>
+        <div>{t("dashboard.tableApplied")}</div>
+        <div>{t("dashboard.tableStatus")}</div>
+      </div>
+      {applications.map((application) => {
+        const statusDetail = applicationStatusDetails[application.status];
+
+        return (
+          <div
+            className="grid grid-cols-[2fr_1fr_1fr_1fr] items-center gap-2 border-b border-line px-5 py-3.5 text-sm last:border-b-0"
+            key={application.id}
+          >
+            <div className="font-semibold">{application.job_title}</div>
+            <div className="text-ink-muted">{application.company_name}</div>
+            <div className="text-ink-muted">
+              {application.applied_at
+                ? new Date(application.applied_at).toLocaleDateString()
+                : "—"}
+            </div>
+            <div>
+              <span
+                className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${statusDetail.styles}`}
+              >
+                {statusDetail.label}
+              </span>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
-
-function StatusBadge({ status }: { status: string }) {
-  const color =
-    status === "applied"
-      ? "bg-amber-600"
-      : status === "interview"
-      ? "bg-sky-600"
-      : status === "offer"
-      ? "bg-emerald-600"
-      : status === "rejected"
-      ? "bg-rose-600"
-      : "bg-ink-muted";
-
-  return (
-    <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${color} text-white uppercase`}>
-      <span className="size-1 rounded-full bg-white/30" />
-      {status}
-    </span>
-  );
-}
-
-const startingPoints = [
-  {
-    description: "The route is ready. Reading and managing your private application records begins in Phase 2.",
-    label: "Applications",
-    to: "/app/applications",
-  },
-  {
-    description: "Review the account information available now and see what candidate details are still missing.",
-    label: "Profile",
-    to: "/app/profile",
-  },
-  {
-    description: "See the current document-storage state before private uploads are introduced.",
-    label: "Documents",
-    to: "/app/documents",
-  },
-];
 
 export function ProductHomePage() {
   const { t } = useTranslation();
@@ -88,22 +162,35 @@ export function ProductHomePage() {
     typeof metadataName === "string" && metadataName.trim()
       ? metadataName.trim()
       : "there";
+
   const { applications, isLoading, errorMessage } = useApplications();
+  const { profile } = useProfile();
+  const profileCompletion = useMemo(() => getProfileCompletion(profile), [profile]);
 
-  const {
-    total,
-    addedThisWeek,
-    byStatus,
-    responseCount,
-    interviewCount,
-    offerCount,
-    upcomingDeadlines,
-    overdueFollowUps,
-    incompleteReminders,
-    recentActivity,
-  } = useMemo(() => calculateDashboardStats(applications), [applications]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set());
 
-  const upcomingInterviews: typeof applications = [];
+  const filteredJobs = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return query
+      ? mockJobs.filter((job) => job.title.toLowerCase().includes(query))
+      : mockJobs;
+  }, [searchQuery]);
+  const visibleJobs = filteredJobs.slice(0, 5);
+
+  function handleApply(jobId: string) {
+    setAppliedJobIds((current) => new Set(current).add(jobId));
+  }
+
+  function handleApplyToAll() {
+    setAppliedJobIds((current) => {
+      const next = new Set(current);
+      for (const job of visibleJobs) {
+        next.add(job.id);
+      }
+      return next;
+    });
+  }
 
   return (
     <>
@@ -121,125 +208,89 @@ export function ProductHomePage() {
         />
 
         <section className="mt-8 max-w-6xl">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard title={t("dashboard.totalApplications")} value={total} />
-            <StatCard title={t("dashboard.addedThisWeek")} value={addedThisWeek} />
-            <StatCard title={t("dashboard.responseRate")} value={total ? `${Math.round((responseCount / total) * 100)}%` : "—"} subtitle={t("dashboard.responseRateSubtitle")} />
-            <StatCard title={t("dashboard.interviewRate")} value={total ? `${Math.round((interviewCount / total) * 100)}%` : "—"} />
+          <InsightBanner percentage={profileCompletion.percentage} />
+
+          <div className="mb-3.5 flex items-center gap-2.5 rounded-card border border-line bg-surface px-4.5 py-3.5">
+            <span aria-hidden="true" className="text-ink-muted">
+              ⌕
+            </span>
+            <input
+              className="flex-1 border-none bg-transparent text-sm outline-none"
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder={t("dashboard.searchPlaceholder")}
+              value={searchQuery}
+            />
           </div>
 
-          <div className="mt-6 grid gap-4 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-              <ListCard title={t("dashboard.applicationsByStatus")}>
-                <div className="grid grid-cols-2 gap-3">
-                  {Array.from(byStatus.entries()).map(([status, count]) => (
-                    <div key={status} className="flex items-center justify-between gap-3 rounded-md border border-line bg-white/3 px-3 py-2">
-                      <div className="flex items-center gap-2">
-                        <StatusBadge status={status} />
-                      </div>
-                      <div className="dashboard-value">{count}</div>
-                    </div>
-                  ))}
-                </div>
-              </ListCard>
+          <div className="mb-5 flex flex-wrap items-center gap-2">
+            {filterChips.map((chip) => (
+              <span
+                className={`rounded-full px-4 py-2 text-xs font-semibold ${
+                  chip.active ? "bg-brand-700 text-white" : "bg-canvas text-ink-muted"
+                }`}
+                key={chip.key}
+              >
+                {t(chip.labelKey)}
+              </span>
+            ))}
+            <button
+              className="ml-auto text-xs font-semibold text-ink-muted transition-colors hover:text-ink"
+              type="button"
+            >
+              {t("dashboard.clearFilters")}
+            </button>
+          </div>
 
-              <div className="mt-4">
-                <ListCard title={t("dashboard.recentStatusActivity")}>
-                  {recentActivity.length === 0 ? (
-                    <p className="text-sm text-ink-muted">{t("dashboard.noRecentActivity")}</p>
-                  ) : (
-                    recentActivity.map((a) => (
-                      <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-sm font-semibold">{a.job_title} — {a.company_name}</div>
-                            <div className="text-xs text-ink-muted">Updated {new Date(a.updated_at).toLocaleString()}</div>
-                          </div>
-                          <div className="text-sm text-ink-muted">{a.status}</div>
-                        </div>
-                      </Link>
-                    ))
-                  )}
-                </ListCard>
-              </div>
-            </div>
-
-            <div>
-              <ListCard title={t("dashboard.upcomingDeadlines")}>
-                {upcomingDeadlines.length === 0 ? (
-                  <p className="text-sm text-ink-muted">{t("dashboard.noUpcomingDeadlines")}</p>
-                ) : (
-                  upcomingDeadlines.map((a) => (
-                    <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm">{a.job_title}</div>
-                        <div className="text-xs text-ink-muted">{new Date(a.deadline!).toLocaleDateString()}</div>
-                      </div>
-                    </Link>
-                  ))
-                )}
-              </ListCard>
-
-              <div className="mt-4">
-                <ListCard title={t("dashboard.overdueFollowUps")}>
-                  {overdueFollowUps.length === 0 ? (
-                    <p className="text-sm text-ink-muted">{t("dashboard.noOverdueFollowUps")}</p>
-                  ) : (
-                    overdueFollowUps.map((a) => (
-                      <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
-                        <div className="flex items-center justify-between">
-                          <div className="text-sm">{a.job_title}</div>
-                          <div className="text-xs text-ink-muted">{new Date(a.follow_up_at!).toLocaleDateString()}</div>
-                        </div>
-                      </Link>
-                    ))
-                  )}
-                </ListCard>
-              </div>
+          <div className="mb-4 flex items-center">
+            <div className="text-lg font-bold tracking-tight">{t("dashboard.topMatches")}</div>
+            <div className="ml-auto flex gap-2.5">
+              <Link
+                className="rounded-full border border-line bg-surface px-4 py-2 text-xs font-semibold transition-colors hover:bg-canvas"
+                to="/app/applications"
+              >
+                {t("dashboard.addYourOwn")}
+              </Link>
+              <button
+                className="rounded-full bg-brand-700 px-4.5 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-800"
+                onClick={handleApplyToAll}
+                type="button"
+              >
+                {t("dashboard.autoApplyToAll")}
+              </button>
             </div>
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <ListCard title={t("dashboard.upcomingInterviews")}>
-              {upcomingInterviews.length === 0 ? (
-                <p className="text-sm text-ink-muted">{t("dashboard.noUpcomingInterviews")}</p>
-              ) : (
-                upcomingInterviews.map((a) => (
-                  <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm">{a.job_title}</div>
-                      <div className="text-xs text-ink-muted">{/* placeholder */}</div>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </ListCard>
-
-            <ListCard title={t("dashboard.incompleteReminders")}>
-              {incompleteReminders.length === 0 ? (
-                <p className="text-sm text-ink-muted">{t("dashboard.noIncompleteReminders")}</p>
-              ) : (
-                incompleteReminders.map((a) => (
-                  <Link key={a.id} to={`/app/applications#${a.id}`} className="block rounded-md px-2 py-2 hover:bg-canvas">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm">{a.job_title}</div>
-                      <div className="dashboard-meta">{new Date(a.follow_up_at!).toLocaleDateString()}</div>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </ListCard>
+          <div className="mb-9 grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4">
+            {visibleJobs.map((job, index) => (
+              <MatchCard
+                isApplied={appliedJobIds.has(job.id)}
+                job={job}
+                key={job.id}
+                onApply={() => handleApply(job.id)}
+                tint={cardTints[index % cardTints.length]}
+              />
+            ))}
           </div>
 
-          <div className="mt-6">
-            {isLoading ? (
-              <LoadingState title={t("dashboard.loadingOverviewTitle")} description={t("dashboard.loadingOverviewDescription")} />
-            ) : errorMessage ? (
-              <ErrorState title={t("dashboard.errorOverviewTitle")} description={errorMessage} />
-            ) : total === 0 ? (
-              <EmptyState title={t("dashboard.noApplicationsYet")} description={t("dashboard.noApplicationsYetDescription")} />
-            ) : null}
+          <div className="mb-3.5 text-lg font-bold tracking-tight">
+            {t("dashboard.allApplications")}
           </div>
+
+          {isLoading ? (
+            <LoadingState
+              description={t("dashboard.loadingOverviewDescription")}
+              title={t("dashboard.loadingOverviewTitle")}
+            />
+          ) : errorMessage ? (
+            <ErrorState description={errorMessage} title={t("dashboard.errorOverviewTitle")} />
+          ) : applications.length === 0 ? (
+            <EmptyState
+              description={t("dashboard.noApplicationsYetDescription")}
+              title={t("dashboard.noApplicationsYet")}
+            />
+          ) : (
+            <ApplicationsTable applications={applications} />
+          )}
         </section>
       </PageContainer>
     </>
