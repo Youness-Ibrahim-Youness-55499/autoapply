@@ -1,20 +1,32 @@
 import { useState } from "react";
 import { useTranslation } from "../../i18n";
 import { TemplateEditor } from "./TemplateEditor";
-import { useTemplates } from "./useTemplates";
+import { useTemplates, type TemplateInput } from "./useTemplates";
 import { Button } from "../../components/ui/Button";
 
 export function TemplatesPage() {
-  const { templates, categories, isLoading, errorMessage, createTemplate, updateTemplate, deleteTemplate, duplicateTemplate, createCategory } = useTemplates();
+  const {
+    templates,
+    categories,
+    isLoading,
+    loadErrorMessage,
+    actionErrorMessage,
+    successMessage,
+    createTemplate,
+    updateTemplate,
+    deleteTemplate,
+    duplicateTemplate,
+    createCategory,
+  } = useTemplates();
   const [editing, setEditing] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [newCategory, setNewCategory] = useState("");
 
-  const handleCreate = async (values: any) => {
+  const handleCreate = async (values: TemplateInput) => {
     await createTemplate(values);
   };
 
-  const handleUpdate = async (id: string, values: any) => {
+  const handleUpdate = async (id: string, values: TemplateInput) => {
     await updateTemplate(id, values);
   };
 
@@ -29,8 +41,10 @@ export function TemplatesPage() {
 
   const handleCreateCategory = async () => {
     if (!newCategory.trim()) return;
-    await createCategory(newCategory.trim());
-    setNewCategory("");
+    const didSucceed = await createCategory(newCategory.trim());
+    if (didSucceed) {
+      setNewCategory("");
+    }
   };
 
   const { t } = useTranslation();
@@ -48,8 +62,8 @@ export function TemplatesPage() {
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {isLoading ? (
             <div>Loading templates…</div>
-          ) : errorMessage ? (
-            <div className="text-red-700">{errorMessage}</div>
+          ) : loadErrorMessage ? (
+            <div className="text-red-700">{loadErrorMessage}</div>
           ) : (
             templates.map((template) => (
               <div key={template.id} className="rounded-card border border-line bg-surface p-4">
@@ -71,6 +85,13 @@ export function TemplatesPage() {
           )}
         </div>
 
+        {actionErrorMessage ? (
+          <p className="mt-4 text-sm text-red-700">{actionErrorMessage}</p>
+        ) : null}
+        {successMessage ? (
+          <p className="mt-4 text-sm text-emerald-700">{successMessage}</p>
+        ) : null}
+
         <div className="mt-6">
           <h3 className="text-sm font-semibold">{t("templates.categories")}</h3>
           <div className="mt-3 flex gap-3">
@@ -86,7 +107,7 @@ export function TemplatesPage() {
             <div className="rounded-xl bg-white p-6 shadow-lg">
               <button className="mb-4 text-sm text-ink-muted" onClick={() => { setIsCreating(false); setEditing(null); }}>Close</button>
               <TemplateEditor
-                template={templates.find((t) => t.id === editing) as any}
+                template={templates.find((t) => t.id === editing)}
                 categories={categories}
                 onCancel={() => { setIsCreating(false); setEditing(null); }}
                 onSave={async (values) => {
