@@ -20,6 +20,50 @@ import { ErrorState } from "../components/states/ErrorState";
 // idea without introducing hues outside the current palette.
 const cardTints = ["bg-brand-50", "bg-brand-100"] as const;
 
+// There's no billing/plans table yet, so this isn't read from a user
+// record -- it mirrors the "Track up to 20 roles" limit already advertised
+// on the Starter plan (see pricing.planStarter.featureOne in i18n.tsx) and
+// is applied to every signed-in user for now. Swapping this constant for a
+// real per-user field later is a one-line change at the call site below.
+const FREE_PLAN_APPLICATION_LIMIT = 20;
+
+function PlanUsageBanner({ limit, used }: { limit: number; used: number }) {
+  const { t } = useTranslation();
+  const remaining = Math.max(limit - used, 0);
+  const percentUsed = Math.min(Math.round((used / limit) * 100), 100);
+  const isExhausted = remaining === 0;
+
+  return (
+    <div className="mb-4 rounded-card border border-line bg-surface px-5 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-bold">{t("dashboard.planFreeLabel")}</p>
+          <p className="mt-0.5 text-xs text-ink-muted">
+            {isExhausted
+              ? t("dashboard.planExhausted", { limit })
+              : t("dashboard.planRemaining", { limit, remaining })}
+          </p>
+        </div>
+        <Link
+          className="shrink-0 rounded-full border border-line bg-canvas px-4 py-2 text-xs font-bold text-ink transition-colors hover:bg-brand-50"
+          to="/#pricing"
+        >
+          {t("dashboard.planUpgrade")}
+        </Link>
+      </div>
+      <div
+        aria-hidden="true"
+        className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-canvas"
+      >
+        <div
+          className={`h-full rounded-full transition-[width] ${isExhausted ? "bg-red-500" : "bg-brand-700"}`}
+          style={{ width: `${percentUsed}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
 const filterChips = [
   { active: false, key: "date", labelKey: "dashboard.filterDate" },
   { active: true, key: "location", labelKey: "dashboard.filterLocation" },
@@ -208,6 +252,7 @@ export function ProductHomePage() {
         />
 
         <section className="mt-8 max-w-6xl">
+          <PlanUsageBanner limit={FREE_PLAN_APPLICATION_LIMIT} used={applications.length} />
           <InsightBanner percentage={profileCompletion.percentage} />
 
           <div className="mb-3.5 flex items-center gap-2.5 rounded-card border border-line bg-surface px-4.5 py-3.5">

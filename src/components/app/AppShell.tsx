@@ -14,7 +14,7 @@ type NavigationItem = {
 
 type WorkspaceLinksProps = {
   onNavigate?: () => void;
-  tone: "dark" | "light";
+  tone: "light" | "row";
   t: (key: string) => string;
 };
 
@@ -79,17 +79,17 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
-const pageTitles = new Map(navigationItems.map((item) => [item.to, item.labelKey]));
-
 function WorkspaceLinks({ onNavigate, tone, t }: WorkspaceLinksProps) {
+  const isRow = tone === "row";
+
   return (
-    <ul className="mt-3 space-y-1">
+    <ul className={isRow ? "flex items-center gap-1" : "mt-3 space-y-1"}>
       {navigationItems.map((item) => (
         <li key={item.to}>
           <NavLink
             className={({ isActive }) => {
-              if (tone === "dark") {
-                return `flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${isActive ? "bg-white text-brand-950 shadow-sm" : "text-white/68 hover:bg-white/8 hover:text-white"}`;
+              if (isRow) {
+                return `flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${isActive ? "bg-brand-50 text-brand-900" : "text-ink-muted hover:bg-canvas hover:text-ink"}`;
               }
 
               return `flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${isActive ? "bg-brand-50 text-brand-900" : "text-ink-muted hover:bg-canvas hover:text-ink"}`;
@@ -117,7 +117,6 @@ export function AppShell() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState("");
-  const pageTitle = t(pageTitles.get(location.pathname) ?? "nav.overview");
   const metadataName = session?.user.user_metadata.name;
   const name =
     typeof metadataName === "string" && metadataName.trim()
@@ -189,20 +188,18 @@ export function AppShell() {
     menuButtonRef.current?.focus();
   }
 
-  const accountCard = (mobile = false) => (
-    <div className={`flex items-center gap-3 rounded-xl p-3 ${mobile ? "border border-line bg-canvas" : "bg-white/6"}`}>
+  const accountCard = (
+    <div className="flex items-center gap-3 rounded-xl border border-line bg-canvas p-3">
       <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-400 text-sm font-bold text-brand-950">
         {initial}
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold">{name}</p>
-        <p className={`truncate text-xs ${mobile ? "text-ink-muted" : "text-white/48"}`}>
-          {session?.user.email}
-        </p>
+        <p className="truncate text-xs text-ink-muted">{session?.user.email}</p>
       </div>
       <button
         aria-label={t("header.logOut")}
-        className={`rounded-lg p-2 transition disabled:opacity-50 ${mobile ? "text-ink-muted hover:bg-surface hover:text-ink" : "text-white/55 hover:bg-white/10 hover:text-white"}`}
+        className="rounded-lg p-2 text-ink-muted transition hover:bg-surface hover:text-ink disabled:opacity-50"
         disabled={isSigningOut}
         onClick={handleSignOut}
         title={t("header.logOut")}
@@ -216,83 +213,82 @@ export function AppShell() {
   );
 
   return (
-    <div className="min-h-screen bg-canvas lg:grid lg:grid-cols-[17rem_minmax(0,1fr)]">
+    <div className="min-h-screen bg-canvas">
       <SkipLink />
-      <aside className="hidden min-h-screen border-r border-line bg-brand-950 text-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
-        <div className="flex min-h-20 items-center border-b border-white/10 px-7">
-          <Link className="text-xl font-bold tracking-[-0.035em]" to="/app">
+
+      <header className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur">
+        <div className="flex min-h-20 items-center gap-4 px-5 sm:px-8 lg:px-10">
+          <Link className="shrink-0 text-xl font-bold tracking-[-0.035em] text-brand-950" to="/app">
             autoapply
           </Link>
-        </div>
 
-        <nav aria-label={t("workspace")} className="flex-1 px-4 py-7">
-          <p className="px-3 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-white/45">
-            {t("workspace")}
-          </p>
-          <WorkspaceLinks tone="dark" t={t} />
-        </nav>
+          <nav aria-label={t("workspace")} className="hidden lg:flex">
+            <WorkspaceLinks t={t} tone="row" />
+          </nav>
 
-        <div className="border-t border-white/10 p-4">
-          {signOutError && (
-            <div className="mb-3">
-              <ErrorState
-                compact
-                description={signOutError}
-                title={t("errors.signOut")}
-              />
+          <div className="ml-auto flex items-center gap-3">
+            <div className="hidden items-center gap-2 rounded-full border border-line bg-surface px-3 py-2 text-sm text-ink-muted sm:flex">
+              <label className="sr-only" htmlFor="locale-select">
+                {t("language.label")}
+              </label>
+              <select
+                className="bg-transparent text-sm text-ink-muted outline-none"
+                id="locale-select"
+                onChange={(event) => setLocale(event.target.value as "en" | "de")}
+                value={locale}
+              >
+                <option value="en">{t("language.english")}</option>
+                <option value="de">{t("language.german")}</option>
+              </select>
             </div>
-          )}
-          {accountCard()}
-        </div>
-      </aside>
 
-      <div className="min-w-0">
-        <header className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur">
-          <div className="flex min-h-20 items-center justify-between gap-4 px-5 sm:px-8 lg:px-10">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-ink-muted">Workspace</p>
-              <h1 className="mt-0.5 truncate text-xl font-semibold tracking-[-0.025em]">{pageTitle}</h1>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="hidden items-center gap-2 text-sm text-ink-muted sm:flex">
-                <span className="size-2 rounded-full bg-emerald-500" />
-                {t("workspace")}
-              </div>
-              <div className="hidden items-center gap-2 rounded-full border border-line bg-surface px-3 py-2 text-sm text-ink-muted sm:flex">
-                <label htmlFor="locale-select" className="sr-only">
-                  {t("language.label")}
-                </label>
-                <select
-                  id="locale-select"
-                  value={locale}
-                  onChange={(event) => setLocale(event.target.value as "en" | "de")}
-                  className="bg-transparent text-sm text-ink-muted outline-none"
-                >
-                  <option value="en">{t("language.english")}</option>
-                  <option value="de">{t("language.german")}</option>
-                </select>
-              </div>
+            <div className="hidden items-center gap-2 lg:flex">
+              <span
+                className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-400 text-sm font-bold text-brand-950"
+                title={name}
+              >
+                {initial}
+              </span>
               <button
-                aria-controls="mobile-workspace-navigation"
-                aria-expanded={isMenuOpen}
-                aria-label={t("nav.openWorkspace")}
-                className="grid size-11 place-items-center rounded-xl border border-line bg-surface text-brand-950 shadow-sm transition hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 lg:hidden"
-                onClick={() => setIsMenuOpen(true)}
-                ref={menuButtonRef}
+                aria-label={t("header.logOut")}
+                className="rounded-lg p-2 text-ink-muted transition hover:bg-canvas hover:text-ink disabled:opacity-50"
+                disabled={isSigningOut}
+                onClick={handleSignOut}
+                title={t("header.logOut")}
                 type="button"
               >
                 <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
-                  <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+                  <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4m5-4 3-3-3-3m3 3H9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
                 </svg>
               </button>
             </div>
-          </div>
-        </header>
 
-        <main id="main-content">
-          <Outlet />
-        </main>
-      </div>
+            <button
+              aria-controls="mobile-workspace-navigation"
+              aria-expanded={isMenuOpen}
+              aria-label={t("nav.openWorkspace")}
+              className="grid size-11 place-items-center rounded-xl border border-line bg-surface text-brand-950 shadow-sm transition hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 lg:hidden"
+              onClick={() => setIsMenuOpen(true)}
+              ref={menuButtonRef}
+              type="button"
+            >
+              <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
+                <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {signOutError && (
+          <div className="border-t border-line px-5 py-3 sm:px-8 lg:px-10">
+            <ErrorState compact description={signOutError} title={t("errors.signOut")} />
+          </div>
+        )}
+      </header>
+
+      <main id="main-content">
+        <Outlet />
+      </main>
 
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
@@ -344,7 +340,7 @@ export function AppShell() {
                   />
                 </div>
               )}
-              {accountCard(true)}
+              {accountCard}
             </div>
           </aside>
         </div>
