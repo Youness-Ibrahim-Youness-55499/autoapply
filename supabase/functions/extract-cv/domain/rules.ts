@@ -43,7 +43,7 @@ const MONTH_NAMES: Record<string, number> = {
 
 const RANGE_SEPARATOR = /\s*(?:-|–|—|\bto\b|\bbis\b)\s*/i;
 
-function foldDiacritics(value: string) {
+export function foldDiacritics(value: string) {
   return value
     .replace(/ä/g, "a")
     .replace(/ö/g, "o")
@@ -183,14 +183,68 @@ function collectFields(cv: ExtractedCV): ExtractedField<unknown>[] {
   ];
 }
 
-// True if any field fell below "high"/"medium" confidence, or a section
-// couldn't be classified at all -- either case means a human should
-// confirm before this data is trusted, per the "never silently accept
-// low-confidence data" constraint.
+// True if any field fell below "high"/"medium" confidence, a section
+// couldn't be classified at all, or literally nothing was extracted --
+// each case means a human should confirm before this data is trusted,
+// per the "never silently accept low-confidence data" constraint. The
+// zero-fields case matters specifically for a scanned/image-only
+// document: the parsers return an empty block list rather than throwing
+// (verified directly against pdfjs-dist and fflate), which would
+// otherwise compute as "reviewed and confident" simply because there was
+// nothing low-confidence to find -- the opposite of what a fully empty
+// result should signal.
 export function computeNeedsReview(cv: ExtractedCV): boolean {
   if (cv.unmatchedSections.length > 0) {
     return true;
   }
 
-  return collectFields(cv).some((field) => field.confidence === "low");
+  const fields = collectFields(cv);
+
+  if (fields.length === 0) {
+    return true;
+  }
+
+  return fields.some((field) => field.confidence === "low");
+}
+
+// Lowercase, diacritic-folded, whitespace-collapsed form used for
+// dictionary lookups (section headers, skills) so "Berufserfahrung",
+// "berufserfahrung", and "  Berufserfahrung  " all match the same key.
+export function normalizeForMatch(value: string): string {
+  return foldDiacritics(value.trim().toLowerCase()).replace(/\s+/g, " ");
+}
+
+// Classic Levenshtein edit distance (insertions/substitutions/deletions),
+// single-row DP for O(min(a,b)) memory. This is the hand-rolled TS
+// equivalent of rapidfuzz (Python-only, unusable here) for catching
+// typos/variants against the controlled skill dictionary -- deterministic
+// and auditable, not a language model.
+function levenshteinDistance(a: string, b: string): number {
+  if (a === b) return 0;
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+
+  let previousRow = Array.from({ length: b.length + 1 }, (_, i) => i);
+
+  for (let i = 0; i < a.length; i++) {
+    const currentRow = [i + 1];
+    for (let j = 0; j < b.length; j++) {
+      const deletionCost = previousRow[j + 1] + 1;
+      const insertionCost = currentRow[j] + 1;
+      const substitutionCost = previousRow[j] + (a[i] === b[j] ? 0 : 1);
+      currentRow.push(Math.min(deletionCost, insertionCost, substitutionCost));
+    }
+    previousRow = currentRow;
+  }
+
+  return previousRow[b.length];
+}
+
+// Normalized similarity in [0, 1]: 1 means identical, 0 means completely
+// different. Fed into confidenceForMethod's fuzzyScore for dictionary-fuzzy
+// matches.
+export function similarityRatio(a: string, b: string): number {
+  const maxLength = Math.max(a.length, b.length);
+  if (maxLength === 0) return 1;
+  return 1 - levenshteinDistance(a, b) / maxLength;
 }

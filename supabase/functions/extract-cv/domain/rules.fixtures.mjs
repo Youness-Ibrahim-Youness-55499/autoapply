@@ -8,8 +8,15 @@
 
 const rulesUrl = new URL("./rules.ts", import.meta.url).href;
 
-const { confidenceForMethod, computeNeedsReview, isOngoingToken, parseDateRange, parseDateToken } =
-  await import(rulesUrl);
+const {
+  confidenceForMethod,
+  computeNeedsReview,
+  isOngoingToken,
+  normalizeForMatch,
+  parseDateRange,
+  parseDateToken,
+  similarityRatio,
+} = await import(rulesUrl);
 
 let pass = 0;
 let fail = 0;
@@ -170,6 +177,19 @@ assertEqual(
   computeNeedsReview(unmatchedSectionCv),
   true,
 );
+
+// --- normalizeForMatch ---
+assertEqual("normalize: case+trim", normalizeForMatch("  Berufserfahrung  "), "berufserfahrung");
+assertEqual("normalize: umlaut folding", normalizeForMatch("Ausbildung"), "ausbildung");
+assertEqual("normalize: collapses internal whitespace", normalizeForMatch("Work   History"), "work history");
+assertEqual("normalize: folds ß", normalizeForMatch("Straße"), "strasse");
+
+// --- similarityRatio ---
+assertEqual("similarity: identical strings", similarityRatio("python", "python"), 1);
+assertEqual("similarity: completely different, same length", similarityRatio("abc", "xyz"), 0);
+assertEqual("similarity: one-char typo", Math.round(similarityRatio("javscript", "javascript") * 100) / 100, 0.9);
+assertEqual("similarity: empty vs empty", similarityRatio("", ""), 1);
+assertEqual("similarity: empty vs non-empty", similarityRatio("", "abc"), 0);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 if (fail > 0) process.exit(1);
