@@ -5,6 +5,7 @@ import { useAuth } from "../auth/AuthProvider";
 import { ProductPageHeader } from "../components/app/ProductPageHeader";
 import { Seo } from "../components/Seo";
 import { PageContainer } from "../components/layout/PageContainer";
+import { calculateDashboardStats } from "../features/applications/applicationStats";
 import { useApplications } from "../features/applications/useApplications";
 import { EmptyState } from "../components/states/EmptyState";
 import { LoadingState } from "../components/states/LoadingState";
@@ -89,66 +90,20 @@ export function ProductHomePage() {
       : "there";
   const { applications, isLoading, errorMessage } = useApplications();
 
-  const total = applications.length;
-
-  const addedThisWeek = useMemo(() => {
-    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    return applications.filter((a) => new Date(a.created_at).getTime() >= weekAgo).length;
-  }, [applications]);
-
-  const byStatus = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const s of ["saved", "applied", "interview", "offer", "rejected", "withdrawn"]) {
-      map.set(s, 0);
-    }
-    for (const app of applications) {
-      map.set(app.status, (map.get(app.status) ?? 0) + 1);
-    }
-    return map;
-  }, [applications]);
-
-  const responseCount = useMemo(() => {
-    return applications.filter((a) => a.status !== "saved" && a.status !== "applied").length;
-  }, [applications]);
-
-  const interviewCount = useMemo(() => applications.filter((a) => a.status === "interview").length, [applications]);
-  const offerCount = useMemo(() => applications.filter((a) => a.status === "offer").length, [applications]);
-
-  const upcomingDeadlines = useMemo(() => {
-    const now = Date.now();
-    const inTwoWeeks = now + 14 * 24 * 60 * 60 * 1000;
-    return applications
-      .filter((a) => a.deadline)
-      .map((a) => ({ ...a, deadlineTs: new Date(a.deadline!).getTime() }))
-      .filter((a) => a.deadlineTs >= now && a.deadlineTs <= inTwoWeeks)
-      .sort((x, y) => x.deadlineTs - y.deadlineTs);
-  }, [applications]);
-
-  const overdueFollowUps = useMemo(() => {
-    const now = Date.now();
-    return applications
-      .filter((a) => a.follow_up_at)
-      .map((a) => ({ ...a, followTs: new Date(a.follow_up_at!).getTime() }))
-      .filter((a) => a.followTs < now)
-      .sort((x, y) => x.followTs - y.followTs);
-  }, [applications]);
+  const {
+    total,
+    addedThisWeek,
+    byStatus,
+    responseCount,
+    interviewCount,
+    offerCount,
+    upcomingDeadlines,
+    overdueFollowUps,
+    incompleteReminders,
+    recentActivity,
+  } = useMemo(() => calculateDashboardStats(applications), [applications]);
 
   const upcomingInterviews: typeof applications = [];
-
-  const incompleteReminders = useMemo(() => {
-    const now = Date.now();
-    return applications
-      .filter((a) => a.follow_up_at)
-      .map((a) => ({ ...a, followTs: new Date(a.follow_up_at!).getTime() }))
-      .filter((a) => a.followTs >= now)
-      .sort((x, y) => x.followTs - y.followTs);
-  }, [applications]);
-
-  const recentActivity = useMemo(() => {
-    return [...applications]
-      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
-      .slice(0, 6);
-  }, [applications]);
 
   return (
     <>
