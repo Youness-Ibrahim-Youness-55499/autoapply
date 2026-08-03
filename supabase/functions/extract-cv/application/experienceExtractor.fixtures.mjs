@@ -137,6 +137,38 @@ assertEqual("noDate: dates unresolved", { start: noDate[0].startDate.value, end:
   end: null,
 });
 
+// --- date BEFORE the role/company line ---
+// Reproduces a real bug: this CV's Experience section listed the date
+// range first, then the "Role, Company, Location." line, then bullets --
+// the opposite order this file originally assumed. Scanning backward
+// from the second date used to grab the first entry's trailing bullet as
+// the second entry's "header."
+const dateFirst = extractExperience([
+  block("2024 - Present", {}, "date1"),
+  block("Development Engineer, Example Corp, Some City, Country.", {}, "role1"),
+  block("• Understood customer requirements.", {}, "b1"),
+  block("• Maintained internal tooling.", {}, "b2"),
+  block("2022 - 2024", {}, "date2"),
+  block("Working Student, Other Corp, Another City, Country.", {}, "role2"),
+  block("• Developed software modules.", {}, "b3"),
+]);
+assertEqual("dateFirst: two entries found", dateFirst.length, 2);
+assertEqual("dateFirst: first entry role/company from the line after the date", {
+  role: dateFirst[0].role.value,
+  company: dateFirst[0].company.value,
+}, { role: "Development Engineer", company: "Example Corp, Some City, Country." });
+assertEqual("dateFirst: first entry's bullets are its own, not swallowed by the header search", dateFirst[0].bullets.map((b) => b.value), [
+  "• Understood customer requirements.",
+  "• Maintained internal tooling.",
+]);
+assertEqual("dateFirst: second entry role/company is NOT the first entry's trailing bullet", {
+  role: dateFirst[1].role.value,
+  company: dateFirst[1].company.value,
+}, { role: "Working Student", company: "Other Corp, Another City, Country." });
+assertEqual("dateFirst: second entry bullets", dateFirst[1].bullets.map((b) => b.value), [
+  "• Developed software modules.",
+]);
+
 // --- empty input ---
 assertEqual("empty input -> no entries", extractExperience([]), []);
 

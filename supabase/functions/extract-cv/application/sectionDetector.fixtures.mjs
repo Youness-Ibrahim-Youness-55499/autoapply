@@ -84,6 +84,63 @@ assertEqual("creative header: unmatched body preserved", creativeResult.unmatche
 ]);
 assertEqual("creative header: known section after it still detected", creativeResult.sections.map((s) => s.key), ["skills"]);
 
+// --- margin-column headers vs. same-size content-column entry lines ---
+// Reproduces a real bug found against a real CV: entry-title lines
+// ("Role, Company, Location.") were styled at the exact same font size
+// as the genuine section headers, fragmenting the experience section
+// into several spurious "unmatched sections" (each wrapped location
+// fragment like "Germany." becoming its own fake header). Real headers
+// sat in a left-margin column (x ~65-115); entry lines and body text sat
+// in a content column (x ~180) -- structurally the same shape as the
+// real data, with placeholder values instead of anyone's real CV.
+const marginColumnBlocks = [
+  block("Jordan Example", { fontSize: 20, x: 60 }),
+  block("Education", { fontSize: 12, x: 110 }),
+  block("Master's Degree, Example University, Example City,", { fontSize: 12, x: 180 }),
+  block("Country.", { fontSize: 12, x: 180 }),
+  block("2020 - 2022", { fontSize: 10, x: 180 }),
+  block("Working Experience", { fontSize: 12, x: 63 }),
+  block("Senior Role, Example Corp, Some City,", { fontSize: 12, x: 180 }),
+  block("Country.", { fontSize: 12, x: 180 }),
+  block("2022 - Present", { fontSize: 10, x: 180 }),
+  block("Did notable things.", { fontSize: 10, x: 180 }),
+  block("Worked on several notable projects.", { fontSize: 10, x: 180 }),
+  block("Collaborated across multiple teams.", { fontSize: 10, x: 180 }),
+  block("Junior Role, Other Corp, Another City,", { fontSize: 12, x: 180 }),
+  block("Country.", { fontSize: 12, x: 180 }),
+  block("2019 - 2021", { fontSize: 10, x: 180 }),
+  block("Delivered several early projects.", { fontSize: 10, x: 180 }),
+  block("Learned a lot on the job.", { fontSize: 10, x: 180 }),
+  block("Supported the wider team.", { fontSize: 10, x: 180 }),
+  block("Contributed to internal tooling.", { fontSize: 10, x: 180 }),
+];
+const marginColumnResult = detectSections(marginColumnBlocks);
+assertEqual(
+  "margin column: 'Working Experience' recognized (not a font-size-only false split)",
+  marginColumnResult.sections.map((s) => s.key),
+  ["education", "experience"],
+);
+assertEqual("margin column: no spurious unmatched sections from wrapped entry lines", marginColumnResult.unmatched, []);
+assertEqual(
+  "margin column: entry-title lines stay inside the experience section body",
+  marginColumnResult.sections[1].blocks.map((b) => b.text),
+  [
+    "Senior Role, Example Corp, Some City,",
+    "Country.",
+    "2022 - Present",
+    "Did notable things.",
+    "Worked on several notable projects.",
+    "Collaborated across multiple teams.",
+    "Junior Role, Other Corp, Another City,",
+    "Country.",
+    "2019 - 2021",
+    "Delivered several early projects.",
+    "Learned a lot on the job.",
+    "Supported the wider team.",
+    "Contributed to internal tooling.",
+  ],
+);
+
 // --- no headers at all (every block same size) ---
 const flatBlocks = [block("Just some text", { fontSize: 10 }), block("More text", { fontSize: 10 })];
 const flatResult = detectSections(flatBlocks);

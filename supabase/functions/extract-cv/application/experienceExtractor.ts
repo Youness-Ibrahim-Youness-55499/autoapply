@@ -7,23 +7,20 @@
 //
 // Strategy: a parseable date range is the strongest, most reliable
 // per-entry boundary signal available (far more reliable than bold/
-// italic, which is frequently unavailable -- see pdfTextMapper.ts). Each
-// date line found anchors one entry; the 1-2 lines immediately before it
-// are that entry's role/company header, and everything between one
-// entry's date line and the next entry's header is treated as bullets.
+// italic, which is frequently unavailable -- see pdfTextMapper.ts). Entry
+// boundaries themselves (including the header-before-vs-after-date
+// direction) are found by entryBoundaries.ts, shared with
+// educationExtractor.ts; this file only splits the found header into
+// role/company and assigns bullets to entries.
 
 import type { LayoutTextBlock } from "../infrastructure/layout.ts";
 import type { ExtractedExperience, ExtractedField, ExtractionMethod } from "../domain/types.ts";
 import { confidenceForMethod, parseDateRange } from "../domain/rules.ts";
+import { boundarySpan, findEntryBoundaries } from "./entryBoundaries.ts";
 
 // Covers "Role - Company", "Role at Company", "Role, Company", and the
 // German "Rolle bei Firma" -- the common single-line patterns.
 const COMBINED_LINE_SEPARATOR = /\s*,\s*|\s+(?:at|bei)\s+|\s+(?:-|–|—|\||·)\s+/i;
-// At most this many lines immediately before a date line are considered
-// that entry's role/company header -- covers the common "role, then
-// company" or "role" / "company" two-line patterns without reaching back
-// into the previous entry's bullet points.
-const MAX_HEADER_LINES = 2;
 
 function toSourceRef(block: LayoutTextBlock) {
   return { blockId: block.blockId, page: block.page, x: block.x, y: block.y };
@@ -31,11 +28,6 @@ function toSourceRef(block: LayoutTextBlock) {
 
 function field<T>(value: T, block: LayoutTextBlock, method: ExtractionMethod): ExtractedField<T> {
   return { confidence: confidenceForMethod(method), extractionMethod: method, source: toSourceRef(block), value };
-}
-
-function hasDateRange(text: string): boolean {
-  const range = parseDateRange(text);
-  return range.start !== null || range.end !== null || range.isCurrent;
 }
 
 function splitHeaderBlocks(
@@ -105,14 +97,9 @@ function buildUnsegmentedEntry(blocks: LayoutTextBlock[]): ExtractedExperience {
 }
 
 export function extractExperience(blocks: LayoutTextBlock[]): ExtractedExperience[] {
-  const dateIndices: number[] = [];
-  blocks.forEach((block, index) => {
-    if (hasDateRange(block.text)) {
-      dateIndices.push(index);
-    }
-  });
+  const boundaries = findEntryBoundaries(blocks);
 
-  if (dateIndices.length === 0) {
+  if (boundaries.length === 0) {
     // No recognizable date line anywhere in the section -- can't
     // confidently segment into entries. Surface everything as one
     // heavily-flagged entry rather than silently dropping it.
@@ -120,20 +107,20 @@ export function extractExperience(blocks: LayoutTextBlock[]): ExtractedExperienc
   }
 
   const entries: ExtractedExperience[] = [];
-  let previousBoundary = 0;
+  let previousSpanEnd = -1;
 
-  dateIndices.forEach((dateIndex, i) => {
-    const headerStart = Math.max(previousBoundary, dateIndex - MAX_HEADER_LINES);
-    const leadingBullets = blocks.slice(previousBoundary, headerStart);
-    const headerBlocks = blocks.slice(headerStart, dateIndex);
-    const dateBlock = blocks[dateIndex];
+  boundaries.forEach((boundary) => {
+    const span = boundarySpan(boundary);
+    const leadingBullets = blocks.slice(previousSpanEnd + 1, span.start);
 
-    if (i > 0 && leadingBullets.length > 0) {
+    if (entries.length > 0 && leadingBullets.length > 0) {
       entries[entries.length - 1].bullets.push(
         ...leadingBullets.map((block) => field(block.text, block, "layout-heuristic")),
       );
     }
 
+    const headerBlocks = boundary.headerIndices.map((index) => blocks[index]);
+    const dateBlock = blocks[boundary.dateIndex];
     const { company, role } = splitHeaderBlocks(headerBlocks, dateBlock);
     const dateRange = parseDateRange(dateBlock.text);
 
@@ -146,10 +133,10 @@ export function extractExperience(blocks: LayoutTextBlock[]): ExtractedExperienc
       startDate: field(dateRange.start, dateBlock, "regex-exact"),
     });
 
-    previousBoundary = dateIndex + 1;
+    previousSpanEnd = span.end;
   });
 
-  const trailingBullets = blocks.slice(previousBoundary);
+  const trailingBullets = blocks.slice(previousSpanEnd + 1);
   if (trailingBullets.length > 0) {
     entries[entries.length - 1].bullets.push(
       ...trailingBullets.map((block) => field(block.text, block, "layout-heuristic")),

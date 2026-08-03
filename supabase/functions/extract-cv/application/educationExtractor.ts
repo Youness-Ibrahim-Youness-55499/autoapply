@@ -8,13 +8,13 @@
 import type { LayoutTextBlock } from "../infrastructure/layout.ts";
 import type { ExtractedEducation, ExtractedField, ExtractionMethod } from "../domain/types.ts";
 import { confidenceForMethod, parseDateRange } from "../domain/rules.ts";
+import { findEntryBoundaries } from "./entryBoundaries.ts";
 
 // Splits a combined "Degree, Field" or "Degree in Field" line. A plain
 // comma or the word "in" covers the large majority of real phrasing
 // ("Bachelor of Science, Computer Science" / "Bachelor of Science in
 // Computer Science") without trying to parse every degree-naming style.
 const DEGREE_FIELD_SEPARATOR = /\s*,\s*|\s+in\s+/i;
-const MAX_HEADER_LINES = 2;
 
 function toSourceRef(block: LayoutTextBlock) {
   return { blockId: block.blockId, page: block.page, x: block.x, y: block.y };
@@ -22,11 +22,6 @@ function toSourceRef(block: LayoutTextBlock) {
 
 function field<T>(value: T, block: LayoutTextBlock, method: ExtractionMethod): ExtractedField<T> {
   return { confidence: confidenceForMethod(method), extractionMethod: method, source: toSourceRef(block), value };
-}
-
-function hasDateRange(text: string): boolean {
-  const range = parseDateRange(text);
-  return range.start !== null || range.end !== null || range.isCurrent;
 }
 
 function splitDegreeAndField(
@@ -62,24 +57,17 @@ function buildUnsegmentedEntry(blocks: LayoutTextBlock[]): ExtractedEducation {
 }
 
 export function extractEducation(blocks: LayoutTextBlock[]): ExtractedEducation[] {
-  const dateIndices: number[] = [];
-  blocks.forEach((block, index) => {
-    if (hasDateRange(block.text)) {
-      dateIndices.push(index);
-    }
-  });
+  const boundaries = findEntryBoundaries(blocks);
 
-  if (dateIndices.length === 0) {
+  if (boundaries.length === 0) {
     return blocks.length === 0 ? [] : [buildUnsegmentedEntry(blocks)];
   }
 
   const entries: ExtractedEducation[] = [];
-  let previousBoundary = 0;
 
-  dateIndices.forEach((dateIndex) => {
-    const headerStart = Math.max(previousBoundary, dateIndex - MAX_HEADER_LINES);
-    const headerBlocks = blocks.slice(headerStart, dateIndex);
-    const dateBlock = blocks[dateIndex];
+  boundaries.forEach((boundary) => {
+    const headerBlocks = boundary.headerIndices.map((index) => blocks[index]);
+    const dateBlock = blocks[boundary.dateIndex];
     const dateRange = parseDateRange(dateBlock.text);
 
     let institution: ExtractedField<string>;
@@ -109,8 +97,6 @@ export function extractEducation(blocks: LayoutTextBlock[]): ExtractedEducation[
       isCurrent: dateRange.isCurrent,
       startDate: field(dateRange.start, dateBlock, "regex-exact"),
     });
-
-    previousBoundary = dateIndex + 1;
   });
 
   return entries;

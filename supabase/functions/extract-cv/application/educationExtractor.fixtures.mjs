@@ -86,6 +86,24 @@ assertEqual("noDate: dates unresolved", { start: noDate[0].startDate.value, end:
   end: null,
 });
 
+// --- date BEFORE the institution line ---
+// A real CV mixed conventions across sections: Education used
+// "institution, then date" while Experience used "date, then role" --
+// this covers Education entries using the "date first" order too.
+const dateFirst = extractEducation([
+  block("2020 - 2022", {}, "date1"),
+  block("Design Academy", {}, "inst1"),
+  block("2016 - 2019", {}, "date2"),
+  block("City College", {}, "inst2"),
+]);
+assertEqual("dateFirst: two entries found", dateFirst.length, 2);
+assertEqual("dateFirst: first institution from the line after its date", dateFirst[0].institution.value, "Design Academy");
+assertEqual("dateFirst: first entry dates", { start: dateFirst[0].startDate.value, end: dateFirst[0].endDate.value }, {
+  start: "2020",
+  end: "2022",
+});
+assertEqual("dateFirst: second institution is not the first entry's own line", dateFirst[1].institution.value, "City College");
+
 // --- empty input ---
 assertEqual("empty input -> no entries", extractEducation([]), []);
 

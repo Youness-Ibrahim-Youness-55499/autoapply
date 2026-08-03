@@ -12,6 +12,18 @@
 // having section boundaries at all; its content falls into whichever
 // section (or the preamble) precedes it -- a known limitation, not a
 // crash, consistent with "don't attempt every layout, flag the rest."
+//
+// Font size alone isn't always enough either -- confirmed against a real
+// CV where every job entry's "Role, Company, Location." line was styled
+// at the EXACT same font size as the genuine "Education"/"Working
+// Experience" headers, fragmenting one experience section into eight
+// spurious ones (each wrapped city/country fragment like "Germany."
+// becoming its own "header"). What actually distinguished them: real
+// headers sat in a left-margin column at a meaningfully smaller x than
+// the main content column those entry lines (and all body text) used.
+// detectSections cross-checks font-size candidates against the
+// x-position of confirmed (dictionary-matched) headers for exactly this
+// reason -- see HEADER_X_TOLERANCE below.
 
 import type { LayoutTextBlock } from "../infrastructure/layout.ts";
 import { matchSectionHeader, type SectionKey } from "../infrastructure/sectionDictionary.ts";
@@ -40,6 +52,13 @@ export type SectionDetectionResult = {
 // pull-quote-style sentence being mistaken for one.
 const MAX_HEADER_LENGTH = 60;
 const FONT_SIZE_EPSILON = 0.01;
+// How far a header-sized block's x-position may sit from a confirmed
+// header's x and still count as "the same margin column." Chosen from a
+// real CV where genuine headers spanned a ~50-unit x range among
+// themselves while sitting 60+ units away from the content column --
+// wide enough to cover natural header-to-header variance, narrow enough
+// to still exclude that content column.
+const HEADER_X_TOLERANCE = 30;
 
 // The most common font size across all blocks, used as the body-text
 // baseline. Mode rather than mean/median: CVs mix many small font sizes
@@ -111,12 +130,39 @@ export function detectSections(blocks: LayoutTextBlock[]): SectionDetectionResul
   const bodyFontSize = computeBodyFontSize(blocks);
   const headerFontSize = computeHeaderFontSize(blocks, bodyFontSize);
 
-  function isHeaderCandidate(block: LayoutTextBlock): boolean {
+  function isHeaderSized(block: LayoutTextBlock): boolean {
     return (
       headerFontSize !== null &&
       Math.abs(block.fontSize - headerFontSize) < FONT_SIZE_EPSILON &&
       looksLikeHeaderShape(block.text)
     );
+  }
+
+  // Confirmed headers are ones whose text actually matches the
+  // dictionary -- a much stronger signal than font size alone. Their
+  // x-positions define the trusted "margin column" range; a
+  // header-sized-but-unmatched block (a real section using unusual
+  // wording, or -- the bug this exists to prevent -- a same-size entry
+  // line) only counts as a header candidate if it falls inside that
+  // range too. With no confirmed headers to anchor on at all, there's no
+  // position signal to cross-check against, so every header-sized block
+  // is accepted as before.
+  const confirmedHeaderXs = blocks
+    .filter((block) => isHeaderSized(block) && matchSectionHeader(block.text) !== null)
+    .map((block) => block.x);
+
+  const trustedXRange =
+    confirmedHeaderXs.length > 0
+      ? {
+          max: Math.max(...confirmedHeaderXs) + HEADER_X_TOLERANCE,
+          min: Math.min(...confirmedHeaderXs) - HEADER_X_TOLERANCE,
+        }
+      : null;
+
+  function isHeaderCandidate(block: LayoutTextBlock): boolean {
+    if (!isHeaderSized(block)) return false;
+    if (!trustedXRange) return true;
+    return block.x >= trustedXRange.min && block.x <= trustedXRange.max;
   }
 
   const preamble: LayoutTextBlock[] = [];

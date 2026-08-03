@@ -25,6 +25,7 @@ const SECTION_HEADERS: Record<string, SectionKey> = {
   // experience
   "experience": "experience",
   "work experience": "experience",
+  "working experience": "experience",
   "professional experience": "experience",
   "employment history": "experience",
   "work history": "experience",
