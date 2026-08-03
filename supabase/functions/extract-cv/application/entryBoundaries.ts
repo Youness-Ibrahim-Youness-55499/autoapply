@@ -18,6 +18,16 @@
 // sometimes grab the PREVIOUS entry's trailing bullet as if it were
 // THIS entry's role/company line, which is exactly the failure mode
 // this was built to fix.
+//
+// That check alone isn't enough, though: when a bullet's text wraps
+// onto a second visual line, that continuation line carries no marker
+// of its own (only the bullet's first line does) -- confirmed against a
+// real CV where a wrapped bullet tail ("Git." continuing "...DOORS,")
+// was mistaken for the NEXT entry's header. isContinuationOfBullet walks
+// backward from a candidate line to check whether it traces back to an
+// actual bullet marker before hitting a date or already-claimed line --
+// if so, the candidate is part of that bullet's wrapped text, not a
+// header, regardless of lacking a marker itself.
 
 import type { LayoutTextBlock } from "../infrastructure/layout.ts";
 import { parseDateRange } from "../domain/rules.ts";
@@ -43,6 +53,22 @@ export function isBulletLine(text: string): boolean {
   return BULLET_MARKER.test(text.trim());
 }
 
+// True if `index` is itself unmarked but traces back to a real bullet
+// marker without crossing a date line or an already-claimed index --
+// i.e. it's the wrapped tail of a bullet, not standalone content.
+function isContinuationOfBullet(blocks: LayoutTextBlock[], index: number, claimed: Set<number>): boolean {
+  let cursor = index - 1;
+
+  while (cursor >= 0 && !claimed.has(cursor) && !hasDateRange(blocks[cursor].text)) {
+    if (isBulletLine(blocks[cursor].text)) {
+      return true;
+    }
+    cursor--;
+  }
+
+  return false;
+}
+
 export function findEntryBoundaries(blocks: LayoutTextBlock[]): EntryBoundary[] {
   const dateIndices: number[] = [];
   blocks.forEach((block, index) => {
@@ -63,7 +89,8 @@ export function findEntryBoundaries(blocks: LayoutTextBlock[]): EntryBoundary[] 
       cursor >= 0 &&
       !claimed.has(cursor) &&
       !hasDateRange(blocks[cursor].text) &&
-      !isBulletLine(blocks[cursor].text)
+      !isBulletLine(blocks[cursor].text) &&
+      !isContinuationOfBullet(blocks, cursor, claimed)
     ) {
       headerIndices.unshift(cursor);
       cursor--;
@@ -76,7 +103,8 @@ export function findEntryBoundaries(blocks: LayoutTextBlock[]): EntryBoundary[] 
         cursor < blocks.length &&
         !claimed.has(cursor) &&
         !hasDateRange(blocks[cursor].text) &&
-        !isBulletLine(blocks[cursor].text)
+        !isBulletLine(blocks[cursor].text) &&
+        !isContinuationOfBullet(blocks, cursor, claimed)
       ) {
         headerIndices.push(cursor);
         cursor++;

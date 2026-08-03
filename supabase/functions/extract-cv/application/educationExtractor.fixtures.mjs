@@ -104,6 +104,53 @@ assertEqual("dateFirst: first entry dates", { start: dateFirst[0].startDate.valu
 });
 assertEqual("dateFirst: second institution is not the first entry's own line", dateFirst[1].institution.value, "City College");
 
+// --- a two-line institution that's really one wrapped sentence ---
+// Reproduces a real bug: a long institution/degree line wrapped
+// mid-word onto a second visual line ("...Technische Hochschule In-" /
+// "golstadt, Germany."). The old code treated the second line as a
+// separate "Degree, Field" line and split it on its own comma,
+// producing degree="golstadt" -- nonsense. The wrap should be detected
+// and the reconstructed sentence kept as institution instead of guessing
+// a degree/field split that isn't really there.
+const wrappedInstitution = extractEducation([
+  block("Master in Automotive Software Engineering, Technische Hochschule In-", {}, "inst"),
+  block("golstadt, Germany.", {}, "instcont"),
+  block("2022 - 2024", {}, "date"),
+]);
+assertEqual(
+  "wrappedInstitution: institution reconstructed across the wrap",
+  wrappedInstitution[0].institution.value,
+  "Master in Automotive Software Engineering, Technische Hochschule Ingolstadt, Germany.",
+);
+assertEqual("wrappedInstitution: degree left null, not guessed from the wrapped tail", wrappedInstitution[0].degree, null);
+assertEqual(
+  "wrappedInstitution: fieldOfStudy left null, not guessed from the wrapped tail",
+  wrappedInstitution[0].fieldOfStudy,
+  null,
+);
+
+// --- a two-line institution wrapped after a conjunction, no punctuation ---
+// Reproduces a real bug that survived the comma/hyphen wrap detection:
+// "Misr University For Science and" / "Technology, Egypt." wraps right
+// after "and," with no comma or hyphen at the line break at all. Without
+// this, the old code split "Technology, Egypt." as its own "Degree,
+// Field" line, producing degree="Technology" -- still nonsense.
+const wrappedInstitutionConjunction = extractEducation([
+  block("Bachelor in Mechatronics Engineering, Misr University For Science and", {}, "inst"),
+  block("Technology, Egypt.", {}, "instcont"),
+  block("2014 - 2019", {}, "date"),
+]);
+assertEqual(
+  "wrappedInstitutionConjunction: institution reconstructed across the wrap",
+  wrappedInstitutionConjunction[0].institution.value,
+  "Bachelor in Mechatronics Engineering, Misr University For Science and Technology, Egypt.",
+);
+assertEqual(
+  "wrappedInstitutionConjunction: degree left null, not guessed from the wrapped tail",
+  wrappedInstitutionConjunction[0].degree,
+  null,
+);
+
 // --- empty input ---
 assertEqual("empty input -> no entries", extractEducation([]), []);
 

@@ -169,6 +169,35 @@ assertEqual("dateFirst: second entry bullets", dateFirst[1].bullets.map((b) => b
   "• Developed software modules.",
 ]);
 
+// --- a two-line header that's really one wrapped sentence ---
+// Reproduces a real bug: a long "Role, Company, City, Country." line
+// wrapped mid-list onto a second visual line ("...Continental AG,
+// Ingolstadt," / "Germany."). Treating these as two independently
+// meaningful lines (the old font-size/bold heuristic) produced
+// role="Germany." -- nonsense. The wrap should be detected and the
+// joined sentence split properly instead.
+const wrappedHeaderComma = extractExperience([
+  block("Master Thesis Embedded Functional Safety, Continental AG, Ingolstadt,", { fontSize: 12 }, "role1"),
+  block("Germany.", { fontSize: 12 }, "role1cont"),
+  block("2023 - 2024", {}, "date"),
+]);
+assertEqual("wrappedHeaderComma: role", wrappedHeaderComma[0].role.value, "Master Thesis Embedded Functional Safety");
+assertEqual("wrappedHeaderComma: company", wrappedHeaderComma[0].company.value, "Continental AG, Ingolstadt, Germany.");
+assertEqual("wrappedHeaderComma: high confidence, not a coin-flip guess", wrappedHeaderComma[0].role.confidence, "high");
+
+// --- a two-line header wrapped mid-word (hyphen) ---
+const wrappedHeaderHyphen = extractExperience([
+  block("Working Student Embedded Systems, EDAG Engineering GmbH, Ingol-", { fontSize: 12 }, "role2"),
+  block("stadt, Germany.", { fontSize: 12 }, "role2cont"),
+  block("2022 - 2023", {}, "date"),
+]);
+assertEqual("wrappedHeaderHyphen: role", wrappedHeaderHyphen[0].role.value, "Working Student Embedded Systems");
+assertEqual(
+  "wrappedHeaderHyphen: company has the hyphen-joined city name reconstructed",
+  wrappedHeaderHyphen[0].company.value,
+  "EDAG Engineering GmbH, Ingolstadt, Germany.",
+);
+
 // --- empty input ---
 assertEqual("empty input -> no entries", extractExperience([]), []);
 

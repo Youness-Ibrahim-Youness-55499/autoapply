@@ -9,6 +9,7 @@ import type { LayoutTextBlock } from "../infrastructure/layout.ts";
 import type { ExtractedEducation, ExtractedField, ExtractionMethod } from "../domain/types.ts";
 import { confidenceForMethod, parseDateRange } from "../domain/rules.ts";
 import { findEntryBoundaries } from "./entryBoundaries.ts";
+import { joinWrappedText, looksLikeWrapContinuation } from "./headerText.ts";
 
 // Splits a combined "Degree, Field" or "Degree in Field" line. A plain
 // comma or the word "in" covers the large majority of real phrasing
@@ -83,10 +84,26 @@ export function extractEducation(blocks: LayoutTextBlock[]): ExtractedEducation[
       institution = field(headerBlocks[0].text, headerBlocks[0], "layout-heuristic");
     } else {
       const [institutionBlock, degreeLineBlock] = headerBlocks;
-      institution = field(institutionBlock.text, institutionBlock, "layout-heuristic");
-      const split = splitDegreeAndField(degreeLineBlock);
-      degree = split.degree;
-      fieldOfStudy = split.fieldOfStudy;
+
+      if (looksLikeWrapContinuation(institutionBlock.text)) {
+        // These two lines are really ONE sentence that wrapped (e.g. a
+        // long "Degree, Institution, City," / "Country." line) --
+        // confirmed against a real CV where splitting the wrapped tail
+        // on its own comma produced nonsense (a city-name fragment
+        // becoming the "degree"). Keep the joined text as institution,
+        // same honest fallback as the single-header-line case, rather
+        // than guess a degree/field split that isn't really there.
+        institution = field(
+          joinWrappedText(institutionBlock.text, degreeLineBlock.text),
+          institutionBlock,
+          "layout-heuristic",
+        );
+      } else {
+        institution = field(institutionBlock.text, institutionBlock, "layout-heuristic");
+        const split = splitDegreeAndField(degreeLineBlock);
+        degree = split.degree;
+        fieldOfStudy = split.fieldOfStudy;
+      }
     }
 
     entries.push({

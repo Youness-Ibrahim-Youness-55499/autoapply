@@ -17,6 +17,7 @@ import type { LayoutTextBlock } from "../infrastructure/layout.ts";
 import type { ExtractedExperience, ExtractedField, ExtractionMethod } from "../domain/types.ts";
 import { confidenceForMethod, parseDateRange } from "../domain/rules.ts";
 import { boundarySpan, findEntryBoundaries } from "./entryBoundaries.ts";
+import { joinWrappedText, looksLikeWrapContinuation } from "./headerText.ts";
 
 // Covers "Role - Company", "Role at Company", "Role, Company", and the
 // German "Rolle bei Firma" -- the common single-line patterns.
@@ -28,6 +29,34 @@ function toSourceRef(block: LayoutTextBlock) {
 
 function field<T>(value: T, block: LayoutTextBlock, method: ExtractionMethod): ExtractedField<T> {
   return { confidence: confidenceForMethod(method), extractionMethod: method, source: toSourceRef(block), value };
+}
+
+// Splits a single logical "Role, Company" (or "Role - Company", "Role at
+// Company") string. Shared by the genuine one-line case and the
+// wrapped-two-lines-that-are-really-one-sentence case below.
+function splitCombinedText(
+  text: string,
+  sourceBlock: LayoutTextBlock,
+): { company: ExtractedField<string>; role: ExtractedField<string> } {
+  const match = COMBINED_LINE_SEPARATOR.exec(text);
+
+  if (match) {
+    const role = text.slice(0, match.index).trim();
+    const company = text.slice(match.index + match[0].length).trim();
+    return {
+      company: field(company, sourceBlock, "regex-exact"),
+      role: field(role, sourceBlock, "regex-exact"),
+    };
+  }
+
+  // No separator found -- can't confidently tell role from company.
+  // Keep the text as the role (the more consequential of the two for
+  // matching purposes) and flag company as unresolved rather than guess
+  // which part is which.
+  return {
+    company: field("", sourceBlock, "unmatched"),
+    role: field(text, sourceBlock, "layout-heuristic"),
+  };
 }
 
 function splitHeaderBlocks(
@@ -44,34 +73,26 @@ function splitHeaderBlocks(
   }
 
   if (headerBlocks.length === 1) {
-    const [only] = headerBlocks;
-    const match = COMBINED_LINE_SEPARATOR.exec(only.text);
-
-    if (match) {
-      const role = only.text.slice(0, match.index).trim();
-      const company = only.text.slice(match.index + match[0].length).trim();
-      return {
-        company: field(company, only, "regex-exact"),
-        role: field(role, only, "regex-exact"),
-      };
-    }
-
-    // No separator found -- can't confidently tell role from company on
-    // a single combined line. Keep the line as the role (the more
-    // consequential of the two for matching purposes) and flag company
-    // as unresolved rather than guess which part is which.
-    return {
-      company: field("", only, "unmatched"),
-      role: field(only.text, only, "layout-heuristic"),
-    };
+    return splitCombinedText(headerBlocks[0].text, headerBlocks[0]);
   }
 
-  // Two header lines: the larger font, or bold when sizes tie, is
-  // treated as the role -- the common convention of the job title being
-  // visually more prominent than the company name. When neither signal
-  // distinguishes them, the assignment is a pure position guess and is
-  // tagged accordingly.
+  // Two header lines. If the first looks like it's mid-sentence (a
+  // trailing comma or word-wrap hyphen), this is really ONE line that
+  // wrapped, not two independently meaningful ones -- confirmed against
+  // a real CV where treating a wrapped "...Continental AG, Ingolstadt,"
+  // + "Germany." as separate role/company fields produced nonsense.
+  // Join and split as a single combined line instead.
   const [first, second] = headerBlocks;
+  if (looksLikeWrapContinuation(first.text)) {
+    return splitCombinedText(joinWrappedText(first.text, second.text), first);
+  }
+
+  // Otherwise, these are two genuinely separate lines (e.g. "Senior
+  // Developer" / "Acme Corp"): the larger font, or bold when sizes tie,
+  // is treated as the role -- the common convention of the job title
+  // being visually more prominent than the company name. When neither
+  // signal distinguishes them, the assignment is a pure position guess
+  // and is tagged accordingly.
   const sizesDiffer = first.fontSize !== second.fontSize;
   const boldnessDiffers = first.isBold !== second.isBold;
   const firstIsRole = sizesDiffer ? first.fontSize > second.fontSize : first.isBold;
