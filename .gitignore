@@ -5,5 +5,6 @@ dist/
 *.log
 *.tsbuildinfo
 supabase/.temp/
+deno.lock
 
 

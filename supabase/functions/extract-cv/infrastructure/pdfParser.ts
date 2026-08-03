@@ -1,24 +1,26 @@
-// PDF layout extraction using pdfjs-dist. This project has no Python
-// anywhere, so PyMuPDF (the originally scoped library) isn't usable --
-// pdfjs-dist is the closest equivalent that runs under Deno (via the
-// npm: specifier), and its getTextContent() API gives per-text-run
-// position and font-size metadata without collapsing to plain text.
-//
-// Version pinned to what the pure mapping logic in pdfTextMapper.ts was
-// verified against (see pdfTextMapper.fixtures.mjs, run under Node
-// against a handcrafted sample PDF). No Deno CLI is available in this
-// environment, so this file's own npm:-specifier import is unverified --
-// only the pure mapper it delegates to has been tested.
-import * as pdfjsLib from "npm:pdfjs-dist@6.2.108/legacy/build/pdf.mjs";
+// PDF layout extraction. This project has no Python anywhere, so
+// PyMuPDF (the originally scoped library) isn't usable. Raw pdfjs-dist
+// (the initial choice here) doesn't work either -- confirmed by direct
+// deployment testing, not assumption: importing it at all, with zero
+// function calls, crashes Supabase's Edge Runtime with a WORKER_ERROR at
+// module load. unpdf (https://github.com/unjs/unpdf) wraps the same
+// pdfjs engine in a build specifically meant for serverless/edge
+// runtimes, avoiding whatever pdfjs-dist's own module does at import
+// time that the sandbox rejects. getDocumentProxy() returns the same
+// underlying pdfjs PDFDocumentProxy pdfjs-dist itself would have, so
+// .getPage()/.getTextContent() behave identically -- confirmed directly:
+// ran this exact call chain against a real deployed function with a real
+// generated PDF and diffed the output against the ground-truth capture
+// pdfTextMapper.fixtures.mjs was built from. Byte-for-byte the same
+// shape (str/transform/fontName/height, the same zero-height placeholder
+// items, the same "sans-serif" style fallback), so the pure mapper below
+// needed zero changes.
+import { getDocumentProxy } from "npm:unpdf@1.8.0";
 import type { LayoutTextBlock } from "./layout.ts";
 import { mapPdfTextItems, type RawPdfFontStyle, type RawPdfTextItem } from "./pdfTextMapper.ts";
 
 export async function extractPdfLayout(bytes: Uint8Array): Promise<LayoutTextBlock[]> {
-  const document = await pdfjsLib.getDocument({
-    data: bytes,
-    isEvalSupported: false,
-    useWorkerFetch: false,
-  }).promise;
+  const document = await getDocumentProxy(bytes);
 
   const blocks: LayoutTextBlock[] = [];
 
