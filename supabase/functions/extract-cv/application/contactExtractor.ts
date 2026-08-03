@@ -4,7 +4,7 @@
 
 import type { LayoutTextBlock } from "../infrastructure/layout.ts";
 import type { ExtractedField } from "../domain/types.ts";
-import { confidenceForMethod } from "../domain/rules.ts";
+import { field } from "./extractedField.ts";
 
 const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
 // Deliberately permissive (7+ digits, common separators) rather than a
@@ -13,15 +13,6 @@ const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
 // unrelated numbers like a street address or a lone year.
 const PHONE_REGEX = /\+?\(?\d[\d\s().-]{5,}\d/;
 const URL_REGEX = /(https?:\/\/[^\s,;]+)|(\b(?:www\.)?[a-zA-Z0-9-]+\.(?:com|net|org|io|dev|de|co)\/[^\s,;]*)/i;
-
-function toField(value: string, block: LayoutTextBlock): ExtractedField<string> {
-  return {
-    confidence: confidenceForMethod("regex-exact"),
-    extractionMethod: "regex-exact",
-    source: { blockId: block.blockId, page: block.page, x: block.x, y: block.y },
-    value,
-  };
-}
 
 function digitCount(value: string): number {
   return (value.match(/\d/g) ?? []).length;
@@ -41,14 +32,14 @@ export function extractContact(blocks: LayoutTextBlock[]): {
     if (!email) {
       const emailMatch = EMAIL_REGEX.exec(block.text);
       if (emailMatch) {
-        email = toField(emailMatch[0], block);
+        email = field(emailMatch[0], block, "regex-exact");
       }
     }
 
     if (!phone) {
       const phoneMatch = PHONE_REGEX.exec(block.text);
       if (phoneMatch && digitCount(phoneMatch[0]) >= 7) {
-        phone = toField(phoneMatch[0].trim(), block);
+        phone = field(phoneMatch[0].trim(), block, "regex-exact");
       }
     }
 
@@ -57,7 +48,7 @@ export function extractContact(blocks: LayoutTextBlock[]): {
       const value = urlMatch[0];
       if (!seenLinks.has(value)) {
         seenLinks.add(value);
-        links.push(toField(value, block));
+        links.push(field(value, block, "regex-exact"));
       }
     }
   }

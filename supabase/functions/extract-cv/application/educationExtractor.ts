@@ -6,9 +6,10 @@
 // not captured in this phase.
 
 import type { LayoutTextBlock } from "../infrastructure/layout.ts";
-import type { ExtractedEducation, ExtractedField, ExtractionMethod } from "../domain/types.ts";
-import { confidenceForMethod, parseDateRange } from "../domain/rules.ts";
+import type { ExtractedEducation, ExtractedField } from "../domain/types.ts";
+import { parseDateRange } from "../domain/rules.ts";
 import { findEntryBoundaries } from "./entryBoundaries.ts";
+import { field } from "./extractedField.ts";
 import { joinWrappedText, looksLikeWrapContinuation } from "./headerText.ts";
 
 // Splits a combined "Degree, Field" or "Degree in Field" line. A plain
@@ -16,14 +17,6 @@ import { joinWrappedText, looksLikeWrapContinuation } from "./headerText.ts";
 // ("Bachelor of Science, Computer Science" / "Bachelor of Science in
 // Computer Science") without trying to parse every degree-naming style.
 const DEGREE_FIELD_SEPARATOR = /\s*,\s*|\s+in\s+/i;
-
-function toSourceRef(block: LayoutTextBlock) {
-  return { blockId: block.blockId, page: block.page, x: block.x, y: block.y };
-}
-
-function field<T>(value: T, block: LayoutTextBlock, method: ExtractionMethod): ExtractedField<T> {
-  return { confidence: confidenceForMethod(method), extractionMethod: method, source: toSourceRef(block), value };
-}
 
 function splitDegreeAndField(
   block: LayoutTextBlock,

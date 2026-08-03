@@ -15,21 +15,14 @@
 
 import type { LayoutTextBlock } from "../infrastructure/layout.ts";
 import type { ExtractedExperience, ExtractedField, ExtractionMethod } from "../domain/types.ts";
-import { confidenceForMethod, parseDateRange } from "../domain/rules.ts";
+import { parseDateRange } from "../domain/rules.ts";
 import { boundarySpan, findEntryBoundaries } from "./entryBoundaries.ts";
+import { field } from "./extractedField.ts";
 import { joinWrappedText, looksLikeWrapContinuation } from "./headerText.ts";
 
 // Covers "Role - Company", "Role at Company", "Role, Company", and the
 // German "Rolle bei Firma" -- the common single-line patterns.
 const COMBINED_LINE_SEPARATOR = /\s*,\s*|\s+(?:at|bei)\s+|\s+(?:-|–|—|\||·)\s+/i;
-
-function toSourceRef(block: LayoutTextBlock) {
-  return { blockId: block.blockId, page: block.page, x: block.x, y: block.y };
-}
-
-function field<T>(value: T, block: LayoutTextBlock, method: ExtractionMethod): ExtractedField<T> {
-  return { confidence: confidenceForMethod(method), extractionMethod: method, source: toSourceRef(block), value };
-}
 
 // Splits a single logical "Role, Company" (or "Role - Company", "Role at
 // Company") string. Shared by the genuine one-line case and the

@@ -168,6 +168,12 @@ export function useDocuments() {
     void loadDocuments();
   }, [loadDocuments, requestVersion]);
 
+  function patchDocument(documentId: string, patch: Partial<CandidateDocument>) {
+    setDocuments((current) =>
+      current.map((item) => (item.id === documentId ? { ...item, ...patch } : item)),
+    );
+  }
+
   async function uploadDocument(
     file: File,
     metadata: Pick<DocumentMetadataInput, "category" | "displayName" | "notes">,
@@ -272,13 +278,7 @@ export function useDocuments() {
   // and its own success/failure is reflected via processingStatus
   // instead of the upload's own error state.
   async function triggerExtraction(documentId: string) {
-    setDocuments((current) =>
-      current.map((item) =>
-        item.id === documentId
-          ? { ...item, extractionError: "", processingStatus: "processing" }
-          : item,
-      ),
-    );
+    patchDocument(documentId, { extractionError: "", processingStatus: "processing" });
 
     const { data, error } = await supabase.functions.invoke("extract-cv", {
       body: { documentId },
@@ -286,13 +286,7 @@ export function useDocuments() {
 
     if (error) {
       const message = await resolveFunctionsErrorMessage(error);
-      setDocuments((current) =>
-        current.map((item) =>
-          item.id === documentId
-            ? { ...item, extractionError: message, processingStatus: "failed" }
-            : item,
-        ),
-      );
+      patchDocument(documentId, { extractionError: message, processingStatus: "failed" });
       return;
     }
 
@@ -300,13 +294,7 @@ export function useDocuments() {
       data && typeof data === "object" ? (data as Record<string, unknown>).data : null,
     );
 
-    setDocuments((current) =>
-      current.map((item) =>
-        item.id === documentId
-          ? { ...item, extraction, extractionError: "", processingStatus: "ready" }
-          : item,
-      ),
-    );
+    patchDocument(documentId, { extraction, extractionError: "", processingStatus: "ready" });
   }
 
   async function updateDocument(

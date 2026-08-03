@@ -5,7 +5,8 @@
 
 import type { LayoutTextBlock } from "../infrastructure/layout.ts";
 import type { ExtractedField, ExtractionMethod } from "../domain/types.ts";
-import { confidenceForMethod, normalizeForMatch, similarityRatio } from "../domain/rules.ts";
+import { normalizeForMatch, similarityRatio } from "../domain/rules.ts";
+import { field } from "./extractedField.ts";
 import { skillDictionary } from "../infrastructure/skillDictionary.ts";
 
 // Skills are usually comma/bullet/pipe/slash-separated on one or more
@@ -61,12 +62,7 @@ export function extractSkills(blocks: LayoutTextBlock[]): ExtractedField<string>
       }
 
       seenCanonical.add(match.canonical);
-      results.push({
-        confidence: confidenceForMethod(match.method, { fuzzyScore: match.fuzzyScore }),
-        extractionMethod: match.method,
-        source: { blockId: block.blockId, page: block.page, x: block.x, y: block.y },
-        value: match.canonical,
-      });
+      results.push(field(match.canonical, block, match.method, { fuzzyScore: match.fuzzyScore }));
     }
   }
 

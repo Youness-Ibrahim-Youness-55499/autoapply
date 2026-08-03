@@ -6,14 +6,14 @@
 // domain/application/infrastructure, all independently tested (see the
 // .fixtures.mjs files throughout this module).
 //
-// Not verified against a real deployment. This environment has no Deno
-// CLI and no Supabase CLI/service-role credentials to deploy or invoke
-// this function against a live project (the same standing caveat as
-// every un-applied migration elsewhere in this repo). Deploy with:
-//   supabase functions deploy extract-cv
-// before src/features/documents/useDocuments.ts's calls to it will do
-// anything but fail.
+// Verified against a real deployment (this environment has no Deno CLI
+// of its own, so testing happened by deploying and calling the live
+// function directly): confirmed the npm:-specifier imports resolve at
+// runtime, and confirmed end to end against a real uploaded CV that the
+// full request/response/Storage/database round trip produces a correct
+// ExtractedCV and writes it back onto the documents row.
 import { createClient } from "npm:@supabase/supabase-js@2.111.0";
+import type { LayoutTextBlock } from "./infrastructure/layout.ts";
 import { extractDocxLayout } from "./infrastructure/docxParser.ts";
 import { extractPdfLayout } from "./infrastructure/pdfParser.ts";
 import { extractCv } from "./application/extractCv.ts";
@@ -23,6 +23,10 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
 };
 
+const PDF_MIME_TYPE = "application/pdf";
+const DOCX_MIME_TYPE =
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
@@ -30,9 +34,22 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-const PDF_MIME_TYPE = "application/pdf";
-const DOCX_MIME_TYPE =
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+// Isolates "which parser handles which MIME type" in one place, so
+// adding a third format later is a one-line addition here rather than a
+// change to the handler's control flow below.
+function parseLayout(bytes: Uint8Array, mimeType: string): Promise<LayoutTextBlock[]> | LayoutTextBlock[] {
+  if (mimeType === PDF_MIME_TYPE) return extractPdfLayout(bytes);
+  if (mimeType === DOCX_MIME_TYPE) return extractDocxLayout(bytes);
+  throw new Error(`Unsupported file type: ${mimeType}`);
+}
+
+async function parseDocumentId(request: Request): Promise<string> {
+  const body = await request.json();
+  if (typeof body !== "object" || body === null || typeof body.documentId !== "string" || !body.documentId) {
+    throw new Error("documentId is required.");
+  }
+  return body.documentId;
+}
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
@@ -50,11 +67,7 @@ Deno.serve(async (request) => {
 
   let documentId: string;
   try {
-    const body = await request.json();
-    if (typeof body !== "object" || body === null || typeof body.documentId !== "string" || !body.documentId) {
-      throw new Error("documentId is required.");
-    }
-    documentId = body.documentId;
+    documentId = await parseDocumentId(request);
   } catch {
     return jsonResponse({ error: "Request body must be JSON with a documentId field." }, 400);
   }
@@ -90,16 +103,7 @@ Deno.serve(async (request) => {
     }
 
     const bytes = new Uint8Array(await file.arrayBuffer());
-
-    let blocks;
-    if (document.mime_type === PDF_MIME_TYPE) {
-      blocks = await extractPdfLayout(bytes);
-    } else if (document.mime_type === DOCX_MIME_TYPE) {
-      blocks = extractDocxLayout(bytes);
-    } else {
-      throw new Error(`Unsupported file type: ${document.mime_type}`);
-    }
-
+    const blocks = await parseLayout(bytes, document.mime_type);
     const extracted = extractCv(blocks);
 
     const { error: updateError } = await supabase
