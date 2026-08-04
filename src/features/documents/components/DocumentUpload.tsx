@@ -1,9 +1,10 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Button } from "../../../components/ui/Button";
+import { useTranslation } from "../../../i18n";
 import {
   acceptedDocumentTypes,
   documentCategories,
-  documentCategoryLabels,
+  documentCategoryLabelKeys,
   formatFileSize,
   maxDocumentSize,
   type DocumentCategory,
@@ -28,6 +29,7 @@ export function DocumentUpload({
   isUploading,
   onUpload,
 }: DocumentUploadProps) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [category, setCategory] = useState<DocumentCategory>("cv");
@@ -59,13 +61,12 @@ export function DocumentUpload({
       aria-labelledby="document-upload-title"
       className="rounded-card border border-line bg-surface p-6 shadow-card sm:p-8"
     >
-      <p className="eyebrow">Private source file</p>
+      <p className="eyebrow">{t("documents.upload.eyebrow")}</p>
       <h2 className="mt-2 text-2xl font-semibold" id="document-upload-title">
-        Upload a document
+        {t("documents.upload.title")}
       </h2>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-muted">
-        Files are stored in your private workspace. Autoapply does not make them
-        public or submit them anywhere.
+        {t("documents.upload.description")}
       </p>
 
       <form className="mt-6" onSubmit={handleSubmit}>
@@ -76,10 +77,10 @@ export function DocumentUpload({
             </svg>
           </span>
           <span className="mt-4 block text-sm font-semibold">
-            {selectedFile ? selectedFile.name : "Choose a PDF or DOCX file"}
+            {selectedFile ? selectedFile.name : t("documents.upload.choosePlaceholder")}
           </span>
           <span className="mt-1 block text-xs text-ink-muted">
-            Maximum size {formatFileSize(maxDocumentSize)}
+            {t("documents.upload.maxSize", { size: formatFileSize(maxDocumentSize) })}
           </span>
           <input
             accept={acceptedDocumentTypes.join(",")}
@@ -107,7 +108,7 @@ export function DocumentUpload({
             </div>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <label className="text-sm font-semibold">
-                Display name
+                {t("documents.upload.displayNameLabel")}
                 <input
                   className={inputClasses}
                   maxLength={160}
@@ -117,7 +118,7 @@ export function DocumentUpload({
                 />
               </label>
               <label className="text-sm font-semibold">
-                Category
+                {t("documents.upload.categoryLabel")}
                 <select
                   className={inputClasses}
                   onChange={(event) =>
@@ -127,25 +128,26 @@ export function DocumentUpload({
                 >
                   {documentCategories.map((value) => (
                     <option key={value} value={value}>
-                      {documentCategoryLabels[value]}
+                      {t(documentCategoryLabelKeys[value])}
                     </option>
                   ))}
                 </select>
               </label>
             </div>
             <label className="mt-4 block text-sm font-semibold">
-              Notes <span className="font-normal text-ink-muted">(optional)</span>
+              {t("documents.upload.notesLabel")}{" "}
+              <span className="font-normal text-ink-muted">{t("documents.upload.notesOptional")}</span>
               <textarea
                 className={`${inputClasses} min-h-24 py-3`}
                 maxLength={5000}
                 onChange={(event) => setNotes(event.target.value)}
-                placeholder="Version, language, intended roles, or other context."
+                placeholder={t("documents.upload.notesPlaceholder")}
                 value={notes}
               />
             </label>
             <div className="mt-4 flex justify-end">
               <Button disabled={isUploading || !displayName.trim()} type="submit">
-                {isUploading ? "Uploading..." : "Upload securely"}
+                {isUploading ? t("documents.upload.submitting") : t("documents.upload.submit")}
               </Button>
             </div>
           </div>

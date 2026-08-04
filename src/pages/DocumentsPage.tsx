@@ -92,8 +92,8 @@ export function DocumentsPage() {
               ) : (
                 <div className="mt-8">
                   <EmptyState
-                    description="Upload your first CV, cover letter, certificate, or reference as a PDF or DOCX file."
-                    title="No documents uploaded"
+                    description={t("documents.noDocumentsDescription")}
+                    title={t("documents.noDocumentsTitle")}
                   />
                 </div>
               )}

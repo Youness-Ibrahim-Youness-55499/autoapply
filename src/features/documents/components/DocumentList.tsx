@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "../../../components/ui/Button";
+import { useTranslation } from "../../../i18n";
 import {
-  documentCategoryLabels,
+  documentCategoryLabelKeys,
   formatFileSize,
   type CandidateDocument,
   type DocumentMetadataInput,
@@ -32,6 +33,7 @@ export function DocumentList({
   onEdit,
   onOpen,
 }: DocumentListProps) {
+  const { t } = useTranslation();
   const [confirmingId, setConfirmingId] = useState("");
   const [editingId, setEditingId] = useState("");
 
@@ -44,13 +46,15 @@ export function DocumentList({
     <section aria-labelledby="document-list-title" className="mt-8">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="eyebrow">Your files</p>
+          <p className="eyebrow">{t("documents.list.eyebrow")}</p>
           <h2 className="mt-2 text-xl font-semibold" id="document-list-title">
-            Stored documents
+            {t("documents.list.title")}
           </h2>
         </div>
         <p className="text-sm font-semibold text-ink-muted">
-          {documents.length} {documents.length === 1 ? "document" : "documents"}
+          {t(documents.length === 1 ? "documents.list.countOne" : "documents.list.countOther", {
+            count: documents.length,
+          })}
         </p>
       </div>
 
@@ -76,13 +80,13 @@ export function DocumentList({
                     <p className="truncate font-semibold">{document.displayName}</p>
                     {document.isDefault && (
                       <span className="rounded-full bg-brand-900 px-2.5 py-1 text-xs font-semibold text-white">
-                        Default CV
+                        {t("documents.list.defaultCv")}
                       </span>
                     )}
                   </div>
                   <p className="mt-1 text-sm text-ink-muted">
-                    {documentCategoryLabels[document.category]} ·{" "}
-                    {formatFileSize(document.sizeBytes)} · Uploaded{" "}
+                    {t(documentCategoryLabelKeys[document.category])} ·{" "}
+                    {formatFileSize(document.sizeBytes)} · {t("documents.list.uploaded")}{" "}
                     <time dateTime={document.createdAt}>
                       {dateFormatter.format(new Date(document.createdAt))}
                     </time>
@@ -102,7 +106,7 @@ export function DocumentList({
                       size="sm"
                       variant="secondary"
                     >
-                      Edit details
+                      {t("documents.list.editDetails")}
                     </Button>
                     <Button
                       disabled={isBusy}
@@ -110,7 +114,7 @@ export function DocumentList({
                       size="sm"
                       variant="secondary"
                     >
-                      {isBusy ? "Opening..." : "Open"}
+                      {isBusy ? t("documents.list.opening") : t("documents.list.open")}
                     </Button>
                     <Button
                       disabled={isBusy}
@@ -118,21 +122,20 @@ export function DocumentList({
                       size="sm"
                       variant="quiet"
                     >
-                      Delete
+                      {t("documents.list.delete")}
                     </Button>
                   </div>
                 ) : (
                   <div className="rounded-xl border border-red-200 bg-red-50 p-3 sm:max-w-xs">
                     <p className="text-sm font-semibold text-red-900">
-                      Delete this document permanently? Application links to it
-                      will be cleared.
+                      {t("documents.list.deleteConfirm")}
                     </p>
                     <div className="mt-3 flex gap-2">
                       <Button disabled={isBusy} onClick={() => setConfirmingId("")} size="sm" variant="secondary">
-                        Keep
+                        {t("documents.list.keep")}
                       </Button>
                       <Button disabled={isBusy} onClick={() => void confirmDelete(document)} size="sm" variant="danger">
-                        {isBusy ? "Deleting..." : "Delete"}
+                        {isBusy ? t("documents.list.deleting") : t("documents.list.delete")}
                       </Button>
                     </div>
                   </div>

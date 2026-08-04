@@ -35,11 +35,11 @@ export type DocumentMetadataInput = {
   notes: string;
 };
 
-export const documentCategoryLabels: Record<DocumentCategory, string> = {
-  certificate: "Certificate",
-  cover_letter: "Cover letter",
-  cv: "CV",
-  reference: "Reference",
+export const documentCategoryLabelKeys: Record<DocumentCategory, string> = {
+  certificate: "documents.category.certificate",
+  cover_letter: "documents.category.coverLetter",
+  cv: "documents.category.cv",
+  reference: "documents.category.reference",
 };
 
 export function isDocumentCategory(value: unknown): value is DocumentCategory {
