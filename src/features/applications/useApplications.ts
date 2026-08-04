@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthProvider";
+import { useTranslation } from "../../i18n";
 import { supabase } from "../../lib/supabase";
 import {
   isApplicationStatus,
@@ -57,6 +58,7 @@ function isApplication(value: unknown): value is Application {
 
 export function useApplications(): ApplicationsState {
   const { session } = useAuth();
+  const { t } = useTranslation();
   const [applications, setApplications] = useState<Application[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -69,7 +71,7 @@ export function useApplications(): ApplicationsState {
     async function loadApplications() {
       if (!userId) {
         setApplications([]);
-        setErrorMessage("Your session is not available. Please log in again.");
+        setErrorMessage(t("error.sessionMissing"));
         setIsLoading(false);
         return;
       }
@@ -98,7 +100,7 @@ export function useApplications(): ApplicationsState {
 
       if (!(data ?? []).every(isApplication)) {
         setApplications([]);
-        setErrorMessage("The application data returned in an unexpected format.");
+        setErrorMessage(t("applications.errors.unexpectedFormat"));
         setIsLoading(false);
         return;
       }
@@ -112,7 +114,7 @@ export function useApplications(): ApplicationsState {
     return () => {
       isCurrent = false;
     };
-  }, [requestVersion, userId]);
+  }, [requestVersion, t, userId]);
 
   const refresh = () => setRequestVersion((version) => version + 1);
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "../../i18n";
-import { Template, TemplateKind, TemplateCategory } from "./useTemplates";
+import { Template, TemplateKind, TemplateCategory, templateKinds } from "./useTemplates";
+import { templateKindLabelKeys } from "./templateKindLabels";
 import { Button } from "../../components/ui/Button";
 
 type Props = {
@@ -47,9 +48,9 @@ export function TemplateEditor({ template, categories, onCancel, onSave }: Props
         <label className="text-sm font-semibold">
           {t("editor.kind")}
           <select value={kind} onChange={(e) => setKind(e.target.value as TemplateKind)} className="mt-2 block w-full rounded-xl border border-line bg-canvas px-4 py-2 text-sm">
-            <option value="cover_letter">{t("editor.kind.cover_letter")}</option>
-            <option value="screening">{t("editor.kind.screening")}</option>
-            <option value="paragraph">{t("editor.kind.paragraph")}</option>
+            {templateKinds.map((value) => (
+              <option key={value} value={value}>{t(templateKindLabelKeys[value])}</option>
+            ))}
           </select>
         </label>
 
@@ -70,7 +71,7 @@ export function TemplateEditor({ template, categories, onCancel, onSave }: Props
 
         <div className="flex justify-end gap-3">
           <Button variant="secondary" onClick={onCancel}>{t("editor.cancel")}</Button>
-          <Button onClick={handleSave} disabled={isSaving || title.trim().length === 0}>{isSaving ? t("editor.save") : t("editor.save")}</Button>
+          <Button onClick={handleSave} disabled={isSaving || title.trim().length === 0}>{isSaving ? t("editor.saving") : t("editor.save")}</Button>
         </div>
       </div>
     </section>

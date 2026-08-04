@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthProvider";
+import { useTranslation } from "../../i18n";
 import { supabase } from "../../lib/supabase";
 
 export const templateKinds = ["cover_letter", "screening", "paragraph"] as const;
@@ -71,14 +72,15 @@ function normalizeTemplate(value: unknown): Template | null {
   };
 }
 
+// Returns an i18n key (translated by the caller), or "" when valid.
 function validateTemplateInput(values: TemplateInput): string {
   const title = values.title.trim();
 
-  if (!title) return "Template title is required.";
-  if (title.length > 160) return "Template title must be 160 characters or fewer.";
-  if (!isTemplateKind(values.kind)) return "Choose a valid template type.";
+  if (!title) return "templates.errors.titleRequired";
+  if (title.length > 160) return "templates.errors.titleTooLong";
+  if (!isTemplateKind(values.kind)) return "templates.errors.invalidKind";
   if (values.content.trim().length > 20000) {
-    return "Template content must be 20,000 characters or fewer.";
+    return "templates.errors.contentTooLong";
   }
 
   return "";
@@ -86,6 +88,7 @@ function validateTemplateInput(values: TemplateInput): string {
 
 export function useTemplates() {
   const { session } = useAuth();
+  const { t } = useTranslation();
   const userId = session?.user.id;
   const [templates, setTemplates] = useState<Template[]>([]);
   const [categories, setCategories] = useState<TemplateCategory[]>([]);
@@ -102,7 +105,7 @@ export function useTemplates() {
       if (!userId) {
         setTemplates([]);
         setCategories([]);
-        setLoadErrorMessage("Your session is not available. Please log in again.");
+        setLoadErrorMessage(t("error.sessionMissing"));
         setIsLoading(false);
         return;
       }
@@ -137,7 +140,7 @@ export function useTemplates() {
       }
 
       if (!(categoryRows ?? []).every(isTemplateCategory)) {
-        setLoadErrorMessage("Template category data returned in an unexpected format.");
+        setLoadErrorMessage(t("templates.errors.categoryUnexpectedFormat"));
         setIsLoading(false);
         return;
       }
@@ -145,7 +148,7 @@ export function useTemplates() {
       const normalizedTemplates = (templateRows ?? []).map(normalizeTemplate);
 
       if (normalizedTemplates.some((template) => template === null)) {
-        setLoadErrorMessage("Template data returned in an unexpected format.");
+        setLoadErrorMessage(t("templates.errors.unexpectedFormat"));
         setIsLoading(false);
         return;
       }
@@ -160,7 +163,7 @@ export function useTemplates() {
     return () => {
       isCurrent = false;
     };
-  }, [userId, requestVersion]);
+  }, [userId, requestVersion, t]);
 
   const retry = () => setRequestVersion((version) => version + 1);
 
@@ -169,13 +172,13 @@ export function useTemplates() {
     setSuccessMessage("");
 
     if (!userId) {
-      setActionErrorMessage("Your session is not available. Please log in again.");
+      setActionErrorMessage(t("error.sessionMissing"));
       return false;
     }
 
     const validationError = validateTemplateInput(values);
     if (validationError) {
-      setActionErrorMessage(validationError);
+      setActionErrorMessage(t(validationError));
       return false;
     }
 
@@ -192,18 +195,18 @@ export function useTemplates() {
       .maybeSingle();
 
     if (error || !data) {
-      setActionErrorMessage(error?.message ?? "The template could not be created.");
+      setActionErrorMessage(error?.message ?? t("templates.errors.createFailed"));
       return false;
     }
 
     const template = normalizeTemplate(data);
     if (!template) {
-      setActionErrorMessage("The created template returned in an unexpected format.");
+      setActionErrorMessage(t("templates.errors.createdUnexpectedFormat"));
       return false;
     }
 
     setTemplates((current) => [template, ...current]);
-    setSuccessMessage("Template created.");
+    setSuccessMessage(t("templates.created"));
     return true;
   }
 
@@ -212,13 +215,13 @@ export function useTemplates() {
     setSuccessMessage("");
 
     if (!userId) {
-      setActionErrorMessage("Your session is not available. Please log in again.");
+      setActionErrorMessage(t("error.sessionMissing"));
       return false;
     }
 
     const validationError = validateTemplateInput(values);
     if (validationError) {
-      setActionErrorMessage(validationError);
+      setActionErrorMessage(t(validationError));
       return false;
     }
 
@@ -235,20 +238,20 @@ export function useTemplates() {
       .maybeSingle();
 
     if (error || !data) {
-      setActionErrorMessage(error?.message ?? "This template could not be found or updated.");
+      setActionErrorMessage(error?.message ?? t("templates.errors.updateFailed"));
       return false;
     }
 
     const template = normalizeTemplate(data);
     if (!template) {
-      setActionErrorMessage("The updated template returned in an unexpected format.");
+      setActionErrorMessage(t("templates.errors.updatedUnexpectedFormat"));
       return false;
     }
 
     setTemplates((current) =>
       current.map((item) => (item.id === template.id ? template : item)),
     );
-    setSuccessMessage("Template updated.");
+    setSuccessMessage(t("templates.updated"));
     return true;
   }
 
@@ -264,7 +267,7 @@ export function useTemplates() {
     }
 
     setTemplates((current) => current.filter((item) => item.id !== id));
-    setSuccessMessage("Template deleted.");
+    setSuccessMessage(t("templates.deleted"));
     return true;
   }
 
@@ -273,13 +276,13 @@ export function useTemplates() {
     setSuccessMessage("");
 
     if (!userId) {
-      setActionErrorMessage("Your session is not available. Please log in again.");
+      setActionErrorMessage(t("error.sessionMissing"));
       return false;
     }
 
     const source = templates.find((item) => item.id === id);
     if (!source) {
-      setActionErrorMessage("This template could not be found.");
+      setActionErrorMessage(t("templates.errors.notFoundForDuplicate"));
       return false;
     }
 
@@ -296,18 +299,18 @@ export function useTemplates() {
       .maybeSingle();
 
     if (error || !data) {
-      setActionErrorMessage(error?.message ?? "The template could not be duplicated.");
+      setActionErrorMessage(error?.message ?? t("templates.errors.duplicateFailed"));
       return false;
     }
 
     const template = normalizeTemplate(data);
     if (!template) {
-      setActionErrorMessage("The duplicated template returned in an unexpected format.");
+      setActionErrorMessage(t("templates.errors.duplicatedUnexpectedFormat"));
       return false;
     }
 
     setTemplates((current) => [template, ...current]);
-    setSuccessMessage("Template duplicated.");
+    setSuccessMessage(t("templates.duplicated"));
     return true;
   }
 
@@ -316,13 +319,13 @@ export function useTemplates() {
     setSuccessMessage("");
 
     if (!userId) {
-      setActionErrorMessage("Your session is not available. Please log in again.");
+      setActionErrorMessage(t("error.sessionMissing"));
       return false;
     }
 
     const trimmedName = name.trim();
     if (!trimmedName || trimmedName.length > 160) {
-      setActionErrorMessage("Category name must contain 1 to 160 characters.");
+      setActionErrorMessage(t("templates.errors.categoryNameLength"));
       return false;
     }
 
@@ -333,12 +336,12 @@ export function useTemplates() {
       .maybeSingle();
 
     if (error || !data || !isTemplateCategory(data)) {
-      setActionErrorMessage(error?.message ?? "The category could not be created.");
+      setActionErrorMessage(error?.message ?? t("templates.errors.categoryCreateFailed"));
       return false;
     }
 
     setCategories((current) => [...current, data]);
-    setSuccessMessage("Category created.");
+    setSuccessMessage(t("templates.categoryCreated"));
     return true;
   }
 

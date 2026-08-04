@@ -1,4 +1,5 @@
 import { Button } from "../../components/ui/Button";
+import { useTranslation } from "../../i18n";
 import { ApplicationStatusControl } from "./ApplicationStatusControl";
 import type { Application, ApplicationStatus } from "./types";
 
@@ -16,9 +17,9 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
   year: "numeric",
 });
 
-function formatDate(value: string) {
+function formatDate(value: string, unavailableLabel: string) {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Date unavailable" : dateFormatter.format(date);
+  return Number.isNaN(date.getTime()) ? unavailableLabel : dateFormatter.format(date);
 }
 
 function getSafeJobUrl(value: string | null) {
@@ -35,6 +36,7 @@ function getSafeJobUrl(value: string | null) {
 }
 
 function JobTitle({ application }: { application: Application }) {
+  const { t } = useTranslation();
   const jobUrl = getSafeJobUrl(application.job_url);
 
   if (!jobUrl) {
@@ -49,7 +51,9 @@ function JobTitle({ application }: { application: Application }) {
       target="_blank"
     >
       {application.job_title}
-      <span className="sr-only"> at {application.company_name} (opens in a new tab)</span>
+      <span className="sr-only">
+        {t("applications.list.opensInNewTab", { company: application.company_name })}
+      </span>
     </a>
   );
 }
@@ -61,17 +65,23 @@ export function ApplicationList({
   onStatusUpdated,
   onWorkflow,
 }: ApplicationListProps) {
+  const { t } = useTranslation();
+  const notSpecified = t("applications.list.notSpecified");
+  const dateUnavailable = t("applications.list.dateUnavailable");
+
   return (
     <section aria-labelledby="application-list-title">
       <div className="mb-4 flex items-end justify-between gap-4">
         <div>
-          <p className="eyebrow">Your records</p>
+          <p className="eyebrow">{t("applications.list.eyebrow")}</p>
           <h3 className="mt-2 text-xl font-semibold" id="application-list-title">
-            Applications
+            {t("applications.title")}
           </h3>
         </div>
         <p className="text-sm font-semibold text-ink-muted">
-          {applications.length} {applications.length === 1 ? "application" : "applications"}
+          {t(applications.length === 1 ? "applications.list.countOne" : "applications.list.countOther", {
+            count: applications.length,
+          })}
         </p>
       </div>
 
@@ -79,11 +89,11 @@ export function ApplicationList({
         <table className="w-full border-collapse text-left">
           <thead className="border-b border-line bg-canvas text-xs uppercase tracking-wide text-ink-muted">
             <tr>
-              <th className="px-6 py-4 font-semibold" scope="col">Role</th>
-              <th className="px-6 py-4 font-semibold" scope="col">Location</th>
-              <th className="px-6 py-4 font-semibold" scope="col">Status</th>
-              <th className="px-6 py-4 font-semibold" scope="col">Added</th>
-              <th className="px-6 py-4 text-right font-semibold" scope="col">Actions</th>
+              <th className="px-6 py-4 font-semibold" scope="col">{t("applications.list.colRole")}</th>
+              <th className="px-6 py-4 font-semibold" scope="col">{t("applications.list.colLocation")}</th>
+              <th className="px-6 py-4 font-semibold" scope="col">{t("applications.list.colStatus")}</th>
+              <th className="px-6 py-4 font-semibold" scope="col">{t("applications.list.colAdded")}</th>
+              <th className="px-6 py-4 text-right font-semibold" scope="col">{t("applications.list.colActions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
@@ -94,7 +104,7 @@ export function ApplicationList({
                   <p className="mt-1 text-sm text-ink-muted">{application.company_name}</p>
                 </td>
                 <td className="px-6 py-5 text-sm text-ink-muted">
-                  {application.location || "Not specified"}
+                  {application.location || notSpecified}
                 </td>
                 <td className="px-6 py-5">
                   <ApplicationStatusControl
@@ -103,33 +113,44 @@ export function ApplicationList({
                   />
                 </td>
                 <td className="px-6 py-5 text-sm text-ink-muted">
-                  <time dateTime={application.created_at}>{formatDate(application.created_at)}</time>
+                  <time dateTime={application.created_at}>
+                    {formatDate(application.created_at, dateUnavailable)}
+                  </time>
                 </td>
                 <td className="px-6 py-5">
                   <div className="flex justify-end gap-2">
                     <Button
-                      aria-label={`Manage workflow for ${application.job_title} at ${application.company_name}`}
+                      aria-label={t("applications.list.manageWorkflowAria", {
+                        company: application.company_name,
+                        job: application.job_title,
+                      })}
                       onClick={() => onWorkflow(application)}
                       size="sm"
                       variant="secondary"
                     >
-                      Workflow
+                      {t("applications.list.workflow")}
                     </Button>
                     <Button
-                      aria-label={`Edit ${application.job_title} at ${application.company_name}`}
+                      aria-label={t("applications.list.editAria", {
+                        company: application.company_name,
+                        job: application.job_title,
+                      })}
                       onClick={() => onEdit(application)}
                       size="sm"
                       variant="secondary"
                     >
-                      Edit
+                      {t("applications.list.edit")}
                     </Button>
                     <Button
-                      aria-label={`Delete ${application.job_title} at ${application.company_name}`}
+                      aria-label={t("applications.list.deleteAria", {
+                        company: application.company_name,
+                        job: application.job_title,
+                      })}
                       onClick={() => onDelete(application)}
                       size="sm"
                       variant="quiet"
                     >
-                      Delete
+                      {t("applications.list.delete")}
                     </Button>
                   </div>
                 </td>
@@ -154,33 +175,35 @@ export function ApplicationList({
             </div>
             <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4 text-sm">
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Location</dt>
-                <dd className="mt-1">{application.location || "Not specified"}</dd>
+                <dt className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{t("applications.list.colLocation")}</dt>
+                <dd className="mt-1">{application.location || notSpecified}</dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Added</dt>
+                <dt className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{t("applications.list.colAdded")}</dt>
                 <dd className="mt-1">
-                  <time dateTime={application.created_at}>{formatDate(application.created_at)}</time>
+                  <time dateTime={application.created_at}>
+                    {formatDate(application.created_at, dateUnavailable)}
+                  </time>
                 </dd>
               </div>
             </dl>
             <div className="mt-5 grid grid-cols-3 gap-3">
               <Button onClick={() => onWorkflow(application)} size="sm" variant="secondary">
-                Workflow
+                {t("applications.list.workflow")}
               </Button>
               <Button
                 onClick={() => onEdit(application)}
                 size="sm"
                 variant="secondary"
               >
-                Edit
+                {t("applications.list.edit")}
               </Button>
               <Button
                 onClick={() => onDelete(application)}
                 size="sm"
                 variant="quiet"
               >
-                Delete
+                {t("applications.list.delete")}
               </Button>
             </div>
           </li>

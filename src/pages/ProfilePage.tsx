@@ -32,7 +32,7 @@ export function ProfilePage() {
   return (
     <>
       <Seo
-        description={t("seo.profileDescription")}
+        description={t("seo.profile.description")}
         noIndex
         path="/app/profile"
         title={t("profile.title")}

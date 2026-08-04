@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthProvider";
+import { useTranslation } from "../../i18n";
 import { supabase } from "../../lib/supabase";
 import {
   acceptedDocumentTypes,
@@ -69,6 +70,7 @@ function safeFileName(name: string) {
 
 export function useDocuments() {
   const { session } = useAuth();
+  const { t } = useTranslation();
   const userId = session?.user.id;
   const [documents, setDocuments] = useState<CandidateDocument[]>([]);
   const [loadErrorMessage, setLoadErrorMessage] = useState("");
@@ -81,7 +83,7 @@ export function useDocuments() {
 
   const loadDocuments = useCallback(async () => {
     if (!userId) {
-      setLoadErrorMessage("Your session is not available. Please log in again.");
+      setLoadErrorMessage(t("error.sessionMissing"));
       setIsLoading(false);
       return;
     }
@@ -104,14 +106,14 @@ export function useDocuments() {
     const normalized = (data ?? []).map(normalizeDocument);
 
     if (normalized.some((document) => document === null)) {
-      setLoadErrorMessage("Document metadata returned in an unexpected format.");
+      setLoadErrorMessage(t("documents.errors.unexpectedFormat"));
       setIsLoading(false);
       return;
     }
 
     setDocuments(normalized as CandidateDocument[]);
     setIsLoading(false);
-  }, [userId]);
+  }, [t, userId]);
 
   useEffect(() => {
     void loadDocuments();
@@ -125,17 +127,17 @@ export function useDocuments() {
     setSuccessMessage("");
 
     if (!userId) {
-      setActionErrorMessage("Your session is not available. Please log in again.");
+      setActionErrorMessage(t("error.sessionMissing"));
       return false;
     }
 
     if (!acceptedDocumentTypes.includes(file.type as (typeof acceptedDocumentTypes)[number])) {
-      setActionErrorMessage("Upload a PDF or DOCX file.");
+      setActionErrorMessage(t("documents.errors.invalidType"));
       return false;
     }
 
     if (file.size <= 0 || file.size > maxDocumentSize) {
-      setActionErrorMessage("The document must be smaller than 10 MB.");
+      setActionErrorMessage(t("documents.errors.tooLarge"));
       return false;
     }
 
@@ -143,17 +145,17 @@ export function useDocuments() {
     const notes = metadata.notes.trim();
 
     if (!displayName || displayName.length > 160) {
-      setActionErrorMessage("Document name must contain 1 to 160 characters.");
+      setActionErrorMessage(t("documents.errors.nameLength"));
       return false;
     }
 
     if (!isDocumentCategory(metadata.category)) {
-      setActionErrorMessage("Choose a valid document category.");
+      setActionErrorMessage(t("documents.errors.invalidCategory"));
       return false;
     }
 
     if (notes.length > 5000) {
-      setActionErrorMessage("Document notes must not exceed 5,000 characters.");
+      setActionErrorMessage(t("documents.errors.notesTooLong"));
       return false;
     }
 
@@ -199,13 +201,13 @@ export function useDocuments() {
 
     if (!document) {
       await supabase.storage.from("resumes").remove([storagePath]);
-      setActionErrorMessage("The uploaded document returned in an unexpected format.");
+      setActionErrorMessage(t("documents.errors.uploadedUnexpectedFormat"));
       setIsUploading(false);
       return false;
     }
 
     setDocuments((current) => [document, ...current]);
-    setSuccessMessage("Document uploaded securely.");
+    setSuccessMessage(t("documents.uploaded"));
     setIsUploading(false);
     return true;
   }
@@ -215,7 +217,7 @@ export function useDocuments() {
     metadata: DocumentMetadataInput,
   ) {
     if (!userId) {
-      setActionErrorMessage("Your session is not available. Please log in again.");
+      setActionErrorMessage(t("error.sessionMissing"));
       return false;
     }
 
@@ -223,17 +225,17 @@ export function useDocuments() {
     const notes = metadata.notes.trim();
 
     if (!displayName || displayName.length > 160) {
-      setActionErrorMessage("Document name must contain 1 to 160 characters.");
+      setActionErrorMessage(t("documents.errors.nameLength"));
       return false;
     }
 
     if (!isDocumentCategory(metadata.category)) {
-      setActionErrorMessage("Choose a valid document category.");
+      setActionErrorMessage(t("documents.errors.invalidCategory"));
       return false;
     }
 
     if (notes.length > 5000) {
-      setActionErrorMessage("Document notes must not exceed 5,000 characters.");
+      setActionErrorMessage(t("documents.errors.notesTooLong"));
       return false;
     }
 
@@ -255,7 +257,7 @@ export function useDocuments() {
 
     if (error || !data) {
       setActionErrorMessage(
-        error?.message ?? "This document could not be found or updated.",
+        error?.message ?? t("documents.errors.updateFailed"),
       );
       setBusyDocumentId("");
       return false;
@@ -264,7 +266,7 @@ export function useDocuments() {
     const updated = normalizeDocument(data);
 
     if (!updated) {
-      setActionErrorMessage("Updated document data returned in an unexpected format.");
+      setActionErrorMessage(t("documents.errors.updatedUnexpectedFormat"));
       setBusyDocumentId("");
       return false;
     }
@@ -278,7 +280,7 @@ export function useDocuments() {
         return item;
       }),
     );
-    setSuccessMessage("Document details updated.");
+    setSuccessMessage(t("documents.updated"));
     setBusyDocumentId("");
     return true;
   }
@@ -304,7 +306,7 @@ export function useDocuments() {
 
   async function deleteDocument(document: CandidateDocument) {
     if (!userId) {
-      setActionErrorMessage("Your session is not available. Please log in again.");
+      setActionErrorMessage(t("error.sessionMissing"));
       return false;
     }
 
@@ -330,14 +332,14 @@ export function useDocuments() {
 
     if (metadataError) {
       setActionErrorMessage(
-        `${metadataError.message} The private file was removed; retry to clear its record.`,
+        `${metadataError.message}${t("documents.errors.deleteMetadataSuffix")}`,
       );
       setBusyDocumentId("");
       return false;
     }
 
     setDocuments((current) => current.filter((item) => item.id !== document.id));
-    setSuccessMessage("Document deleted.");
+    setSuccessMessage(t("documents.deleted"));
     setBusyDocumentId("");
     return true;
   }

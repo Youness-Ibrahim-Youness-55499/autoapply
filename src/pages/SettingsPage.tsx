@@ -11,7 +11,7 @@ export function SettingsPage() {
   return (
     <>
       <Seo
-        description={t("seo.settingsDescription")}
+        description={t("seo.settings.description")}
         noIndex
         path="/app/settings"
         title={t("settings.title")}

@@ -29,7 +29,7 @@ export type ApplicationFormContext = {
 };
 
 export type ApplicationFormParseResult =
-  | { error: string; success: false }
+  | { error: string /* i18n key, translated by the caller */; success: false }
   | { success: true; values: ApplicationFormValues };
 
 function readField(formData: FormData, name: string): string {
@@ -45,13 +45,13 @@ function getSafeOptionalUrl(value: string): { error: string; value: string | nul
     const url = new URL(value);
 
     if (url.protocol !== "http:" && url.protocol !== "https:") {
-      return { error: "Use an HTTP or HTTPS job link.", value: null };
+      return { error: "applications.form.errors.jobUrlProtocol", value: null };
     }
 
     return { error: "", value: url.href };
   } catch {
     return {
-      error: "Enter a complete job link, such as https://example.com/job.",
+      error: "applications.form.errors.jobUrlInvalid",
       value: null,
     };
   }
@@ -90,11 +90,11 @@ export function parseApplicationFormInput(
   const coverLetterDocumentId = readField(formData, "cover_letter_document_id");
 
   if (!companyName || !jobTitle) {
-    return { error: "Company and job title are required.", success: false };
+    return { error: "applications.form.errors.requiredFields", success: false };
   }
 
   if (!isApplicationStatus(status)) {
-    return { error: "Choose a valid application status.", success: false };
+    return { error: "applications.form.errors.invalidStatus", success: false };
   }
 
   if (jobUrlResult.error) {
@@ -102,18 +102,18 @@ export function parseApplicationFormInput(
   }
 
   if (recruiterEmail && !recruiterEmailPattern.test(recruiterEmail)) {
-    return { error: "Enter a valid recruiter email address.", success: false };
+    return { error: "applications.form.errors.recruiterEmailInvalid", success: false };
   }
 
   if (cvDocumentId && !context.availableCvDocumentIds.includes(cvDocumentId)) {
-    return { error: "Choose an available CV.", success: false };
+    return { error: "applications.form.errors.cvUnavailable", success: false };
   }
 
   if (
     coverLetterDocumentId &&
     !context.availableCoverLetterDocumentIds.includes(coverLetterDocumentId)
   ) {
-    return { error: "Choose an available cover letter.", success: false };
+    return { error: "applications.form.errors.coverLetterUnavailable", success: false };
   }
 
   return {

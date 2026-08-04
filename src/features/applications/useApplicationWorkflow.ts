@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthProvider";
+import { useTranslation } from "../../i18n";
 import { supabase } from "../../lib/supabase";
 import {
   interviewStages,
@@ -53,6 +54,7 @@ function normalizeInterview(value: unknown): ApplicationInterview | null {
 
 export function useApplicationWorkflow(applicationId: string) {
   const { session } = useAuth();
+  const { t } = useTranslation();
   const userId = session?.user.id;
   const [history, setHistory] = useState<StatusHistory[]>([]);
   const [reminders, setReminders] = useState<ApplicationReminder[]>([]);
@@ -64,7 +66,7 @@ export function useApplicationWorkflow(applicationId: string) {
 
   const load = useCallback(async () => {
     if (!userId) {
-      setErrorMessage("Your session is not available. Please log in again.");
+      setErrorMessage(t("error.sessionMissing"));
       setIsLoading(false);
       return;
     }
@@ -108,7 +110,7 @@ export function useApplicationWorkflow(applicationId: string) {
       nextReminders.some((item) => !item) ||
       nextInterviews.some((item) => !item)
     ) {
-      setErrorMessage("Workflow data returned in an unexpected format.");
+      setErrorMessage(t("applications.workflow.errors.unexpectedFormat"));
       setIsLoading(false);
       return;
     }
@@ -117,7 +119,7 @@ export function useApplicationWorkflow(applicationId: string) {
     setReminders(nextReminders as ApplicationReminder[]);
     setInterviews(nextInterviews as ApplicationInterview[]);
     setIsLoading(false);
-  }, [applicationId, userId]);
+  }, [applicationId, t, userId]);
 
   useEffect(() => {
     void load();
@@ -146,7 +148,7 @@ export function useApplicationWorkflow(applicationId: string) {
       setErrorMessage(error.message);
       return false;
     }
-    setSuccessMessage("Reminder added.");
+    setSuccessMessage(t("applications.workflow.reminderAdded"));
     await load();
     return true;
   }
@@ -201,7 +203,7 @@ export function useApplicationWorkflow(applicationId: string) {
       setErrorMessage(error.message);
       return false;
     }
-    setSuccessMessage("Interview added.");
+    setSuccessMessage(t("applications.workflow.interviewAdded"));
     await load();
     return true;
   }
