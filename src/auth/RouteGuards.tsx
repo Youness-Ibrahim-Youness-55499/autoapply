@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { LoadingState } from "../components/states/LoadingState";
+import { ProfileProvider, useProfileContext } from "../features/profile/ProfileProvider";
 import { useAuth } from "./AuthProvider";
 
 type RouteGuardProps = {
@@ -30,7 +31,7 @@ export function RequireAuth({ children }: RouteGuardProps) {
     return <Navigate replace state={{ from }} to="/login" />;
   }
 
-  return children ?? <Outlet />;
+  return <ProfileProvider>{children ?? <Outlet />}</ProfileProvider>;
 }
 
 export function PublicOnly({ children }: RouteGuardProps) {
@@ -41,6 +42,34 @@ export function PublicOnly({ children }: RouteGuardProps) {
   }
 
   if (session) {
+    return <Navigate replace to="/app" />;
+  }
+
+  return children;
+}
+
+export function RequireOnboarding({ children }: RouteGuardProps) {
+  const { isLoading, profile } = useProfileContext();
+
+  if (isLoading) {
+    return <SessionLoading />;
+  }
+
+  if (!profile.onboardingCompleted) {
+    return <Navigate replace to="/onboarding" />;
+  }
+
+  return children ?? <Outlet />;
+}
+
+export function OnboardingOnly({ children }: RouteGuardProps) {
+  const { isLoading, profile } = useProfileContext();
+
+  if (isLoading) {
+    return <SessionLoading />;
+  }
+
+  if (profile.onboardingCompleted) {
     return <Navigate replace to="/app" />;
   }
 

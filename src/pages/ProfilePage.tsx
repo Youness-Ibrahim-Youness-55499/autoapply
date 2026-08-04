@@ -12,7 +12,7 @@ import { ProfilePreferencesCard } from "../features/profile/components/ProfilePr
 import { ProfileProgress } from "../features/profile/components/ProfileProgress";
 import { ProfileSkillsCard } from "../features/profile/components/ProfileSkillsCard";
 import { ProfileSummaryCard } from "../features/profile/components/ProfileSummaryCard";
-import { useProfile } from "../features/profile/useProfile";
+import { useProfileContext } from "../features/profile/ProfileProvider";
 import { useTranslation } from "../i18n";
 
 export function ProfilePage() {
@@ -25,7 +25,7 @@ export function ProfilePage() {
     saveErrorMessage,
     saveProfile,
     successMessage,
-  } = useProfile();
+  } = useProfileContext();
   const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState<ProfileSection | null>(null);
 

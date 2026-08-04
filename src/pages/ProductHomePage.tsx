@@ -10,7 +10,7 @@ import type { Application } from "../features/applications/types";
 import { useApplications } from "../features/applications/useApplications";
 import { mockJobs, type MockJob } from "../features/jobs/mockJobs";
 import { getProfileCompletion } from "../features/profile/profile.utils";
-import { useProfile } from "../features/profile/useProfile";
+import { useProfileContext } from "../features/profile/ProfileProvider";
 import { EmptyState } from "../components/states/EmptyState";
 import { LoadingState } from "../components/states/LoadingState";
 import { ErrorState } from "../components/states/ErrorState";
@@ -208,7 +208,7 @@ export function ProductHomePage() {
       : "there";
 
   const { applications, isLoading, errorMessage } = useApplications();
-  const { profile } = useProfile();
+  const { profile } = useProfileContext();
   const profileCompletion = useMemo(() => getProfileCompletion(profile), [profile]);
 
   const [searchQuery, setSearchQuery] = useState("");

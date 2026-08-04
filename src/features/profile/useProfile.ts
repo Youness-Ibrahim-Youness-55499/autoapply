@@ -6,7 +6,7 @@ import { emptyCandidateProfile, type CandidateProfile } from "./profile.types";
 import { normalizeProfile, profileToRow } from "./profile.utils";
 
 const profileColumns =
-  "full_name, headline, location, desired_roles, skills, work_preference, employment_types, willing_to_relocate, professional_summary, experience, education, onboarding_completed";
+  "full_name, headline, location, desired_roles, skills, work_preference, employment_types, willing_to_relocate, professional_summary, experience, education, onboarding_completed, preferred_locations, minimum_salary, visa_status, preferred_languages, excluded_companies, excluded_industries, application_mode";
 
 export function useProfile() {
   const { session } = useAuth();
