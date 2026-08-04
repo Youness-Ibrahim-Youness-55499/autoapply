@@ -7,6 +7,15 @@ export const workPreferences = [
 
 export type WorkPreference = (typeof workPreferences)[number];
 
+// i18n keys for each option, shared by ProfilePreferencesCard (read
+// view) and ProfileEditModal (edit form) so the two never drift.
+export const workPreferenceLabelKeys: Record<WorkPreference, string> = {
+  flexible: "profile.workPreference.flexible",
+  hybrid: "profile.workPreference.hybrid",
+  onsite: "profile.workPreference.onsite",
+  remote: "profile.workPreference.remote",
+};
+
 export const employmentTypeOptions = [
   "Full-time",
   "Part-time",
@@ -14,6 +23,14 @@ export const employmentTypeOptions = [
   "Freelance",
   "Internship",
 ] as const;
+
+export const employmentTypeLabelKeys: Record<(typeof employmentTypeOptions)[number], string> = {
+  "Contract": "profile.employmentType.contract",
+  "Freelance": "profile.employmentType.freelance",
+  "Full-time": "profile.employmentType.fullTime",
+  "Internship": "profile.employmentType.internship",
+  "Part-time": "profile.employmentType.partTime",
+};
 
 export type ExperienceEntry = {
   company: string;

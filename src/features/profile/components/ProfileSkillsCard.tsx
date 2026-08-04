@@ -1,4 +1,5 @@
 import { Badge } from "../../../components/ui/Badge";
+import { useTranslation } from "../../../i18n";
 import { ProfileSectionCard } from "./ProfileSectionCard";
 
 const SKILLS_ICON = (
@@ -19,17 +20,21 @@ type ProfileSkillsCardProps = {
 // categories would mean guessing at data that doesn't exist; showing
 // them flat is the honest read of what's actually stored.
 export function ProfileSkillsCard({ onEdit, skills }: ProfileSkillsCardProps) {
+  const { t } = useTranslation();
+
   return (
     <ProfileSectionCard
-      editLabel="Edit"
+      editLabel={t("profile.edit")}
       icon={SKILLS_ICON}
       iconClassName="bg-brand-100 text-brand-800"
       onEdit={onEdit}
-      subtitle={`${skills.length} ${skills.length === 1 ? "skill" : "skills"}`}
-      title="Skills"
+      subtitle={t(skills.length === 1 ? "profile.skills.subtitleOne" : "profile.skills.subtitleOther", {
+        count: skills.length,
+      })}
+      title={t("profile.skills.title")}
     >
       {skills.length === 0 ? (
-        <p className="text-sm text-ink-muted">No skills added yet.</p>
+        <p className="text-sm text-ink-muted">{t("profile.skills.empty")}</p>
       ) : (
         <div className="flex flex-wrap gap-2">
           {skills.map((skill) => (

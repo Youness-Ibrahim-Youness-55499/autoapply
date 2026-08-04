@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../i18n";
 import type { EducationEntry } from "../profile.types";
 import { ProfileSectionCard } from "./ProfileSectionCard";
 
@@ -26,9 +27,7 @@ function initialBadge(label: string) {
 }
 
 function formatRange(entry: EducationEntry) {
-  const start = entry.startDate || "—";
-  const end = entry.endDate || "Present";
-  return `${start} - ${end}`;
+  return `${entry.startDate || "—"} - ${entry.endDate || "—"}`;
 }
 
 type ProfileEducationCardProps = {
@@ -37,17 +36,22 @@ type ProfileEducationCardProps = {
 };
 
 export function ProfileEducationCard({ education, onEdit }: ProfileEducationCardProps) {
+  const { t } = useTranslation();
+
   return (
     <ProfileSectionCard
-      editLabel="Edit"
+      editLabel={t("profile.edit")}
       icon={GRADUATION_CAP_ICON}
       iconClassName="bg-violet-100 text-violet-700"
       onEdit={onEdit}
-      subtitle={`${education.length} ${education.length === 1 ? "entry" : "entries"}`}
-      title="Education"
+      subtitle={t(
+        education.length === 1 ? "profile.education.subtitleOne" : "profile.education.subtitleOther",
+        { count: education.length },
+      )}
+      title={t("profile.education.title")}
     >
       {education.length === 0 ? (
-        <p className="text-sm text-ink-muted">No education added yet.</p>
+        <p className="text-sm text-ink-muted">{t("profile.education.empty")}</p>
       ) : (
         <ul className="-mt-1">
           {education.map((entry, index) => (

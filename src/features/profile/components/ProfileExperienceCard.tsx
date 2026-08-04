@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../i18n";
 import type { ExperienceEntry } from "../profile.types";
 import { ProfileSectionCard } from "./ProfileSectionCard";
 
@@ -27,29 +28,34 @@ function initialBadge(label: string, isCurrent: boolean) {
   );
 }
 
-function formatRange(entry: ExperienceEntry) {
-  const start = entry.startDate || "—";
-  const end = entry.current ? "Present" : entry.endDate || "—";
-  return `${start} – ${end}`;
-}
-
 type ProfileExperienceCardProps = {
   experience: ExperienceEntry[];
   onEdit: () => void;
 };
 
 export function ProfileExperienceCard({ experience, onEdit }: ProfileExperienceCardProps) {
+  const { t } = useTranslation();
+
+  function formatRange(entry: ExperienceEntry) {
+    const start = entry.startDate || "—";
+    const end = entry.current ? t("profile.experience.present") : entry.endDate || "—";
+    return `${start} – ${end}`;
+  }
+
   return (
     <ProfileSectionCard
-      editLabel="Edit"
+      editLabel={t("profile.edit")}
       icon={BRIEFCASE_ICON}
       iconClassName="bg-emerald-100 text-emerald-700"
       onEdit={onEdit}
-      subtitle={`${experience.length} ${experience.length === 1 ? "role" : "roles"}`}
-      title="Experience"
+      subtitle={t(
+        experience.length === 1 ? "profile.experience.subtitleOne" : "profile.experience.subtitleOther",
+        { count: experience.length },
+      )}
+      title={t("profile.experience.title")}
     >
       {experience.length === 0 ? (
-        <p className="text-sm text-ink-muted">No work experience added yet.</p>
+        <p className="text-sm text-ink-muted">{t("profile.experience.empty")}</p>
       ) : (
         <ul>
           {experience.map((entry, index) => (

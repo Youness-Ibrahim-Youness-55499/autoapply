@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../i18n";
 import type {
   EducationEntry,
   ExperienceEntry,
@@ -17,6 +18,8 @@ type ExperienceEditorProps = {
 };
 
 export function ExperienceEditor({ onChange, value }: ExperienceEditorProps) {
+  const { t } = useTranslation();
+
   function update(id: string, changes: Partial<ExperienceEntry>) {
     onChange(
       value.map((entry) =>
@@ -45,9 +48,9 @@ export function ExperienceEditor({ onChange, value }: ExperienceEditorProps) {
     <div>
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold">Work experience</h3>
+          <h3 className="text-lg font-semibold">{t("profile.experienceEditor.title")}</h3>
           <p className="mt-1 text-sm text-ink-muted">
-            Add the evidence Autoapply can use when matching roles.
+            {t("profile.experienceEditor.description")}
           </p>
         </div>
         <button
@@ -55,13 +58,13 @@ export function ExperienceEditor({ onChange, value }: ExperienceEditorProps) {
           onClick={add}
           type="button"
         >
-          Add role
+          {t("profile.experienceEditor.addRole")}
         </button>
       </div>
 
       {value.length === 0 ? (
         <p className="mt-5 rounded-xl border border-dashed border-line bg-canvas p-5 text-sm text-ink-muted">
-          No work experience added yet.
+          {t("profile.experienceEditor.empty")}
         </p>
       ) : (
         <div className="mt-5 space-y-4">
@@ -71,11 +74,11 @@ export function ExperienceEditor({ onChange, value }: ExperienceEditorProps) {
               key={entry.id}
             >
               <legend className="px-2 text-sm font-semibold">
-                Role {index + 1}
+                {t("profile.experienceEditor.roleLegend", { number: index + 1 })}
               </legend>
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="text-sm font-semibold">
-                  Job title
+                  {t("profile.experienceEditor.jobTitle")}
                   <input
                     className={inputClasses}
                     maxLength={160}
@@ -85,7 +88,7 @@ export function ExperienceEditor({ onChange, value }: ExperienceEditorProps) {
                   />
                 </label>
                 <label className="text-sm font-semibold">
-                  Company
+                  {t("profile.experienceEditor.company")}
                   <input
                     className={inputClasses}
                     maxLength={160}
@@ -95,7 +98,7 @@ export function ExperienceEditor({ onChange, value }: ExperienceEditorProps) {
                   />
                 </label>
                 <label className="text-sm font-semibold">
-                  Location
+                  {t("profile.experienceEditor.location")}
                   <input
                     className={inputClasses}
                     maxLength={160}
@@ -105,7 +108,7 @@ export function ExperienceEditor({ onChange, value }: ExperienceEditorProps) {
                 </label>
                 <span className="hidden sm:block" />
                 <label className="text-sm font-semibold">
-                  Start date
+                  {t("profile.experienceEditor.startDate")}
                   <input
                     className={inputClasses}
                     onChange={(event) => update(entry.id, { startDate: event.target.value })}
@@ -114,7 +117,7 @@ export function ExperienceEditor({ onChange, value }: ExperienceEditorProps) {
                   />
                 </label>
                 <label className="text-sm font-semibold">
-                  End date
+                  {t("profile.experienceEditor.endDate")}
                   <input
                     className={inputClasses}
                     disabled={entry.current}
@@ -136,17 +139,17 @@ export function ExperienceEditor({ onChange, value }: ExperienceEditorProps) {
                   }
                   type="checkbox"
                 />
-                I currently work here
+                {t("profile.experienceEditor.currentlyWorkHere")}
               </label>
               <label className="mt-4 block text-sm font-semibold">
-                Achievements and responsibilities
+                {t("profile.experienceEditor.achievements")}
                 <textarea
                   className={textareaClasses}
                   maxLength={2000}
                   onChange={(event) =>
                     update(entry.id, { description: event.target.value })
                   }
-                  placeholder="Focus on outcomes, scope, and measurable impact."
+                  placeholder={t("profile.experienceEditor.achievementsPlaceholder")}
                   value={entry.description}
                 />
               </label>
@@ -155,7 +158,7 @@ export function ExperienceEditor({ onChange, value }: ExperienceEditorProps) {
                 onClick={() => onChange(value.filter((item) => item.id !== entry.id))}
                 type="button"
               >
-                Remove role
+                {t("profile.experienceEditor.removeRole")}
               </button>
             </fieldset>
           ))}
@@ -171,6 +174,8 @@ type EducationEditorProps = {
 };
 
 export function EducationEditor({ onChange, value }: EducationEditorProps) {
+  const { t } = useTranslation();
+
   function update(id: string, changes: Partial<EducationEntry>) {
     onChange(
       value.map((entry) =>
@@ -197,9 +202,9 @@ export function EducationEditor({ onChange, value }: EducationEditorProps) {
     <div>
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold">Education</h3>
+          <h3 className="text-lg font-semibold">{t("profile.educationEditor.title")}</h3>
           <p className="mt-1 text-sm text-ink-muted">
-            Record degrees, training, or other relevant study.
+            {t("profile.educationEditor.description")}
           </p>
         </div>
         <button
@@ -207,13 +212,13 @@ export function EducationEditor({ onChange, value }: EducationEditorProps) {
           onClick={add}
           type="button"
         >
-          Add education
+          {t("profile.educationEditor.addEducation")}
         </button>
       </div>
 
       {value.length === 0 ? (
         <p className="mt-5 rounded-xl border border-dashed border-line bg-canvas p-5 text-sm text-ink-muted">
-          No education added yet.
+          {t("profile.educationEditor.empty")}
         </p>
       ) : (
         <div className="mt-5 space-y-4">
@@ -223,11 +228,11 @@ export function EducationEditor({ onChange, value }: EducationEditorProps) {
               key={entry.id}
             >
               <legend className="px-2 text-sm font-semibold">
-                Education {index + 1}
+                {t("profile.educationEditor.entryLegend", { number: index + 1 })}
               </legend>
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="text-sm font-semibold">
-                  Institution
+                  {t("profile.educationEditor.institution")}
                   <input
                     className={inputClasses}
                     maxLength={160}
@@ -239,7 +244,7 @@ export function EducationEditor({ onChange, value }: EducationEditorProps) {
                   />
                 </label>
                 <label className="text-sm font-semibold">
-                  Degree or qualification
+                  {t("profile.educationEditor.degree")}
                   <input
                     className={inputClasses}
                     maxLength={160}
@@ -249,7 +254,7 @@ export function EducationEditor({ onChange, value }: EducationEditorProps) {
                   />
                 </label>
                 <label className="text-sm font-semibold">
-                  Field of study
+                  {t("profile.educationEditor.field")}
                   <input
                     className={inputClasses}
                     maxLength={160}
@@ -259,7 +264,7 @@ export function EducationEditor({ onChange, value }: EducationEditorProps) {
                 </label>
                 <span className="hidden sm:block" />
                 <label className="text-sm font-semibold">
-                  Start date
+                  {t("profile.experienceEditor.startDate")}
                   <input
                     className={inputClasses}
                     onChange={(event) => update(entry.id, { startDate: event.target.value })}
@@ -268,7 +273,7 @@ export function EducationEditor({ onChange, value }: EducationEditorProps) {
                   />
                 </label>
                 <label className="text-sm font-semibold">
-                  End date
+                  {t("profile.experienceEditor.endDate")}
                   <input
                     className={inputClasses}
                     onChange={(event) => update(entry.id, { endDate: event.target.value })}
@@ -282,7 +287,7 @@ export function EducationEditor({ onChange, value }: EducationEditorProps) {
                 onClick={() => onChange(value.filter((item) => item.id !== entry.id))}
                 type="button"
               >
-                Remove education
+                {t("profile.educationEditor.removeEducation")}
               </button>
             </fieldset>
           ))}

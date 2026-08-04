@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import { Modal } from "../../../components/ui/Modal";
+import { useTranslation } from "../../../i18n";
 import {
+  employmentTypeLabelKeys,
   employmentTypeOptions,
+  workPreferenceLabelKeys,
   workPreferences,
   type CandidateProfile,
   type WorkPreference,
@@ -13,12 +16,12 @@ import { TagEditor } from "./TagEditor";
 
 export type ProfileSection = "education" | "experience" | "preferences" | "skills" | "summary";
 
-const SECTION_TITLES: Record<ProfileSection, string> = {
-  education: "Edit education",
-  experience: "Edit experience",
-  preferences: "Edit role preferences",
-  skills: "Edit skills",
-  summary: "Edit professional summary",
+const SECTION_TITLE_KEYS: Record<ProfileSection, string> = {
+  education: "profile.editModal.educationTitle",
+  experience: "profile.editModal.experienceTitle",
+  preferences: "profile.editModal.preferencesTitle",
+  skills: "profile.editModal.skillsTitle",
+  summary: "profile.editModal.summaryTitle",
 };
 
 const inputClasses =
@@ -45,6 +48,7 @@ export function ProfileEditModal({
   profile,
   section,
 }: ProfileEditModalProps) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState(profile);
 
   useEffect(() => {
@@ -74,28 +78,63 @@ export function ProfileEditModal({
       footer={
         <>
           <Button disabled={isSaving} onClick={onClose} variant="secondary">
-            Cancel
+            {t("profile.cancel")}
           </Button>
           <Button disabled={isSaving} onClick={() => void handleSave()}>
-            {isSaving ? "Saving…" : "Save"}
+            {isSaving ? t("profile.saving") : t("profile.save")}
           </Button>
         </>
       }
       isOpen={section !== null}
       onClose={onClose}
-      title={section ? SECTION_TITLES[section] : ""}
+      title={section ? t(SECTION_TITLE_KEYS[section]) : ""}
     >
       {section === "summary" && (
-        <label className="block text-sm font-semibold">
-          Professional summary
-          <textarea
-            className={textareaClasses}
-            maxLength={2000}
-            onChange={(event) => update({ professionalSummary: event.target.value })}
-            placeholder="Summarize your experience, strengths, and the work you want to do."
-            value={draft.professionalSummary}
-          />
-        </label>
+        <div className="space-y-4">
+          <label className="block text-sm font-semibold">
+            {t("profile.editModal.fullNameLabel")}
+            <input
+              autoComplete="name"
+              className={inputClasses}
+              maxLength={120}
+              onChange={(event) => update({ fullName: event.target.value })}
+              required
+              value={draft.fullName}
+            />
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="text-sm font-semibold">
+              {t("profile.editModal.headlineLabel")}
+              <input
+                className={inputClasses}
+                maxLength={180}
+                onChange={(event) => update({ headline: event.target.value })}
+                placeholder={t("profile.editModal.headlinePlaceholder")}
+                value={draft.headline}
+              />
+            </label>
+            <label className="text-sm font-semibold">
+              {t("profile.editModal.locationLabel")}
+              <input
+                className={inputClasses}
+                maxLength={160}
+                onChange={(event) => update({ location: event.target.value })}
+                placeholder={t("profile.editModal.locationPlaceholder")}
+                value={draft.location}
+              />
+            </label>
+          </div>
+          <label className="block text-sm font-semibold">
+            {t("profile.editModal.summaryLabel")}
+            <textarea
+              className={textareaClasses}
+              maxLength={2000}
+              onChange={(event) => update({ professionalSummary: event.target.value })}
+              placeholder={t("profile.editModal.summaryPlaceholder")}
+              value={draft.professionalSummary}
+            />
+          </label>
+        </div>
       )}
 
       {section === "education" && (
@@ -108,10 +147,10 @@ export function ProfileEditModal({
 
       {section === "skills" && (
         <TagEditor
-          label="Skills"
+          label={t("profile.editModal.skillsLabel")}
           maxItems={30}
           onChange={(skills) => update({ skills })}
-          placeholder="e.g. React"
+          placeholder={t("profile.editModal.skillsPlaceholder")}
           value={draft.skills}
         />
       )}
@@ -119,15 +158,15 @@ export function ProfileEditModal({
       {section === "preferences" && (
         <div className="space-y-6">
           <TagEditor
-            label="Desired roles"
+            label={t("profile.editModal.desiredRolesLabel")}
             maxItems={10}
             onChange={(desiredRoles) => update({ desiredRoles })}
-            placeholder="e.g. Product designer"
+            placeholder={t("profile.editModal.desiredRolesPlaceholder")}
             value={draft.desiredRoles}
           />
 
           <div>
-            <span className="text-sm font-semibold">Work style</span>
+            <span className="text-sm font-semibold">{t("profile.preferences.workStyle")}</span>
             <div className="mt-2 grid gap-2 sm:grid-cols-4">
               {workPreferences.map((preference) => (
                 <label
@@ -145,14 +184,14 @@ export function ProfileEditModal({
                     onChange={() => update({ workPreference: preference as WorkPreference })}
                     type="radio"
                   />
-                  {preference.charAt(0).toUpperCase() + preference.slice(1)}
+                  {t(workPreferenceLabelKeys[preference])}
                 </label>
               ))}
             </div>
           </div>
 
           <fieldset>
-            <legend className="text-sm font-semibold">Employment type</legend>
+            <legend className="text-sm font-semibold">{t("profile.preferences.employmentType")}</legend>
             <div className="mt-2 flex flex-wrap gap-2">
               {employmentTypeOptions.map((type) => (
                 <label
@@ -169,7 +208,7 @@ export function ProfileEditModal({
                     onChange={() => toggleEmploymentType(type)}
                     type="checkbox"
                   />
-                  {type}
+                  {t(employmentTypeLabelKeys[type])}
                 </label>
               ))}
             </div>
@@ -182,7 +221,7 @@ export function ProfileEditModal({
               onChange={(event) => update({ willingToRelocate: event.target.checked })}
               type="checkbox"
             />
-            I am willing to relocate
+            {t("profile.editModal.willingToRelocate")}
           </label>
         </div>
       )}

@@ -1,6 +1,9 @@
 import { Badge } from "../../../components/ui/Badge";
+import { useTranslation } from "../../../i18n";
 import {
+  employmentTypeLabelKeys,
   employmentTypeOptions,
+  workPreferenceLabelKeys,
   workPreferences,
   type CandidateProfile,
 } from "../profile.types";
@@ -14,10 +17,6 @@ const PREFERENCES_ICON = (
   </svg>
 );
 
-function label(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
 type ProfilePreferencesCardProps = {
   onEdit: () => void;
   profile: CandidateProfile;
@@ -28,20 +27,22 @@ type ProfilePreferencesCardProps = {
 // defaults" -- autoapply doesn't auto-fill ATS forms, so that label
 // would claim a capability the product doesn't have.
 export function ProfilePreferencesCard({ onEdit, profile }: ProfilePreferencesCardProps) {
+  const { t } = useTranslation();
+
   return (
     <ProfileSectionCard
-      editLabel="Edit"
+      editLabel={t("profile.edit")}
       icon={PREFERENCES_ICON}
       iconClassName="bg-blue-100 text-blue-700"
       onEdit={onEdit}
-      subtitle="The roles and work style you're looking for."
-      title="Role preferences"
+      subtitle={t("profile.preferences.subtitle")}
+      title={t("profile.preferences.title")}
     >
       <div>
-        <p className="eyebrow">Desired roles</p>
+        <p className="eyebrow">{t("profile.preferences.desiredRoles")}</p>
         <div className="mt-2.5 flex flex-wrap gap-2">
           {profile.desiredRoles.length === 0 ? (
-            <p className="text-sm text-ink-muted">No desired roles added yet.</p>
+            <p className="text-sm text-ink-muted">{t("profile.preferences.desiredRolesEmpty")}</p>
           ) : (
             profile.desiredRoles.map((role) => <Badge key={role}>{role}</Badge>)
           )}
@@ -49,31 +50,14 @@ export function ProfilePreferencesCard({ onEdit, profile }: ProfilePreferencesCa
       </div>
 
       <div className="mt-5">
-        <p className="eyebrow">Work style</p>
+        <p className="eyebrow">{t("profile.preferences.workStyle")}</p>
         <div className="mt-2.5 flex flex-wrap gap-2">
-          {workPreferences.map((preference) => (
-            <Badge
-              key={preference}
-              tone={profile.workPreference === preference ? "active" : "inactive"}
-            >
-              <span aria-hidden="true">
-                {profile.workPreference === preference ? "✓" : "✕"}
-              </span>
-              {label(preference)}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-5">
-        <p className="eyebrow">Employment type</p>
-        <div className="mt-2.5 flex flex-wrap gap-2">
-          {employmentTypeOptions.map((type) => {
-            const active = profile.employmentTypes.includes(type);
+          {workPreferences.map((preference) => {
+            const active = profile.workPreference === preference;
             return (
-              <Badge key={type} tone={active ? "active" : "inactive"}>
+              <Badge key={preference} tone={active ? "active" : "inactive"}>
                 <span aria-hidden="true">{active ? "✓" : "✕"}</span>
-                {type}
+                {t(workPreferenceLabelKeys[preference])}
               </Badge>
             );
           })}
@@ -81,11 +65,26 @@ export function ProfilePreferencesCard({ onEdit, profile }: ProfilePreferencesCa
       </div>
 
       <div className="mt-5">
-        <p className="eyebrow">Relocation</p>
+        <p className="eyebrow">{t("profile.preferences.employmentType")}</p>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          {employmentTypeOptions.map((type) => {
+            const active = profile.employmentTypes.includes(type);
+            return (
+              <Badge key={type} tone={active ? "active" : "inactive"}>
+                <span aria-hidden="true">{active ? "✓" : "✕"}</span>
+                {t(employmentTypeLabelKeys[type])}
+              </Badge>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <p className="eyebrow">{t("profile.preferences.relocation")}</p>
         <div className="mt-2.5">
           <Badge tone={profile.willingToRelocate ? "active" : "inactive"}>
             <span aria-hidden="true">{profile.willingToRelocate ? "✓" : "✕"}</span>
-            Can relocate
+            {t("profile.preferences.canRelocate")}
           </Badge>
         </div>
       </div>

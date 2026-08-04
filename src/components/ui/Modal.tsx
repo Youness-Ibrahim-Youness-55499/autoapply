@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
+import { useTranslation } from "../../i18n";
 
 type ModalProps = {
   children: ReactNode;
@@ -13,6 +14,7 @@ type ModalProps = {
 // the same accessibility rigor AppShell's mobile drawer already applies,
 // written fresh here since that drawer isn't a reusable component.
 export function Modal({ children, footer, isOpen, onClose, title }: ModalProps) {
+  const { t } = useTranslation();
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -59,7 +61,7 @@ export function Modal({ children, footer, isOpen, onClose, title }: ModalProps) 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-6 backdrop-blur-[2px]">
       <button
-        aria-label="Close dialog"
+        aria-label={t("common.closeDialog")}
         className="absolute inset-0 cursor-default"
         onClick={onClose}
         type="button"
@@ -76,7 +78,7 @@ export function Modal({ children, footer, isOpen, onClose, title }: ModalProps) 
             {title}
           </h2>
           <button
-            aria-label="Close"
+            aria-label={t("common.close")}
             className="grid size-9 shrink-0 place-items-center rounded-full text-ink-muted transition hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700"
             onClick={onClose}
             ref={closeButtonRef}

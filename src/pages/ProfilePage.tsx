@@ -86,7 +86,7 @@ export function ProfilePage() {
               <div className="flex flex-col gap-6">
                 <ProfileSummaryCard
                   onEdit={() => setActiveSection("summary")}
-                  summary={profile.professionalSummary}
+                  profile={profile}
                 />
                 <ProfileEducationCard
                   education={profile.education}
