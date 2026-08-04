@@ -4,6 +4,7 @@ import { AppShell } from "./components/app/AppShell";
 import { ApplicationsPage } from "./pages/ApplicationsPage";
 import { TemplatesPage } from "./features/templates/TemplatesPage";
 import { AuthPage } from "./pages/AuthPage";
+import { DoclingTestPage } from "./pages/DoclingTestPage";
 import { DocumentsPage } from "./pages/DocumentsPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LegalPage } from "./pages/LegalPage";
@@ -40,6 +41,7 @@ export function App() {
           <Route element={<ProfilePage />} path="profile" />
           <Route element={<DocumentsPage />} path="documents" />
           <Route element={<SettingsPage />} path="settings" />
+          <Route element={<DoclingTestPage />} path="docling-test" />
           <Route element={<Navigate replace to="/app" />} path="*" />
         </Route>
       </Route>

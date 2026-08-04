@@ -5,3 +5,5 @@ dist/
 *.log
 *.tsbuildinfo
 supabase/.temp/
+docling-service/venv/
+docling-service/*.log
