@@ -1,11 +1,17 @@
+import { useState } from "react";
 import { ProductPageHeader } from "../components/app/ProductPageHeader";
 import { Seo } from "../components/Seo";
 import { PageContainer } from "../components/layout/PageContainer";
 import { ErrorState } from "../components/states/ErrorState";
 import { LoadingState } from "../components/states/LoadingState";
 import { Button } from "../components/ui/Button";
-import { ProfileForm } from "../features/profile/components/ProfileForm";
+import { ProfileEditModal, type ProfileSection } from "../features/profile/components/ProfileEditModal";
+import { ProfileEducationCard } from "../features/profile/components/ProfileEducationCard";
+import { ProfileExperienceCard } from "../features/profile/components/ProfileExperienceCard";
+import { ProfilePreferencesCard } from "../features/profile/components/ProfilePreferencesCard";
 import { ProfileProgress } from "../features/profile/components/ProfileProgress";
+import { ProfileSkillsCard } from "../features/profile/components/ProfileSkillsCard";
+import { ProfileSummaryCard } from "../features/profile/components/ProfileSummaryCard";
 import { useProfile } from "../features/profile/useProfile";
 import { useTranslation } from "../i18n";
 
@@ -21,6 +27,7 @@ export function ProfilePage() {
     successMessage,
   } = useProfile();
   const { t } = useTranslation();
+  const [activeSection, setActiveSection] = useState<ProfileSection | null>(null);
 
   return (
     <>
@@ -56,34 +63,63 @@ export function ProfilePage() {
         )}
 
         {!isLoading && !loadErrorMessage && (
-          <div className="mt-10 grid max-w-6xl items-start gap-7 lg:grid-cols-[18rem_minmax(0,1fr)]">
-            <div className="lg:sticky lg:top-28">
-              <ProfileProgress profile={profile} />
-              <div aria-live="polite">
-                {successMessage && (
-                  <p className="mt-4 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-900">
-                    {successMessage}
-                  </p>
-                )}
-                {saveErrorMessage && (
-                  <p
-                    className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
-                    role="alert"
-                  >
-                    {saveErrorMessage}
-                  </p>
-                )}
-              </div>
+          <div className="mt-8 max-w-6xl">
+            <ProfileProgress profile={profile} />
+
+            <div aria-live="polite">
+              {successMessage && (
+                <p className="mt-4 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-900">
+                  {successMessage}
+                </p>
+              )}
+              {saveErrorMessage && (
+                <p
+                  className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                  role="alert"
+                >
+                  {saveErrorMessage}
+                </p>
+              )}
             </div>
 
-            <ProfileForm
-              isSaving={isSaving}
-              onSave={saveProfile}
-              profile={profile}
-            />
+            <div className="mt-6 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+              <div className="flex flex-col gap-6">
+                <ProfileSummaryCard
+                  onEdit={() => setActiveSection("summary")}
+                  summary={profile.professionalSummary}
+                />
+                <ProfileEducationCard
+                  education={profile.education}
+                  onEdit={() => setActiveSection("education")}
+                />
+                <ProfileExperienceCard
+                  experience={profile.experience}
+                  onEdit={() => setActiveSection("experience")}
+                />
+              </div>
+
+              <div className="flex flex-col gap-6">
+                <ProfilePreferencesCard
+                  onEdit={() => setActiveSection("preferences")}
+                  profile={profile}
+                />
+                <ProfileSkillsCard
+                  onEdit={() => setActiveSection("skills")}
+                  skills={profile.skills}
+                />
+              </div>
+            </div>
           </div>
         )}
       </PageContainer>
+
+      <ProfileEditModal
+        isSaving={isSaving}
+        onClose={() => setActiveSection(null)}
+        onSave={saveProfile}
+        profile={profile}
+        section={activeSection}
+      />
     </>
   );
 }

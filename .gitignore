@@ -4,5 +4,4 @@ dist/
 *.local
 *.log
 *.tsbuildinfo
-
-
+supabase/.temp/
