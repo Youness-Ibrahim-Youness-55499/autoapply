@@ -3,6 +3,7 @@ import { useTranslation } from "../../i18n";
 import { TemplateEditor } from "./TemplateEditor";
 import { useTemplates, type TemplateInput } from "./useTemplates";
 import { Button } from "../../components/ui/Button";
+import { templateKindLabelKeys } from "./templateKindLabels";
 
 export function TemplatesPage() {
   const {
@@ -30,8 +31,10 @@ export function TemplatesPage() {
     await updateTemplate(id, values);
   };
 
+  const { t } = useTranslation();
+
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this template?")) return;
+    if (!confirm(t("templates.confirmDelete"))) return;
     await deleteTemplate(id);
   };
 
@@ -47,8 +50,6 @@ export function TemplatesPage() {
     }
   };
 
-  const { t } = useTranslation();
-
   return (
     <section className="py-10 sm:py-14 lg:px-10">
       <div className="max-w-6xl">
@@ -61,7 +62,7 @@ export function TemplatesPage() {
 
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {isLoading ? (
-            <div>Loading templates…</div>
+            <div>{t("templates.loading")}</div>
           ) : loadErrorMessage ? (
             <div className="text-red-700">{loadErrorMessage}</div>
           ) : (
@@ -70,7 +71,7 @@ export function TemplatesPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="text-sm font-semibold">{template.title}</div>
-                    <div className="mt-1 text-xs text-ink-muted">{template.kind} {template.category ? `— ${template.category.name}` : ""}</div>
+                    <div className="mt-1 text-xs text-ink-muted">{t(templateKindLabelKeys[template.kind])} {template.category ? `— ${template.category.name}` : ""}</div>
                     <pre className="mt-2 max-h-28 overflow-auto whitespace-pre-wrap text-sm">{template.content}</pre>
                   </div>
                   <div className="flex flex-col items-end gap-2">
@@ -105,7 +106,7 @@ export function TemplatesPage() {
         <div className="fixed inset-0 z-50 flex items-start justify-center p-6">
           <div className="max-w-2xl w-full">
             <div className="rounded-xl bg-white p-6 shadow-lg">
-              <button className="mb-4 text-sm text-ink-muted" onClick={() => { setIsCreating(false); setEditing(null); }}>Close</button>
+              <button className="mb-4 text-sm text-ink-muted" onClick={() => { setIsCreating(false); setEditing(null); }}>{t("common.close")}</button>
               <TemplateEditor
                 template={templates.find((t) => t.id === editing)}
                 categories={categories}

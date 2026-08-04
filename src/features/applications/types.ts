@@ -46,14 +46,14 @@ export const interviewStages = [
 ] as const;
 export type InterviewStage = (typeof interviewStages)[number];
 
-export const interviewStageLabels: Record<InterviewStage, string> = {
-  case_study: "Case study",
-  final: "Final interview",
-  onsite: "On-site",
-  other: "Other",
-  recruiter: "Recruiter call",
-  screening: "Screening",
-  technical: "Technical interview",
+export const interviewStageLabelKeys: Record<InterviewStage, string> = {
+  case_study: "applications.interviewStage.caseStudy",
+  final: "applications.interviewStage.final",
+  onsite: "applications.interviewStage.onsite",
+  other: "applications.interviewStage.other",
+  recruiter: "applications.interviewStage.recruiter",
+  screening: "applications.interviewStage.screening",
+  technical: "applications.interviewStage.technical",
 };
 
 export const reminderTypes = [
@@ -63,11 +63,11 @@ export const reminderTypes = [
   "task",
 ] as const;
 export type ReminderType = (typeof reminderTypes)[number];
-export const reminderTypeLabels: Record<ReminderType, string> = {
-  deadline: "Deadline",
-  follow_up: "Follow-up",
-  interview: "Interview",
-  task: "Task",
+export const reminderTypeLabelKeys: Record<ReminderType, string> = {
+  deadline: "applications.reminderType.deadline",
+  follow_up: "applications.reminderType.followUp",
+  interview: "applications.reminderType.interview",
+  task: "applications.reminderType.task",
 };
 
 export type StatusHistory = {

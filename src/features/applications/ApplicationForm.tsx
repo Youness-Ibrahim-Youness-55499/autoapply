@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "../../auth/AuthProvider";
 import { Button } from "../../components/ui/Button";
+import { useTranslation } from "../../i18n";
 import { useDocuments } from "../documents/useDocuments";
 import { useTemplates } from "../templates/useTemplates";
 import { useApplicationChecklist } from "../checklists/useApplicationChecklist";
@@ -29,6 +30,7 @@ export function ApplicationForm({
   onSaved,
 }: ApplicationFormProps) {
   const { session } = useAuth();
+  const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus>(
@@ -55,7 +57,7 @@ export function ApplicationForm({
     const userId = session?.user.id;
 
     if (!userId) {
-      setErrorMessage("Your session is not available. Please log in again.");
+      setErrorMessage(t("error.sessionMissing"));
       return;
     }
 
@@ -66,7 +68,7 @@ export function ApplicationForm({
     });
 
     if (!parseResult.success) {
-      setErrorMessage(parseResult.error);
+      setErrorMessage(t(parseResult.error));
       return;
     }
 
@@ -90,7 +92,7 @@ export function ApplicationForm({
       }
 
       if (!data) {
-        setErrorMessage("This application could not be found or is no longer available.");
+        setErrorMessage(t("applications.form.notFoundOnUpdate"));
         setIsSubmitting(false);
         return;
       }
@@ -117,14 +119,12 @@ export function ApplicationForm({
       id="application-form"
     >
       <div>
-        <p className="eyebrow">{isEditing ? "Update record" : "New record"}</p>
+        <p className="eyebrow">{t(isEditing ? "applications.form.eyebrowEdit" : "applications.form.eyebrowNew")}</p>
         <h3 className="mt-2 text-2xl font-semibold" id="application-form-title">
-          {isEditing ? "Edit application" : "Add an application"}
+          {t(isEditing ? "applications.form.titleEdit" : "applications.form.titleNew")}
         </h3>
         <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-          {isEditing
-            ? "Review the saved details and change only what needs updating."
-            : "Save the opportunity now. You can update its details and status later."}
+          {t(isEditing ? "applications.form.descriptionEdit" : "applications.form.descriptionNew")}
         </p>
       </div>
 
@@ -132,51 +132,53 @@ export function ApplicationForm({
         <fieldset disabled={isSubmitting}>
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="text-sm font-semibold">
-              Company
+              {t("applications.form.companyLabel")}
               <input
                 autoFocus
                 className={inputClasses}
                 defaultValue={application?.company_name}
                 maxLength={160}
                 name="company_name"
-                placeholder="Company name"
+                placeholder={t("applications.form.companyPlaceholder")}
                 required
               />
             </label>
             <label className="text-sm font-semibold">
-              Job title
+              {t("applications.form.jobTitleLabel")}
               <input
                 className={inputClasses}
                 defaultValue={application?.job_title}
                 maxLength={160}
                 name="job_title"
-                placeholder="Role title"
+                placeholder={t("applications.form.jobTitlePlaceholder")}
                 required
               />
             </label>
             <label className="text-sm font-semibold">
-              Location <span className="font-normal text-ink-muted">(optional)</span>
+              {t("applications.form.locationLabel")}{" "}
+              <span className="font-normal text-ink-muted">{t("common.optional")}</span>
               <input
                 className={inputClasses}
                 defaultValue={application?.location ?? ""}
                 maxLength={160}
                 name="location"
-                placeholder="Berlin, Remote..."
+                placeholder={t("applications.form.locationPlaceholder")}
               />
             </label>
             <label className="text-sm font-semibold">
-              Job link <span className="font-normal text-ink-muted">(optional)</span>
+              {t("applications.form.jobLinkLabel")}{" "}
+              <span className="font-normal text-ink-muted">{t("common.optional")}</span>
               <input
                 className={inputClasses}
                 defaultValue={application?.job_url ?? ""}
                 maxLength={2048}
                 name="job_url"
-                placeholder="https://..."
+                placeholder={t("applications.form.jobLinkPlaceholder")}
                 type="url"
               />
             </label>
             <label className="text-sm font-semibold">
-              Status
+              {t("status.label")}
               <select
                 className={inputClasses}
                 name="status"
@@ -189,13 +191,14 @@ export function ApplicationForm({
               >
                 {applicationStatuses.map((status) => (
                   <option key={status} value={status}>
-                    {applicationStatusDetails[status].label}
+                    {t(applicationStatusDetails[status].labelKey)}
                   </option>
                 ))}
               </select>
             </label>
             <label className="text-sm font-semibold">
-              Applied date <span className="font-normal text-ink-muted">(optional)</span>
+              {t("applications.form.appliedDateLabel")}{" "}
+              <span className="font-normal text-ink-muted">{t("common.optional")}</span>
               <input
                 className={inputClasses}
                 defaultValue={application?.applied_at ?? ""}
@@ -204,18 +207,19 @@ export function ApplicationForm({
               />
             </label>
             <label className="text-sm font-semibold">
-              Salary <span className="font-normal text-ink-muted">(optional)</span>
+              {t("applications.form.salaryLabel")}{" "}
+              <span className="font-normal text-ink-muted">{t("common.optional")}</span>
               <input
                 className={inputClasses}
                 defaultValue={application?.salary ?? ""}
                 maxLength={160}
                 name="salary"
-                placeholder="€65,000–€75,000"
+                placeholder={t("applications.form.salaryPlaceholder")}
               />
             </label>
             <label className="text-sm font-semibold">
-              Application deadline{" "}
-              <span className="font-normal text-ink-muted">(optional)</span>
+              {t("applications.form.deadlineLabel")}{" "}
+              <span className="font-normal text-ink-muted">{t("common.optional")}</span>
               <input
                 className={inputClasses}
                 defaultValue={application?.deadline ?? ""}
@@ -224,8 +228,8 @@ export function ApplicationForm({
               />
             </label>
             <label className="text-sm font-semibold">
-              Follow-up date{" "}
-              <span className="font-normal text-ink-muted">(optional)</span>
+              {t("applications.form.followUpLabel")}{" "}
+              <span className="font-normal text-ink-muted">{t("common.optional")}</span>
               <input
                 className={inputClasses}
                 defaultValue={application?.follow_up_at ?? ""}
@@ -236,34 +240,34 @@ export function ApplicationForm({
           </div>
 
           <label className="mt-5 block text-sm font-semibold">
-            Job description{" "}
-            <span className="font-normal text-ink-muted">(optional)</span>
+            {t("applications.form.jobDescriptionLabel")}{" "}
+            <span className="font-normal text-ink-muted">{t("common.optional")}</span>
             <textarea
               className={`${inputClasses} min-h-52 py-3`}
               defaultValue={application?.job_description ?? ""}
               maxLength={50000}
               name="job_description"
-              placeholder="Paste the job description here. Nothing will be fetched automatically."
+              placeholder={t("applications.form.jobDescriptionPlaceholder")}
             />
           </label>
 
           <label className="mt-5 block text-sm font-semibold">
-            Personal notes{" "}
-            <span className="font-normal text-ink-muted">(optional)</span>
+            {t("applications.form.notesLabel")}{" "}
+            <span className="font-normal text-ink-muted">{t("common.optional")}</span>
             <textarea
               className={`${inputClasses} min-h-28 py-3`}
               defaultValue={application?.notes ?? ""}
               maxLength={10000}
               name="notes"
-              placeholder="Add useful context about this opportunity."
+              placeholder={t("applications.form.notesPlaceholder")}
             />
           </label>
 
           <div className="mt-7 border-t border-line pt-6">
-            <h4 className="text-lg font-semibold">Recruiter or hiring contact</h4>
+            <h4 className="text-lg font-semibold">{t("applications.form.recruiterHeading")}</h4>
             <div className="mt-4 grid gap-5 sm:grid-cols-3">
               <label className="text-sm font-semibold">
-                Name
+                {t("applications.form.recruiterNameLabel")}
                 <input
                   className={inputClasses}
                   defaultValue={application?.recruiter_name ?? ""}
@@ -272,7 +276,7 @@ export function ApplicationForm({
                 />
               </label>
               <label className="text-sm font-semibold">
-                Email
+                {t("applications.form.recruiterEmailLabel")}
                 <input
                   className={inputClasses}
                   defaultValue={application?.recruiter_email ?? ""}
@@ -282,7 +286,7 @@ export function ApplicationForm({
                 />
               </label>
               <label className="text-sm font-semibold">
-                Phone
+                {t("applications.form.recruiterPhoneLabel")}
                 <input
                   className={inputClasses}
                   defaultValue={application?.recruiter_phone ?? ""}
@@ -294,42 +298,42 @@ export function ApplicationForm({
           </div>
 
           <div className="mt-7 border-t border-line pt-6">
-            <h4 className="text-lg font-semibold">Application documents</h4>
+            <h4 className="text-lg font-semibold">{t("applications.form.documentsHeading")}</h4>
             <p className="mt-1 text-sm text-ink-muted">
-              Associate private files already stored in your document workspace.
+              {t("applications.form.documentsDescription")}
             </p>
             {documentsError && (
               <p className="mt-3 text-sm text-red-700">
-                Documents could not be loaded: {documentsError}
+                {t("applications.form.documentsLoadError", { error: documentsError })}
               </p>
             )}
             <div className="mt-4 grid gap-5 sm:grid-cols-2">
               <label className="text-sm font-semibold">
-                CV
+                {t("applications.form.cvLabel")}
                 <select
                   className={inputClasses}
                   defaultValue={application?.cv_document_id ?? ""}
                   disabled={areDocumentsLoading || Boolean(documentsError)}
                   name="cv_document_id"
                 >
-                  <option value="">No CV selected</option>
+                  <option value="">{t("applications.form.noCvSelected")}</option>
                   {cvDocuments.map((document) => (
                     <option key={document.id} value={document.id}>
                       {document.displayName}
-                      {document.isDefault ? " — Default" : ""}
+                      {document.isDefault ? t("applications.form.defaultSuffix") : ""}
                     </option>
                   ))}
                 </select>
               </label>
               <label className="text-sm font-semibold">
-                Cover letter
+                {t("applications.form.coverLetterLabel")}
                 <select
                   className={inputClasses}
                   defaultValue={application?.cover_letter_document_id ?? ""}
                   disabled={areDocumentsLoading || Boolean(documentsError)}
                   name="cover_letter_document_id"
                 >
-                  <option value="">No cover letter selected</option>
+                  <option value="">{t("applications.form.noCoverLetterSelected")}</option>
                   {coverLetterDocuments.map((document) => (
                     <option key={document.id} value={document.id}>
                       {document.displayName}
@@ -339,20 +343,20 @@ export function ApplicationForm({
               </label>
             </div>
             <div className="mt-6 border-t border-line pt-6">
-              <h4 className="text-lg font-semibold">Preparation checklist</h4>
-              <p className="mt-1 text-sm text-ink-muted">Track application preparation progress.</p>
+              <h4 className="text-lg font-semibold">{t("applications.form.checklistHeading")}</h4>
+              <p className="mt-1 text-sm text-ink-muted">{t("applications.form.checklistDescription")}</p>
 
               {application ? (
                 <div className="mt-4 grid gap-3">
                   {[
-                    ["cv_selected", "CV selected"],
-                    ["cover_letter_prepared", "Cover letter prepared"],
-                    ["contact_details_reviewed", "Contact details reviewed"],
-                    ["screening_completed", "Screening questions completed"],
-                    ["job_description_saved", "Job description saved"],
-                    ["final_review_completed", "Final review completed"],
-                    ["submission_confirmed", "Submission confirmed"],
-                  ].map(([key, label]) => {
+                    ["cv_selected", "applications.form.checklistCvSelected"],
+                    ["cover_letter_prepared", "applications.form.checklistCoverLetterPrepared"],
+                    ["contact_details_reviewed", "applications.form.checklistContactDetailsReviewed"],
+                    ["screening_completed", "applications.form.checklistScreeningCompleted"],
+                    ["job_description_saved", "applications.form.checklistJobDescriptionSaved"],
+                    ["final_review_completed", "applications.form.checklistFinalReviewCompleted"],
+                    ["submission_confirmed", "applications.form.checklistSubmissionConfirmed"],
+                  ].map(([key, labelKey]) => {
                     const k = key as keyof typeof checklist & string;
                     const checked = (checklist as any)?.[k] ?? false;
 
@@ -370,13 +374,13 @@ export function ApplicationForm({
                             }
                           }}
                         />
-                        <span className="text-sm">{label}</span>
+                        <span className="text-sm">{t(labelKey)}</span>
                       </label>
                     );
                   })}
 
                   <div className="mt-2 text-sm text-ink-muted">
-                    Completion: {application ? (() => {
+                    {application ? (() => {
                       const items = [
                         checklist?.cv_selected,
                         checklist?.cover_letter_prepared,
@@ -388,21 +392,25 @@ export function ApplicationForm({
                       ];
                       const done = items.filter(Boolean).length;
                       const total = items.length;
-                      return `${done}/${total} (${Math.round((done/total)*100)}%)`;
+                      return t("applications.form.checklistCompletion", {
+                        done,
+                        percent: Math.round((done / total) * 100),
+                        total,
+                      });
                     })() : "—"}
                   </div>
                 </div>
               ) : (
-                <p className="mt-3 text-sm text-ink-muted">Save the application to enable the preparation checklist.</p>
+                <p className="mt-3 text-sm text-ink-muted">{t("applications.form.checklistSaveToEnable")}</p>
               )}
             </div>
           </div>
 
           {selectedStatus === "rejected" && (
             <label className="mt-7 block border-t border-line pt-6 text-sm font-semibold">
-              Rejection reason{" "}
+              {t("applications.form.rejectionReasonLabel")}{" "}
               <span className="font-normal text-ink-muted">
-                (saved only when status is Rejected)
+                {t("applications.form.rejectionReasonHint")}
               </span>
               <textarea
                 className={`${inputClasses} min-h-24 py-3`}
@@ -415,13 +423,13 @@ export function ApplicationForm({
 
           {selectedStatus === "offer" && (
             <div className="mt-7 border-t border-line pt-6">
-              <h4 className="text-lg font-semibold">Offer details</h4>
+              <h4 className="text-lg font-semibold">{t("applications.form.offerHeading")}</h4>
               <p className="mt-1 text-sm text-ink-muted">
-                These fields are saved only when the application status is Offer.
+                {t("applications.form.offerDescription")}
               </p>
               <div className="mt-4 grid gap-5 sm:grid-cols-2">
                 <label className="text-sm font-semibold">
-                  Offer amount
+                  {t("applications.form.offerAmountLabel")}
                   <input
                     className={inputClasses}
                     defaultValue={application?.offer_amount ?? ""}
@@ -430,7 +438,7 @@ export function ApplicationForm({
                   />
                 </label>
                 <label className="text-sm font-semibold">
-                  Offer date
+                  {t("applications.form.offerDateLabel")}
                   <input
                     className={inputClasses}
                     defaultValue={application?.offer_date ?? ""}
@@ -440,7 +448,7 @@ export function ApplicationForm({
                 </label>
               </div>
               <label className="mt-5 block text-sm font-semibold">
-                Offer notes
+                {t("applications.form.offerNotesLabel")}
                 <textarea
                   className={`${inputClasses} min-h-24 py-3`}
                   defaultValue={application?.offer_notes ?? ""}
@@ -463,16 +471,16 @@ export function ApplicationForm({
 
         <div className="mt-6 flex flex-wrap justify-end gap-3">
           <Button disabled={isSubmitting} onClick={onCancel} variant="secondary">
-            Cancel
+            {t("applications.form.cancel")}
           </Button>
           <Button disabled={isSubmitting} type="submit">
             {isSubmitting
               ? isEditing
-                ? "Updating..."
-                : "Saving..."
+                ? t("applications.form.updating")
+                : t("common.saving")
               : isEditing
-                ? "Save changes"
-                : "Save application"}
+                ? t("applications.form.saveChanges")
+                : t("applications.form.saveApplication")}
           </Button>
         </div>
       </form>

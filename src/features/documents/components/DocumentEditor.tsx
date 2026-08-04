@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { Button } from "../../../components/ui/Button";
+import { useTranslation } from "../../../i18n";
 import {
   documentCategories,
-  documentCategoryLabels,
+  documentCategoryLabelKeys,
   type CandidateDocument,
   type DocumentCategory,
   type DocumentMetadataInput,
@@ -27,6 +28,7 @@ export function DocumentEditor({
   onCancel,
   onSave,
 }: DocumentEditorProps) {
+  const { t } = useTranslation();
   const [category, setCategory] = useState(document.category);
   const [displayName, setDisplayName] = useState(document.displayName);
   const [isDefault, setIsDefault] = useState(document.isDefault);
@@ -51,7 +53,7 @@ export function DocumentEditor({
       <fieldset disabled={isSaving}>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="text-sm font-semibold">
-            Display name
+            {t("documents.upload.displayNameLabel")}
             <input
               className={inputClasses}
               maxLength={160}
@@ -61,7 +63,7 @@ export function DocumentEditor({
             />
           </label>
           <label className="text-sm font-semibold">
-            Category
+            {t("documents.upload.categoryLabel")}
             <select
               className={inputClasses}
               onChange={(event) => {
@@ -73,7 +75,7 @@ export function DocumentEditor({
             >
               {documentCategories.map((value) => (
                 <option key={value} value={value}>
-                  {documentCategoryLabels[value]}
+                  {t(documentCategoryLabelKeys[value])}
                 </option>
               ))}
             </select>
@@ -81,7 +83,8 @@ export function DocumentEditor({
         </div>
 
         <label className="mt-4 block text-sm font-semibold">
-          Notes <span className="font-normal text-ink-muted">(optional)</span>
+          {t("documents.upload.notesLabel")}{" "}
+          <span className="font-normal text-ink-muted">{t("documents.upload.notesOptional")}</span>
           <textarea
             className={`${inputClasses} min-h-24 py-3`}
             maxLength={5000}
@@ -99,9 +102,9 @@ export function DocumentEditor({
               type="checkbox"
             />
             <span>
-              <span className="block font-semibold">Use as default CV</span>
+              <span className="block font-semibold">{t("documents.editor.defaultCvLabel")}</span>
               <span className="mt-1 block text-ink-muted">
-                This replaces any CV currently marked as your default.
+                {t("documents.editor.defaultCvDescription")}
               </span>
             </span>
           </label>
@@ -110,10 +113,10 @@ export function DocumentEditor({
 
       <div className="mt-4 flex justify-end gap-3">
         <Button disabled={isSaving} onClick={onCancel} size="sm" variant="secondary">
-          Cancel
+          {t("documents.editor.cancel")}
         </Button>
         <Button disabled={isSaving || !displayName.trim()} size="sm" type="submit">
-          {isSaving ? "Saving..." : "Save details"}
+          {isSaving ? t("documents.editor.saving") : t("documents.editor.save")}
         </Button>
       </div>
     </form>

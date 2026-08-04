@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthProvider";
+import { useTranslation } from "../../i18n";
 import { supabase } from "../../lib/supabase";
 import { emptyCandidateProfile, type CandidateProfile } from "./profile.types";
 import { normalizeProfile, profileToRow } from "./profile.utils";
@@ -9,6 +10,7 @@ const profileColumns =
 
 export function useProfile() {
   const { session } = useAuth();
+  const { t } = useTranslation();
   const metadataName = session?.user.user_metadata.name;
   const fallbackName =
     typeof metadataName === "string" ? metadataName.trim() : "";
@@ -26,7 +28,7 @@ export function useProfile() {
 
   const loadProfile = useCallback(async () => {
     if (!userId) {
-      setLoadErrorMessage("Your session is not available. Please log in again.");
+      setLoadErrorMessage(t("error.sessionMissing"));
       setIsLoading(false);
       return;
     }
@@ -48,7 +50,7 @@ export function useProfile() {
 
     setProfile(normalizeProfile(data, fallbackName));
     setIsLoading(false);
-  }, [fallbackName, userId]);
+  }, [fallbackName, t, userId]);
 
   useEffect(() => {
     void loadProfile();
@@ -56,7 +58,7 @@ export function useProfile() {
 
   async function saveProfile(nextProfile: CandidateProfile) {
     if (!userId) {
-      setSaveErrorMessage("Your session is not available. Please log in again.");
+      setSaveErrorMessage(t("error.sessionMissing"));
       return false;
     }
 
@@ -73,14 +75,14 @@ export function useProfile() {
 
     if (error || !data) {
       setSaveErrorMessage(
-        error?.message ?? "Your profile record could not be found.",
+        error?.message ?? t("profile.errors.recordNotFound"),
       );
       setIsSaving(false);
       return false;
     }
 
     setProfile(normalizeProfile(data, fallbackName));
-    setSuccessMessage("Profile saved.");
+    setSuccessMessage(t("profile.saved"));
     setIsSaving(false);
     return true;
   }

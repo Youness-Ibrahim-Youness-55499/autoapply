@@ -188,7 +188,7 @@ function ApplicationsTable({ applications }: { applications: Application[] }) {
               <span
                 className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${statusDetail.styles}`}
               >
-                {statusDetail.label}
+                {t(statusDetail.labelKey)}
               </span>
             </div>
           </div>
@@ -239,10 +239,10 @@ export function ProductHomePage() {
   return (
     <>
       <Seo
-        description="Your private Autoapply workspace."
+        description={t("seo.overview.description")}
         noIndex
         path="/app"
-        title="Overview"
+        title={t("nav.overview")}
       />
       <PageContainer className="py-10 sm:py-14 lg:px-10" size="wide">
         <ProductPageHeader

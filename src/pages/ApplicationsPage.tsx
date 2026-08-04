@@ -136,7 +136,7 @@ export function ApplicationsPage() {
   return (
     <>
       <Seo
-        description={t("seo.applicationsDescription")}
+        description={t("seo.applications.description")}
         noIndex
         path="/app/applications"
         title={t("applications.title")}

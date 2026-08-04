@@ -116,30 +116,42 @@ export function profileToRow(profile: CandidateProfile) {
   };
 }
 
+export type ProfileCompletionSectionKey =
+  | "about"
+  | "education"
+  | "experience"
+  | "preferences"
+  | "skills";
+
+// Returns section keys, not display labels -- getProfileCompletion has
+// no access to the active locale (it's a plain utility, not a
+// component), so translation happens where these keys are rendered
+// (see ProfileProgress.tsx's sectionLabelKeys map) rather than baking
+// English text in here.
 export function getProfileCompletion(profile: CandidateProfile) {
-  const sections = [
+  const sections: { complete: boolean; key: ProfileCompletionSectionKey }[] = [
     {
       complete: Boolean(
         profile.fullName.trim() &&
           profile.headline.trim() &&
           profile.location.trim(),
       ),
-      label: "Basic profile",
+      key: "about",
     },
     {
       complete:
         profile.desiredRoles.length > 0 && profile.employmentTypes.length > 0,
-      label: "Work preferences",
+      key: "preferences",
     },
-    { complete: profile.skills.length > 0, label: "Skills" },
-    { complete: profile.experience.length > 0, label: "Experience" },
-    { complete: profile.education.length > 0, label: "Education" },
+    { complete: profile.skills.length > 0, key: "skills" },
+    { complete: profile.experience.length > 0, key: "experience" },
+    { complete: profile.education.length > 0, key: "education" },
   ];
   const completed = sections.filter((section) => section.complete).length;
 
   return {
     completed,
-    missing: sections.filter((section) => !section.complete).map((section) => section.label),
+    missing: sections.filter((section) => !section.complete).map((section) => section.key),
     percentage: Math.round((completed / sections.length) * 100),
     total: sections.length,
   };

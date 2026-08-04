@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../auth/AuthProvider";
 import { Button } from "../../components/ui/Button";
+import { useTranslation } from "../../i18n";
 import { supabase } from "../../lib/supabase";
 import type { Application } from "./types";
 
@@ -16,6 +17,7 @@ export function DeleteApplicationDialog({
   onDeleted,
 }: DeleteApplicationDialogProps) {
   const { session } = useAuth();
+  const { t } = useTranslation();
   const dialogRef = useRef<HTMLDivElement>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -64,7 +66,7 @@ export function DeleteApplicationDialog({
     setErrorMessage("");
 
     if (!userId) {
-      setErrorMessage("Your session is not available. Please log in again.");
+      setErrorMessage(t("error.sessionMissing"));
       return;
     }
 
@@ -80,7 +82,7 @@ export function DeleteApplicationDialog({
 
     if (error || !data) {
       setErrorMessage(
-        error?.message ?? "This application could not be found or deleted.",
+        error?.message ?? t("applications.deleteDialog.notFound"),
       );
       setIsDeleting(false);
       return;
@@ -92,7 +94,7 @@ export function DeleteApplicationDialog({
   return (
     <div className="fixed inset-0 z-50 grid place-items-center p-5">
       <button
-        aria-label="Cancel deleting application"
+        aria-label={t("applications.deleteDialog.cancelAria")}
         className="absolute inset-0 bg-brand-950/55 backdrop-blur-[2px]"
         disabled={isDeleting}
         onClick={onCancel}
@@ -112,15 +114,17 @@ export function DeleteApplicationDialog({
           </svg>
         </span>
         <h2 className="mt-5 text-2xl font-semibold" id="delete-application-title">
-          Delete application?
+          {t("applications.deleteDialog.title")}
         </h2>
         <p
           className="mt-3 text-sm leading-relaxed text-ink-muted"
           id="delete-application-description"
         >
-          This permanently removes <strong className="text-ink">{application.job_title}</strong>{" "}
-          at <strong className="text-ink">{application.company_name}</strong>. This action
-          cannot be undone.
+          {t("applications.deleteDialog.descriptionPrefix")}
+          <strong className="text-ink">{application.job_title}</strong>
+          {t("applications.deleteDialog.descriptionMiddle")}
+          <strong className="text-ink">{application.company_name}</strong>
+          {t("applications.deleteDialog.descriptionSuffix")}
         </p>
 
         {errorMessage && (
@@ -138,10 +142,10 @@ export function DeleteApplicationDialog({
             onClick={onCancel}
             variant="secondary"
           >
-            Keep application
+            {t("applications.deleteDialog.keep")}
           </Button>
           <Button disabled={isDeleting} onClick={handleDelete} variant="danger">
-            {isDeleting ? "Deleting..." : "Delete permanently"}
+            {isDeleting ? t("applications.deleteDialog.deleting") : t("applications.deleteDialog.deletePermanently")}
           </Button>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { applicationStatusDetails } from "./applicationStatus";
 import {
   applicationStatuses,
   type ApplicationStatus,
@@ -14,10 +15,6 @@ type ApplicationFiltersProps = {
   status: ApplicationStatusFilter;
 };
 
-function formatStatus(status: ApplicationStatus) {
-  return status.charAt(0).toUpperCase() + status.slice(1);
-}
-
 export function ApplicationFilters({
   onQueryChange,
   onReset,
@@ -30,7 +27,7 @@ export function ApplicationFilters({
 
   return (
     <section
-      aria-label="Filter applications"
+      aria-label={t("applications.filterSectionAria")}
       className="mb-6 rounded-card border border-line bg-surface p-4 shadow-card sm:p-5"
     >
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_13rem_auto] sm:items-end">
@@ -72,7 +69,7 @@ export function ApplicationFilters({
             <option value="all">{t("status.all")}</option>
             {applicationStatuses.map((applicationStatus) => (
               <option key={applicationStatus} value={applicationStatus}>
-                {formatStatus(applicationStatus)}
+                {t(applicationStatusDetails[applicationStatus].labelKey)}
               </option>
             ))}
           </select>

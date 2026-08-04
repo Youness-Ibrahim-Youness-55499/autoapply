@@ -11,7 +11,7 @@ export function SettingsPage() {
   return (
     <>
       <Seo
-        description={t("seo.settingsDescription")}
+        description={t("seo.settings.description")}
         noIndex
         path="/app/settings"
         title={t("settings.title")}
@@ -24,7 +24,7 @@ export function SettingsPage() {
 
         <section className="mt-10 max-w-3xl overflow-hidden rounded-card border border-line bg-surface shadow-card">
           <div className="border-b border-line p-6 sm:p-8">
-            <p className="eyebrow">Account</p>
+            <p className="eyebrow">{t("settings.accountSection")}</p>
             <h3 className="mt-3 text-xl font-semibold">{t("settings.signInEmail")}</h3>
             <p className="mt-2 break-all text-sm text-ink-muted">{session?.user.email}</p>
           </div>

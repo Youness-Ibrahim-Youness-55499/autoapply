@@ -1,4 +1,5 @@
 import { useState, type KeyboardEvent } from "react";
+import { useTranslation } from "../../../i18n";
 
 type TagEditorProps = {
   label: string;
@@ -15,6 +16,7 @@ export function TagEditor({
   placeholder,
   value,
 }: TagEditorProps) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState("");
   const inputId = `tag-editor-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 
@@ -61,7 +63,7 @@ export function TagEditor({
           onClick={addTag}
           type="button"
         >
-          Add
+          {t("profile.tagEditor.add")}
         </button>
       </div>
 
@@ -74,7 +76,7 @@ export function TagEditor({
             >
               {item}
               <button
-                aria-label={`Remove ${item}`}
+                aria-label={t("profile.tagEditor.remove", { item })}
                 className="grid size-7 place-items-center rounded-full hover:bg-brand-100"
                 onClick={() => onChange(value.filter((current) => current !== item))}
                 type="button"
@@ -86,7 +88,7 @@ export function TagEditor({
         </ul>
       )}
       <p className="mt-2 text-xs text-ink-muted">
-        {value.length}/{maxItems}
+        {t("profile.tagEditor.count", { count: value.length, max: maxItems })}
       </p>
     </div>
   );
