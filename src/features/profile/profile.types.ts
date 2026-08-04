@@ -16,6 +16,31 @@ export const workPreferenceLabelKeys: Record<WorkPreference, string> = {
   remote: "profile.workPreference.remote",
 };
 
+export const visaStatuses = [
+  "citizen_or_permanent_resident",
+  "has_work_permit",
+  "requires_sponsorship",
+  "prefer_not_to_say",
+] as const;
+
+export type VisaStatus = (typeof visaStatuses)[number];
+
+export const visaStatusLabelKeys: Record<VisaStatus, string> = {
+  citizen_or_permanent_resident: "profile.visaStatus.citizenOrPermanentResident",
+  has_work_permit: "profile.visaStatus.hasWorkPermit",
+  prefer_not_to_say: "profile.visaStatus.preferNotToSay",
+  requires_sponsorship: "profile.visaStatus.requiresSponsorship",
+};
+
+export const applicationModes = ["manual", "auto"] as const;
+
+export type ApplicationMode = (typeof applicationModes)[number];
+
+export const applicationModeLabelKeys: Record<ApplicationMode, string> = {
+  auto: "profile.applicationMode.auto",
+  manual: "profile.applicationMode.manual",
+};
+
 export const employmentTypeOptions = [
   "Full-time",
   "Part-time",
@@ -53,31 +78,45 @@ export type EducationEntry = {
 };
 
 export type CandidateProfile = {
+  applicationMode: ApplicationMode;
   desiredRoles: string[];
   education: EducationEntry[];
   employmentTypes: string[];
+  excludedCompanies: string[];
+  excludedIndustries: string[];
   experience: ExperienceEntry[];
   fullName: string;
   headline: string;
   location: string;
+  minimumSalary: number | null;
   onboardingCompleted: boolean;
+  preferredLanguages: string[];
+  preferredLocations: string[];
   professionalSummary: string;
   skills: string[];
+  visaStatus: VisaStatus;
   willingToRelocate: boolean;
   workPreference: WorkPreference;
 };
 
 export const emptyCandidateProfile: CandidateProfile = {
+  applicationMode: "manual",
   desiredRoles: [],
   education: [],
   employmentTypes: [],
+  excludedCompanies: [],
+  excludedIndustries: [],
   experience: [],
   fullName: "",
   headline: "",
   location: "",
+  minimumSalary: null,
   onboardingCompleted: false,
+  preferredLanguages: [],
+  preferredLocations: [],
   professionalSummary: "",
   skills: [],
+  visaStatus: "prefer_not_to_say",
   willingToRelocate: false,
   workPreference: "flexible",
 };

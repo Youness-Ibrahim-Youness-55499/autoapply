@@ -3,14 +3,19 @@ import { Button } from "../../../components/ui/Button";
 import { Modal } from "../../../components/ui/Modal";
 import { useTranslation } from "../../../i18n";
 import {
+  applicationModeLabelKeys,
+  applicationModes,
   employmentTypeLabelKeys,
   employmentTypeOptions,
+  visaStatusLabelKeys,
+  visaStatuses,
   workPreferenceLabelKeys,
   workPreferences,
+  type ApplicationMode,
   type CandidateProfile,
+  type VisaStatus,
   type WorkPreference,
 } from "../profile.types";
-import { getProfileCompletion } from "../profile.utils";
 import { EducationEditor, ExperienceEditor } from "./RepeatableEditors";
 import { TagEditor } from "./TagEditor";
 
@@ -68,8 +73,7 @@ export function ProfileEditModal({
   }
 
   async function handleSave() {
-    const completion = getProfileCompletion(draft);
-    const success = await onSave({ ...draft, onboardingCompleted: completion.percentage === 100 });
+    const success = await onSave(draft);
     if (success) onClose();
   }
 
@@ -165,6 +169,14 @@ export function ProfileEditModal({
             value={draft.desiredRoles}
           />
 
+          <TagEditor
+            label={t("profile.editModal.preferredLocationsLabel")}
+            maxItems={10}
+            onChange={(preferredLocations) => update({ preferredLocations })}
+            placeholder={t("profile.editModal.preferredLocationsPlaceholder")}
+            value={draft.preferredLocations}
+          />
+
           <div>
             <span className="text-sm font-semibold">{t("profile.preferences.workStyle")}</span>
             <div className="mt-2 grid gap-2 sm:grid-cols-4">
@@ -214,6 +226,55 @@ export function ProfileEditModal({
             </div>
           </fieldset>
 
+          <label className="block text-sm font-semibold">
+            {t("profile.editModal.minimumSalaryLabel")}
+            <input
+              className={inputClasses}
+              min={0}
+              onChange={(event) =>
+                update({
+                  minimumSalary: event.target.value === "" ? null : Number(event.target.value),
+                })
+              }
+              placeholder={t("profile.editModal.minimumSalaryPlaceholder")}
+              type="number"
+              value={draft.minimumSalary ?? ""}
+            />
+          </label>
+
+          <div>
+            <span className="text-sm font-semibold">{t("profile.preferences.visaStatus")}</span>
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              {visaStatuses.map((status) => (
+                <label
+                  className={`flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-3 text-sm font-semibold transition ${
+                    draft.visaStatus === status
+                      ? "border-brand-500 bg-brand-50 text-brand-900"
+                      : "border-line bg-canvas"
+                  }`}
+                  key={status}
+                >
+                  <input
+                    checked={draft.visaStatus === status}
+                    className="accent-brand-800"
+                    name="visa-status"
+                    onChange={() => update({ visaStatus: status as VisaStatus })}
+                    type="radio"
+                  />
+                  {t(visaStatusLabelKeys[status])}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <TagEditor
+            label={t("profile.editModal.preferredLanguagesLabel")}
+            maxItems={10}
+            onChange={(preferredLanguages) => update({ preferredLanguages })}
+            placeholder={t("profile.editModal.preferredLanguagesPlaceholder")}
+            value={draft.preferredLanguages}
+          />
+
           <label className="flex items-center gap-3 text-sm font-semibold">
             <input
               checked={draft.willingToRelocate}
@@ -223,6 +284,47 @@ export function ProfileEditModal({
             />
             {t("profile.editModal.willingToRelocate")}
           </label>
+
+          <TagEditor
+            label={t("profile.editModal.excludedCompaniesLabel")}
+            maxItems={20}
+            onChange={(excludedCompanies) => update({ excludedCompanies })}
+            placeholder={t("profile.editModal.excludedCompaniesPlaceholder")}
+            value={draft.excludedCompanies}
+          />
+
+          <TagEditor
+            label={t("profile.editModal.excludedIndustriesLabel")}
+            maxItems={20}
+            onChange={(excludedIndustries) => update({ excludedIndustries })}
+            placeholder={t("profile.editModal.excludedIndustriesPlaceholder")}
+            value={draft.excludedIndustries}
+          />
+
+          <div>
+            <span className="text-sm font-semibold">{t("profile.preferences.applicationMode")}</span>
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              {applicationModes.map((mode) => (
+                <label
+                  className={`flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-3 text-sm font-semibold transition ${
+                    draft.applicationMode === mode
+                      ? "border-brand-500 bg-brand-50 text-brand-900"
+                      : "border-line bg-canvas"
+                  }`}
+                  key={mode}
+                >
+                  <input
+                    checked={draft.applicationMode === mode}
+                    className="accent-brand-800"
+                    name="application-mode"
+                    onChange={() => update({ applicationMode: mode as ApplicationMode })}
+                    type="radio"
+                  />
+                  {t(applicationModeLabelKeys[mode])}
+                </label>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </Modal>

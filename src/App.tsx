@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { PublicOnly, RequireAuth } from "./auth/RouteGuards";
+import { OnboardingOnly, PublicOnly, RequireAuth, RequireOnboarding } from "./auth/RouteGuards";
 import { AppShell } from "./components/app/AppShell";
 import { ApplicationsPage } from "./pages/ApplicationsPage";
 import { TemplatesPage } from "./features/templates/TemplatesPage";
@@ -7,6 +7,7 @@ import { AuthPage } from "./pages/AuthPage";
 import { DocumentsPage } from "./pages/DocumentsPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LegalPage } from "./pages/LegalPage";
+import { OnboardingPage } from "./pages/OnboardingPage";
 import { ProductHomePage } from "./pages/ProductHomePage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SettingsPage } from "./pages/SettingsPage";
@@ -33,14 +34,24 @@ export function App() {
       />
 
       <Route element={<RequireAuth />}>
-        <Route element={<AppShell />} path="/app">
-          <Route element={<ProductHomePage />} index />
-          <Route element={<ApplicationsPage />} path="applications" />
-          <Route element={<TemplatesPage />} path="templates" />
-          <Route element={<ProfilePage />} path="profile" />
-          <Route element={<DocumentsPage />} path="documents" />
-          <Route element={<SettingsPage />} path="settings" />
-          <Route element={<Navigate replace to="/app" />} path="*" />
+        <Route
+          element={
+            <OnboardingOnly>
+              <OnboardingPage />
+            </OnboardingOnly>
+          }
+          path="/onboarding"
+        />
+        <Route element={<RequireOnboarding />}>
+          <Route element={<AppShell />} path="/app">
+            <Route element={<ProductHomePage />} index />
+            <Route element={<ApplicationsPage />} path="applications" />
+            <Route element={<TemplatesPage />} path="templates" />
+            <Route element={<ProfilePage />} path="profile" />
+            <Route element={<DocumentsPage />} path="documents" />
+            <Route element={<SettingsPage />} path="settings" />
+            <Route element={<Navigate replace to="/app" />} path="*" />
+          </Route>
         </Route>
       </Route>
 

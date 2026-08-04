@@ -1,9 +1,13 @@
 import {
+  applicationModes,
   emptyCandidateProfile,
+  visaStatuses,
   workPreferences,
+  type ApplicationMode,
   type CandidateProfile,
   type EducationEntry,
   type ExperienceEntry,
+  type VisaStatus,
   type WorkPreference,
 } from "./profile.types";
 
@@ -22,6 +26,21 @@ function isWorkPreference(value: unknown): value is WorkPreference {
     typeof value === "string" &&
     workPreferences.includes(value as WorkPreference)
   );
+}
+
+function isVisaStatus(value: unknown): value is VisaStatus {
+  return typeof value === "string" && visaStatuses.includes(value as VisaStatus);
+}
+
+function isApplicationMode(value: unknown): value is ApplicationMode {
+  return (
+    typeof value === "string" &&
+    applicationModes.includes(value as ApplicationMode)
+  );
+}
+
+function numberOrNull(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 function experienceEntries(value: unknown): ExperienceEntry[] {
@@ -81,16 +100,25 @@ export function normalizeProfile(
   const row = value as Record<string, unknown>;
 
   return {
+    applicationMode: isApplicationMode(row.application_mode)
+      ? row.application_mode
+      : "manual",
     desiredRoles: stringArray(row.desired_roles),
     education: educationEntries(row.education),
     employmentTypes: stringArray(row.employment_types),
+    excludedCompanies: stringArray(row.excluded_companies),
+    excludedIndustries: stringArray(row.excluded_industries),
     experience: experienceEntries(row.experience),
     fullName: stringValue(row.full_name) || fallbackName,
     headline: stringValue(row.headline),
     location: stringValue(row.location),
+    minimumSalary: numberOrNull(row.minimum_salary),
     onboardingCompleted: row.onboarding_completed === true,
+    preferredLanguages: stringArray(row.preferred_languages),
+    preferredLocations: stringArray(row.preferred_locations),
     professionalSummary: stringValue(row.professional_summary),
     skills: stringArray(row.skills),
+    visaStatus: isVisaStatus(row.visa_status) ? row.visa_status : "prefer_not_to_say",
     willingToRelocate: row.willing_to_relocate === true,
     workPreference: isWorkPreference(row.work_preference)
       ? row.work_preference
@@ -100,16 +128,23 @@ export function normalizeProfile(
 
 export function profileToRow(profile: CandidateProfile) {
   return {
+    application_mode: profile.applicationMode,
     desired_roles: profile.desiredRoles,
     education: profile.education,
     employment_types: profile.employmentTypes,
+    excluded_companies: profile.excludedCompanies,
+    excluded_industries: profile.excludedIndustries,
     experience: profile.experience,
     full_name: profile.fullName.trim() || null,
     headline: profile.headline.trim() || null,
     location: profile.location.trim() || null,
+    minimum_salary: profile.minimumSalary,
     onboarding_completed: profile.onboardingCompleted,
+    preferred_languages: profile.preferredLanguages,
+    preferred_locations: profile.preferredLocations,
     professional_summary: profile.professionalSummary.trim() || null,
     skills: profile.skills,
+    visa_status: profile.visaStatus,
     willing_to_relocate: profile.willingToRelocate,
     work_preference: profile.workPreference,
     updated_at: new Date().toISOString(),

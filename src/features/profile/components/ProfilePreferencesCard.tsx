@@ -1,8 +1,10 @@
 import { Badge } from "../../../components/ui/Badge";
 import { useTranslation } from "../../../i18n";
 import {
+  applicationModeLabelKeys,
   employmentTypeLabelKeys,
   employmentTypeOptions,
+  visaStatusLabelKeys,
   workPreferenceLabelKeys,
   workPreferences,
   type CandidateProfile,
@@ -50,6 +52,17 @@ export function ProfilePreferencesCard({ onEdit, profile }: ProfilePreferencesCa
       </div>
 
       <div className="mt-5">
+        <p className="eyebrow">{t("profile.preferences.locations")}</p>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          {profile.preferredLocations.length === 0 ? (
+            <p className="text-sm text-ink-muted">{t("profile.preferences.locationsEmpty")}</p>
+          ) : (
+            profile.preferredLocations.map((location) => <Badge key={location}>{location}</Badge>)
+          )}
+        </div>
+      </div>
+
+      <div className="mt-5">
         <p className="eyebrow">{t("profile.preferences.workStyle")}</p>
         <div className="mt-2.5 flex flex-wrap gap-2">
           {workPreferences.map((preference) => {
@@ -80,12 +93,70 @@ export function ProfilePreferencesCard({ onEdit, profile }: ProfilePreferencesCa
       </div>
 
       <div className="mt-5">
+        <p className="eyebrow">{t("profile.preferences.minimumSalary")}</p>
+        <div className="mt-2.5">
+          <p className="text-sm text-ink-muted">
+            {profile.minimumSalary === null
+              ? t("profile.preferences.minimumSalaryEmpty")
+              : profile.minimumSalary.toLocaleString()}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <p className="eyebrow">{t("profile.preferences.visaStatus")}</p>
+        <div className="mt-2.5">
+          <Badge>{t(visaStatusLabelKeys[profile.visaStatus])}</Badge>
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <p className="eyebrow">{t("profile.preferences.languages")}</p>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          {profile.preferredLanguages.length === 0 ? (
+            <p className="text-sm text-ink-muted">{t("profile.preferences.languagesEmpty")}</p>
+          ) : (
+            profile.preferredLanguages.map((language) => <Badge key={language}>{language}</Badge>)
+          )}
+        </div>
+      </div>
+
+      <div className="mt-5">
         <p className="eyebrow">{t("profile.preferences.relocation")}</p>
         <div className="mt-2.5">
           <Badge tone={profile.willingToRelocate ? "active" : "inactive"}>
             <span aria-hidden="true">{profile.willingToRelocate ? "✓" : "✕"}</span>
             {t("profile.preferences.canRelocate")}
           </Badge>
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <p className="eyebrow">{t("profile.preferences.excludedCompanies")}</p>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          {profile.excludedCompanies.length === 0 ? (
+            <p className="text-sm text-ink-muted">{t("profile.preferences.excludedCompaniesEmpty")}</p>
+          ) : (
+            profile.excludedCompanies.map((company) => <Badge key={company}>{company}</Badge>)
+          )}
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <p className="eyebrow">{t("profile.preferences.excludedIndustries")}</p>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          {profile.excludedIndustries.length === 0 ? (
+            <p className="text-sm text-ink-muted">{t("profile.preferences.excludedIndustriesEmpty")}</p>
+          ) : (
+            profile.excludedIndustries.map((industry) => <Badge key={industry}>{industry}</Badge>)
+          )}
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <p className="eyebrow">{t("profile.preferences.applicationMode")}</p>
+        <div className="mt-2.5">
+          <Badge>{t(applicationModeLabelKeys[profile.applicationMode])}</Badge>
         </div>
       </div>
     </ProfileSectionCard>
