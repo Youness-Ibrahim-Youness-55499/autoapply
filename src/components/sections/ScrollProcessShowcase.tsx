@@ -31,13 +31,6 @@ export function ScrollProcessShowcase() {
         <PageContainer className="flex h-full flex-col py-6" size="wide">
           <ProcessTabs activeStage={reduceMotion ? 0 : activeStage} />
 
-          <div className="mt-4 h-px w-full bg-line">
-            <motion.div
-              className="h-px bg-brand-500"
-              style={{ scaleX: scrollYProgress, transformOrigin: "left" }}
-            />
-          </div>
-
           <div className="mt-5 flex items-start justify-between gap-8 border-b border-line pb-5">
             <p className="max-w-4xl text-lg leading-7 text-ink-muted">
               {t("scrollProcess.description")}
