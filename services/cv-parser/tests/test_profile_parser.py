@@ -26,11 +26,13 @@ class ParseProfileTest(unittest.TestCase):
             line("10115 Berlin, Germany", 45),
             line("Education", 100, x=40, size=14),
             line("2020 - 2022", 130, x=40),
-            line("MSc Computer Science, Example University", 130),
+            line("MSc Computer Science, Example Uni-", 130),
+            line("versity", 148),
             line("Work Experience", 200, x=40, size=14),
             line("2022 - Present", 230, x=40),
-            line("Software Engineer, Example GmbH, Berlin", 230),
-            line("- Built deterministic document pipelines", 255),
+            line("Software Engineer, Example GmbH, Ber-", 230),
+            line("lin", 245),
+            line("- Built deterministic document pipelines", 265),
             line("Skills", 320, x=40, size=14),
             line("- Python, TypeScript", 350),
             line("Example Candidate", 700, x=400),
@@ -43,8 +45,10 @@ class ParseProfileTest(unittest.TestCase):
         self.assertEqual(profile.skills, ["Python", "TypeScript"])
         self.assertEqual(len(profile.education), 1)
         self.assertEqual(profile.education[0].degree, "MSc Computer Science")
+        self.assertEqual(profile.education[0].institution, "Example University")
         self.assertEqual(len(profile.experience), 1)
         self.assertEqual(profile.experience[0].company, "Example GmbH")
+        self.assertEqual(profile.experience[0].location, "Berlin")
         self.assertTrue(profile.experience[0].current)
 
 

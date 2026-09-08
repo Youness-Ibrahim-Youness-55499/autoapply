@@ -61,6 +61,32 @@ def split_date_range(value: str) -> tuple[str, str, bool]:
     return start, "" if current else end, current
 
 
+def join_wrapped_lines(values: list[str]) -> str:
+    combined = ""
+    for value in values:
+        text = value.strip()
+        if not text:
+            continue
+        if combined.endswith("-"):
+            combined = combined[:-1] + text
+        elif combined:
+            combined += " " + text
+        else:
+            combined = text
+    return combined
+
+
+def heading_and_body(details: list[TextLine]) -> tuple[str, list[TextLine]]:
+    heading_lines: list[str] = []
+    body_index = len(details)
+    for index, line in enumerate(details):
+        if re.match(r"^[•·▪◦*-]", line.text.strip()):
+            body_index = index
+            break
+        heading_lines.append(line.text)
+    return join_wrapped_lines(heading_lines), details[body_index:]
+
+
 def parse_skills(lines: list[TextLine]) -> list[str]:
     values: list[str] = []
     for line in section_lines(lines, "skills"):
@@ -101,7 +127,7 @@ def pair_rows(lines: list[TextLine], page_widths: list[float], target: str) -> l
 def parse_education(lines: list[TextLine], page_widths: list[float]) -> list[EducationEntry]:
     entries: list[EducationEntry] = []
     for date_line, details in pair_rows(lines, page_widths, "education"):
-        heading = details[0].text
+        heading, _ = heading_and_body(details)
         parts = [part.strip(" .") for part in heading.split(",") if part.strip(" .")]
         if len(parts) < 2:
             continue
@@ -121,13 +147,13 @@ def parse_education(lines: list[TextLine], page_widths: list[float]) -> list[Edu
 def parse_experience(lines: list[TextLine], page_widths: list[float]) -> list[ExperienceEntry]:
     entries: list[ExperienceEntry] = []
     for date_line, details in pair_rows(lines, page_widths, "experience"):
-        heading = details[0].text
+        heading, body = heading_and_body(details)
         parts = [part.strip(" .") for part in heading.split(",") if part.strip(" .")]
         if len(parts) < 2:
             continue
         start, end, current = split_date_range(date_line.text)
         description = "\n".join(
-            BULLET_PREFIX.sub("", line.text).strip() for line in details[1:] if line.text.strip()
+            BULLET_PREFIX.sub("", line.text).strip() for line in body if line.text.strip()
         )
         entries.append(
             ExperienceEntry(
