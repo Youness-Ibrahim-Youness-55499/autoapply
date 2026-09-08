@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
@@ -7,7 +7,7 @@ import { ErrorState } from "../states/ErrorState";
 import { useTranslation } from "../../i18n";
 
 type NavigationItem = {
-  icon: ReactNode;
+  iconSrc: string;
   labelKey: string;
   to: string;
 };
@@ -18,64 +18,31 @@ type WorkspaceLinksProps = {
   t: (key: string) => string;
 };
 
-function NavigationIcon({ children }: { children: ReactNode }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className="size-5 shrink-0"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      {children}
-    </svg>
-  );
-}
-
 const navigationItems: NavigationItem[] = [
   {
     labelKey: "nav.overview",
     to: "/app",
-    icon: (
-      <NavigationIcon>
-        <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" stroke="currentColor" strokeWidth="1.7" />
-      </NavigationIcon>
-    ),
+    iconSrc: "/images/workspace-nav/overview.png",
   },
   {
     labelKey: "nav.applications",
     to: "/app/applications",
-    icon: (
-      <NavigationIcon>
-        <path d="M8 6V4.8A1.8 1.8 0 0 1 9.8 3h4.4A1.8 1.8 0 0 1 16 4.8V6m4 4H4m2-4h12a2 2 0 0 1 2 2v10.5A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5V8a2 2 0 0 1 2-2Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-      </NavigationIcon>
-    ),
+    iconSrc: "/images/workspace-nav/applications.png",
   },
   {
     labelKey: "nav.profile",
     to: "/app/profile",
-    icon: (
-      <NavigationIcon>
-        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-      </NavigationIcon>
-    ),
+    iconSrc: "/images/workspace-nav/profile.png",
   },
   {
     labelKey: "nav.documents",
     to: "/app/documents",
-    icon: (
-      <NavigationIcon>
-        <path d="M7 3h7l4 4v14H7V3Zm7 0v5h4M10 13h5m-5 4h5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-      </NavigationIcon>
-    ),
+    iconSrc: "/images/workspace-nav/documents.png",
   },
   {
     labelKey: "nav.settings",
     to: "/app/settings",
-    icon: (
-      <NavigationIcon>
-        <path d="M12 15.25A3.25 3.25 0 1 0 12 8.75a3.25 3.25 0 0 0 0 6.5Zm7-3.25 2-1-2-3-2.1.7A7.8 7.8 0 0 0 15 7.6L14.5 5h-5L9 7.6a7.8 7.8 0 0 0-1.9 1.1L5 8l-2 3 2 1-2 1 2 3 2.1-.7A7.8 7.8 0 0 0 9 16.4l.5 2.6h5l.5-2.6a7.8 7.8 0 0 0 1.9-1.1l2.1.7 2-3-2-1Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
-      </NavigationIcon>
-    ),
+    iconSrc: "/images/workspace-nav/settings.png",
   },
 ];
 
@@ -98,7 +65,12 @@ function WorkspaceLinks({ onNavigate, tone, t }: WorkspaceLinksProps) {
             onClick={onNavigate}
             to={item.to}
           >
-            {item.icon}
+            <img
+              alt=""
+              aria-hidden="true"
+              className="size-7 shrink-0 object-contain"
+              src={item.iconSrc}
+            />
             {t(item.labelKey)}
           </NavLink>
         </li>

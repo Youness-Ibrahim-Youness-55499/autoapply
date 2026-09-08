@@ -4,6 +4,7 @@ import { dashboardReveal, fadeUp, headlineLine, heroStagger } from "../../lib/mo
 import { PageContainer } from "../layout/PageContainer";
 import { Section } from "../ui/Section";
 import { HeroDashboard } from "./HeroDashboard";
+import { HeroTrustBadges } from "./HeroTrustBadges";
 
 export function Hero() {
   const { t } = useTranslation();
@@ -45,6 +46,7 @@ export function Hero() {
             }}
           />
           <HeroDashboard />
+          <HeroTrustBadges />
         </motion.div>
       </PageContainer>
     </Section>
