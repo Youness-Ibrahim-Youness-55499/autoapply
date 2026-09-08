@@ -1,6 +1,6 @@
-# Autoapply
+# Jobman
 
-Autoapply helps active job seekers organize applications and prepare better application materials. The product is being built incrementally, with user review required before any future submission workflow.
+Jobman helps active job seekers organize applications and prepare better application materials. The product is being built incrementally, with user review required before any future submission workflow.
 
 ## Current foundation
 

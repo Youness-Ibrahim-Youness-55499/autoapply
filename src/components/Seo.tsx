@@ -30,7 +30,7 @@ export function Seo({
     const baseUrl = new URL(import.meta.env.BASE_URL, window.location.origin);
     const canonicalUrl = new URL(path.replace(/^\//, ""), baseUrl);
     const socialImageUrl = new URL("social-preview.svg", baseUrl);
-    const fullTitle = `${title} | Autoapply`;
+    const fullTitle = `${title} | Jobman`;
 
     document.title = fullTitle;
 

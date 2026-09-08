@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "../../i18n";
+import { BrandLogo } from "../BrandLogo";
 import { PageContainer } from "./PageContainer";
 
 const footerGroups = [
@@ -12,7 +13,7 @@ const footerGroups = [
   },
   {
     links: [
-      ["footer.link.contact", "mailto:hello@autoapply.app"],
+      ["footer.link.contact", "mailto:hello@jobman.app"],
       ["nav.faq", "#faq"],
       ["footer.link.backToTop", "#top"],
     ],
@@ -37,17 +38,17 @@ export function Footer() {
         <div className="grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-[1.5fr_0.75fr_0.75fr_0.75fr]">
           <div>
             <a
-              className="text-xl font-bold tracking-[-0.03em] text-brand-900"
+              className="text-xl font-bold text-brand-900"
               href="#top"
             >
-              autoapply
+              <BrandLogo />
             </a>
             <p className="body-copy mt-4 max-w-sm">
               {t("footer.description")}
             </p>
             <a
               className="mt-6 inline-block text-sm font-semibold text-brand-800 underline decoration-brand-200 underline-offset-4"
-              href="mailto:hello@autoapply.app"
+              href="mailto:hello@jobman.app"
             >
               {t("footer.contactEmail")}
             </a>
