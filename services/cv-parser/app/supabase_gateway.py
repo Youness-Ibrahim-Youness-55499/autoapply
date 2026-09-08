@@ -65,7 +65,7 @@ class SupabaseGateway:
                 headers=self.headers,
                 params={
                     "id": f"eq.{user_id}",
-                    "select": "full_name,location,skills,education,experience",
+                    "select": "full_name,location,skills,education,experience,languages",
                 },
             )
         current_response.raise_for_status()
@@ -105,7 +105,7 @@ def merge_profile(current: dict[str, object], parsed: ParsedProfile) -> dict[str
     if skills != current_skills:
         payload["skills"] = skills
 
-    for field_name in ("education", "experience"):
+    for field_name in ("education", "experience", "languages"):
         existing = current.get(field_name, [])
         current_entries = existing if isinstance(existing, list) else []
         parsed_entries = [entry.model_dump() for entry in getattr(parsed, field_name)]
