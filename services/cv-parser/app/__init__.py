@@ -1,0 +1,1 @@
+"""Jobman CV parser service."""

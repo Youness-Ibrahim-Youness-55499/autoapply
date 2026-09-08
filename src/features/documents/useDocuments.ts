@@ -10,6 +10,7 @@ import {
   type DocumentMetadataInput,
   type DocumentStatus,
 } from "./document.types";
+import { parsePdfCv } from "./cvParser";
 
 const documentColumns =
   "id, storage_path, original_name, display_name, category, notes, is_default, mime_type, size_bytes, processing_status, created_at";
@@ -207,7 +208,46 @@ export function useDocuments() {
     }
 
     setDocuments((current) => [document, ...current]);
-    setSuccessMessage(t("documents.uploaded"));
+    const shouldParse = metadata.category === "cv" && file.type === "application/pdf";
+
+    if (shouldParse) {
+      setDocuments((current) =>
+        current.map((item) =>
+          item.id === document.id ? { ...item, processingStatus: "processing" } : item,
+        ),
+      );
+
+      try {
+        await parsePdfCv({
+          accessToken: session.access_token,
+          documentId: document.id,
+        });
+        setDocuments((current) =>
+          current.map((item) =>
+            item.id === document.id ? { ...item, processingStatus: "ready" } : item,
+          ),
+        );
+        setSuccessMessage(t("documents.uploadedAndParsed"));
+      } catch (error) {
+        await supabase
+          .from("documents")
+          .update({ processing_status: "failed" })
+          .eq("id", document.id)
+          .eq("user_id", userId);
+        setDocuments((current) =>
+          current.map((item) =>
+            item.id === document.id ? { ...item, processingStatus: "failed" } : item,
+          ),
+        );
+        setActionErrorMessage(
+          t("documents.errors.parseFailed", {
+            message: error instanceof Error ? error.message : t("documents.errors.parseUnknown"),
+          }),
+        );
+      }
+    } else {
+      setSuccessMessage(t("documents.uploaded"));
+    }
     setIsUploading(false);
     return true;
   }

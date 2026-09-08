@@ -4,4 +4,10 @@ dist/
 *.local
 *.log
 *.tsbuildinfo
+__pycache__/
 supabase/.temp/
+.mineru-venv/
+experiments/mineru-local/output/
+.pymupdf-venv/
+experiments/pymupdf-local/output/
+.cv-parser-venv/

@@ -25,6 +25,7 @@ The authenticated pages deliberately avoid fake records, statistics, AI output, 
 - Tailwind CSS
 - React Router
 - Supabase
+- Python, FastAPI, and PyMuPDF for isolated PDF CV extraction
 - pnpm
 
 ## Local setup
@@ -47,7 +48,9 @@ Copy the environment template:
 Copy-Item .env.example .env.local
 ```
 
-Add your Supabase project URL and publishable key to `.env.local`. Never add a service-role key to the frontend.
+Add your Supabase project URL, publishable key, and CV parser URL to `.env.local`. Never add a service-role key to the frontend.
+
+The PDF CV parser is an independently deployable service under `services/cv-parser/`. Follow its README to run it locally on `http://localhost:8000` before testing profile extraction.
 
 Start the development server:
 
