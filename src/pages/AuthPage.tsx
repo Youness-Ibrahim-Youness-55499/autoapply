@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Seo } from "../components/Seo";
 import { SkipLink } from "../components/SkipLink";
+import { BrandLogo } from "../components/BrandLogo";
 import { PageContainer } from "../components/layout/PageContainer";
 import { supabase } from "../lib/supabase";
 import { useTranslation } from "../i18n";
@@ -103,10 +104,10 @@ export function AuthPage({ mode }: AuthPageProps) {
         <PageContainer>
           <div className="flex min-h-18 items-center justify-between">
             <Link
-              className="text-lg font-bold tracking-[-0.03em] text-brand-900"
+              className="text-lg font-bold text-brand-900"
               to="/"
             >
-              autoapply
+              <BrandLogo />
             </Link>
             <Link
               className="text-sm font-semibold text-brand-800 hover:text-brand-600"

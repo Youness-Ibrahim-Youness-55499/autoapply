@@ -12,7 +12,7 @@ export function LandingPage() {
   return (
     <div id="top">
       <Seo
-        description="Organize opportunities, improve application materials, and keep every next step visible with Autoapply."
+        description="Organize opportunities, improve application materials, and keep every next step visible with Jobman."
         title="A calmer job search workspace"
       />
       <SkipLink />

@@ -130,7 +130,7 @@ export function HeroDashboard() {
       >
         <div className="grid lg:grid-cols-[15rem_1fr]">
           <nav className="hidden border-r border-white/10 p-4 lg:block">
-            <p className="meta-label px-2 text-white/40">autoapply</p>
+            <p className="meta-label px-2 text-white/40">Jobman</p>
             <ul className="mt-4 space-y-1">
               {navItems.map((item) => (
                 <li key={item.key}>

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { BrandLogo } from "../components/BrandLogo";
 import { Seo } from "../components/Seo";
 import { SkipLink } from "../components/SkipLink";
 import { PageContainer } from "../components/layout/PageContainer";
@@ -26,7 +27,7 @@ const pageContent: Record<
 > = {
   privacy: {
     description:
-      "A launch-ready structure describing how Autoapply handles personal data.",
+      "A launch-ready structure describing how Jobman handles personal data.",
     eyebrow: "Privacy foundation",
     sections: [
       {
@@ -94,14 +95,14 @@ const pageContent: Record<
   },
   terms: {
     description:
-      "Draft terms structure for the Autoapply frontend preview and future service.",
+      "Draft terms structure for the Jobman frontend preview and future service.",
     eyebrow: "Terms foundation",
     sections: [
       {
         title: "1. Preview status",
         content: (
           <p>
-            Autoapply is currently a frontend product preview. Account creation,
+            Jobman is currently a frontend product preview. Account creation,
             automated applications, subscriptions, and payment functionality are
             not yet available. Displayed plans and prices are illustrative.
           </p>
@@ -153,7 +154,7 @@ const pageContent: Record<
   },
   "legal-notice": {
     description:
-      "Provider-information structure for Autoapply under German digital-services rules.",
+      "Provider-information structure for Jobman under German digital-services rules.",
     eyebrow: "German provider information",
     sections: [
       {
@@ -216,10 +217,10 @@ export function LegalPage({ kind }: LegalPageProps) {
         <PageContainer>
           <div className="flex min-h-18 items-center justify-between gap-6">
             <Link
-              className="text-lg font-bold tracking-[-0.03em] text-brand-900"
+              className="text-lg font-bold text-brand-900"
               to="/"
             >
-              autoapply
+              <BrandLogo />
             </Link>
             <Link
               className="text-sm font-semibold text-brand-800 hover:text-brand-600"

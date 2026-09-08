@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabase";
 import { SkipLink } from "../SkipLink";
 import { ErrorState } from "../states/ErrorState";
 import { useTranslation } from "../../i18n";
+import { BrandLogo } from "../BrandLogo";
 
 type NavigationItem = {
   iconSrc: string;
@@ -190,8 +191,8 @@ export function AppShell() {
 
       <header className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur">
         <div className="flex min-h-20 items-center gap-4 px-5 sm:px-8 lg:px-10">
-          <Link className="shrink-0 text-xl font-bold tracking-[-0.035em] text-brand-950" to="/app">
-            autoapply
+          <Link className="shrink-0 text-xl font-bold text-brand-950" to="/app">
+            <BrandLogo />
           </Link>
 
           <nav aria-label={t("workspace")} className="hidden lg:flex">
@@ -279,8 +280,8 @@ export function AppShell() {
             role="dialog"
           >
             <div className="flex min-h-20 items-center justify-between border-b border-line px-5">
-              <Link className="text-xl font-bold tracking-[-0.035em] text-brand-900" onClick={closeMenu} to="/app">
-                autoapply
+              <Link className="text-xl font-bold text-brand-900" onClick={closeMenu} to="/app">
+                <BrandLogo />
               </Link>
               <button
                 aria-label={t("nav.closeWorkspace")}

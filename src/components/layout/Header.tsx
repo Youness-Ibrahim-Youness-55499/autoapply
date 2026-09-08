@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "../../i18n";
 import { navEntrance } from "../../lib/motion";
+import { BrandLogo } from "../BrandLogo";
 import { PageContainer } from "./PageContainer";
 
 const navigationItems = [
@@ -78,11 +79,8 @@ export function Header() {
             isScrolled ? "min-h-16" : "min-h-18"
           }`}
         >
-          <a
-            className="ml-3 text-lg font-bold tracking-[-0.03em] text-brand-900"
-            href="#top"
-          >
-            autoapply
+          <a className="ml-3 text-lg font-bold text-brand-900" href="#top">
+            <BrandLogo />
           </a>
 
           <div className="hidden items-center gap-1 md:flex">
