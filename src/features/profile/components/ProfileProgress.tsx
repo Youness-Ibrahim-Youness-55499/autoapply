@@ -1,66 +1,79 @@
+import { Button } from "../../../components/ui/Button";
 import { useTranslation } from "../../../i18n";
-import { getProfileCompletion, type ProfileCompletionSectionKey } from "../profile.utils";
+import { getJobReadiness, type ReadinessRequirementKey } from "../profile.utils";
 import type { CandidateProfile } from "../profile.types";
 
-const SECTION_LABEL_KEYS: Record<ProfileCompletionSectionKey, string> = {
-  about: "profile.about.title",
-  education: "profile.education.title",
-  experience: "profile.experience.title",
-  preferences: "profile.preferences.title",
-  skills: "profile.skills.title",
+const requirementLabelKeys: Record<ReadinessRequirementKey, string> = {
+  applicationPreferences: "profile.readiness.requirement.applicationPreferences",
+  basics: "profile.readiness.requirement.basics",
+  experience: "profile.readiness.requirement.experience",
+  location: "profile.readiness.requirement.location",
+  rolePreferences: "profile.readiness.requirement.rolePreferences",
+  salary: "profile.readiness.requirement.salary",
+  skills: "profile.readiness.requirement.skills",
+  workAuthorization: "profile.readiness.requirement.workAuthorization",
 };
 
-export function ProfileProgress({ profile }: { profile: CandidateProfile }) {
+type ProfileProgressProps = {
+  onComplete: () => void;
+  profile: CandidateProfile;
+};
+
+export function ProfileProgress({ onComplete, profile }: ProfileProgressProps) {
   const { t } = useTranslation();
-  const completion = getProfileCompletion(profile);
+  const readiness = getJobReadiness(profile);
 
   return (
-    <aside className="rounded-card border border-line bg-brand-950 p-6 text-white shadow-card sm:p-7">
-      <div className="flex items-end justify-between gap-4">
+    <section className="overflow-hidden rounded-card border border-brand-900 bg-brand-950 text-white shadow-card">
+      <div className="grid gap-7 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-300">
-            {t("profile.progress.eyebrow")}
+            {t("profile.readiness.eyebrow")}
           </p>
-          <h2 className="mt-2 text-2xl font-semibold">
-            {t("profile.progress.complete", { percentage: completion.percentage })}
-          </h2>
+          <div className="mt-3 flex flex-wrap items-end gap-x-4 gap-y-2">
+            <h2 className="text-3xl font-semibold">{t("profile.readiness.title")}</h2>
+            <span className="text-4xl font-bold tabular-nums text-brand-200">{readiness.percentage}%</span>
+          </div>
+          <div
+            aria-label={t("profile.readiness.scoreLabel", { percentage: readiness.percentage })}
+            aria-valuemax={100}
+            aria-valuemin={0}
+            aria-valuenow={readiness.percentage}
+            className="mt-5 h-2 max-w-2xl overflow-hidden rounded-full bg-white/12"
+            role="progressbar"
+          >
+            <div className="h-full rounded-full bg-brand-300" style={{ width: `${readiness.percentage}%` }} />
+          </div>
+          <div className="mt-5 flex flex-wrap gap-3 text-sm">
+            <span className="rounded-full border border-white/12 bg-white/6 px-3 py-1.5">
+              {readiness.readyToSearch ? "✓" : "○"} {t("profile.readiness.readySearch")}
+            </span>
+            <span className="rounded-full border border-white/12 bg-white/6 px-3 py-1.5">
+              {readiness.readyToApply ? "✓" : "○"} {t("profile.readiness.readyApply")}
+            </span>
+          </div>
         </div>
-        <p className="text-sm text-white/60">
-          {t("profile.progress.sections", { completed: completion.completed, total: completion.total })}
-        </p>
-      </div>
 
-      <div
-        aria-label={t("profile.progress.complete", { percentage: completion.percentage })}
-        aria-valuemax={100}
-        aria-valuemin={0}
-        aria-valuenow={completion.percentage}
-        className="mt-5 h-2 overflow-hidden rounded-full bg-white/12"
-        role="progressbar"
-      >
-        <div
-          className="h-full rounded-full bg-brand-300 transition-[width] duration-500"
-          style={{ width: `${completion.percentage}%` }}
-        />
+        <div className="lg:max-w-sm">
+          <p className="text-sm font-semibold">{t("profile.readiness.missing")}</p>
+          {readiness.missing.length ? (
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {readiness.missing.map((key) => (
+                <li className="rounded-full bg-white/8 px-3 py-1.5 text-xs text-white/75" key={key}>
+                  {t(requirementLabelKeys[key])}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-2 text-sm text-brand-200">{t("profile.readiness.complete")}</p>
+          )}
+          {readiness.missing.length > 0 && (
+            <Button className="mt-5" onClick={onComplete} variant="secondary">
+              {t("profile.readiness.cta")}
+            </Button>
+          )}
+        </div>
       </div>
-
-      {completion.missing.length > 0 ? (
-        <>
-          <p className="mt-5 text-sm font-semibold">{t("profile.progress.stillToComplete")}</p>
-          <ul className="mt-3 flex flex-wrap gap-2">
-            {completion.missing.map((key) => (
-              <li
-                className="rounded-full border border-white/12 bg-white/6 px-3 py-1.5 text-xs text-white/75"
-                key={key}
-              >
-                {t(SECTION_LABEL_KEYS[key])}
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : (
-        <p className="mt-5 text-sm text-brand-200">{t("profile.progress.ready")}</p>
-      )}
-    </aside>
+    </section>
   );
 }

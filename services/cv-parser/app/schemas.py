@@ -29,12 +29,20 @@ class ExperienceEntry(BaseModel):
     description: str = ""
 
 
+class LanguageEntry(BaseModel):
+    id: str
+    name: str
+    level: str
+    confirmed: bool = False
+
+
 class ParsedProfile(BaseModel):
     full_name: str = ""
     location: str = ""
     skills: list[str] = Field(default_factory=list)
     education: list[EducationEntry] = Field(default_factory=list)
     experience: list[ExperienceEntry] = Field(default_factory=list)
+    languages: list[LanguageEntry] = Field(default_factory=list)
 
 
 class ParseResponse(BaseModel):
