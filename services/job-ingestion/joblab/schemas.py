@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
 
@@ -29,7 +29,7 @@ class RawJob(BaseModel):
     expires_at: datetime | None = None
     apply_url: str | None = None
     raw_data: dict[str, Any] = Field(default_factory=dict)
-    retrieved_at: datetime = Field(default_factory=datetime.utcnow)
+    retrieved_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class SourceDiagnostic(BaseModel):
