@@ -141,12 +141,6 @@ function MatchCard({
 
       <div className="flex items-center gap-2">
         <div className="flex-1 truncate text-sm font-semibold">{job.company}</div>
-        <button
-          className="shrink-0 rounded-full bg-white/60 px-3.5 py-2 text-xs font-bold transition-colors hover:bg-white/80"
-          type="button"
-        >
-          {t("dashboard.pass")}
-        </button>
         {job.applyUrl ? (
           <a
             className="shrink-0 rounded-full bg-brand-700 px-3.5 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-800"
