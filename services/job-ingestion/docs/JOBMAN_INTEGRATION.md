@@ -1,0 +1,44 @@
+# Jobman integration guide
+
+## Local test
+
+```powershell
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe scripts\validate_registry.py
+.venv\Scripts\python.exe -m pytest -q
+.venv\Scripts\python.exe -m uvicorn joblab.api:app --port 5184
+```
+
+Open `http://localhost:5184/`. The service does not read Jobman's environment,
+Supabase project, or frontend source.
+
+## Add another company board
+
+```powershell
+.venv\Scripts\python.exe scripts\add_board.py --company "Example GmbH" --provider lever --identifier example --region eu
+.venv\Scripts\python.exe scripts\verify_custom_boards.py
+.venv\Scripts\python.exe scripts\build_company_board_registry.py
+```
+
+The command also supports Ashby, Greenhouse, SmartRecruiters, and Personio.
+Workday needs `--identifier tenant|career_site --board-url URL`.
+SuccessFactors needs `--board-url URL`; use `--mode legacy` for its older site
+format. Only live-verified boards with German jobs become ingestion-ready.
+
+## Merge strategy
+
+Place this directory at `services/job-ingestion` in Jobman and preserve it as a
+separate Python service. Add deployment configuration only after selecting a
+worker host. Jobman should consume the normalized API contract, not import
+adapter internals.
+
+Recommended production flow:
+
+1. A scheduled worker reads ingestion-ready registry boards.
+2. Adapters fetch and normalize public jobs with bounded concurrency.
+3. The worker upserts canonical jobs and source occurrences into PostgreSQL.
+4. Jobman's backend reads active normalized jobs and performs user matching.
+5. Diagnostics and source freshness remain private administrative data.
+
+Review each provider's current API terms, robots rules, licensing, and data
+retention requirements before production deployment.

@@ -1,0 +1,28 @@
+# ATS-only registry. Ingestion retains German-located jobs only.
+ats_sources:
+  - {company: Enpal, provider: ashby, identifier: enpal, company_domain: enpal.com}
+  - {company: Avelios Medical, provider: ashby, identifier: avelios-medical, company_domain: avelios.com}
+  - {company: Black Semiconductor, provider: ashby, identifier: blacksemiconductor, company_domain: black-semiconductor.com}
+  - {company: Almedia, provider: ashby, identifier: almedia, company_domain: almedia.com}
+  - {company: adjoe, provider: ashby, identifier: adjoe, company_domain: adjoe.io}
+  - {company: Air Apps, provider: ashby, identifier: airapps, company_domain: airapps.co}
+
+  - {company: FINN, provider: lever, identifier: finn, region: global, company_domain: finn.com}
+  - {company: Netlight, provider: lever, identifier: netlight, region: global, company_domain: netlight.com}
+  - {company: Emma Sleep, provider: lever, identifier: emma-sleep, region: global, company_domain: emma-sleep.com}
+  - {company: Agicap, provider: lever, identifier: agicap, region: global, company_domain: agicap.com}
+  - {company: Impossible Cloud, provider: lever, identifier: impossiblecloud, region: global, company_domain: impossiblecloud.com}
+  - {company: Sonar, provider: lever, identifier: sonarsource, region: global, company_domain: sonarsource.com}
+
+  - {company: Atolls, provider: greenhouse, identifier: atolls, company_domain: atolls.com}
+  - {company: HelloFresh, provider: greenhouse, identifier: hellofresh, company_domain: hellofresh.com}
+  - {company: GetYourGuide, provider: greenhouse, identifier: getyourguide, company_domain: getyourguide.com}
+
+  - {company: ATLAS, provider: smartrecruiters, identifier: ATLAS4, company_domain: atlas.de}
+  - {company: Flink, provider: smartrecruiters, identifier: Flink3, company_domain: flink.com}
+  - {company: McMakler, provider: smartrecruiters, identifier: mcmakler1, company_domain: mcmakler.de}
+  - {company: Securitas Germany, provider: smartrecruiters, identifier: securitas, company_domain: securitas.de}
+
+# This small file is retained for bounded smoke tests. The canonical registry
+# drives full ingestion. Add future company boards to custom_boards.yaml and
+# verify them with scripts/verify_custom_boards.py.
