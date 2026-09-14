@@ -42,3 +42,21 @@ Recommended production flow:
 
 Review each provider's current API terms, robots rules, licensing, and data
 retention requirements before production deployment.
+
+## Supabase storage
+
+Apply Jobman's `20260914090000_create_job_ingestion_storage.sql` migration to
+the development project before setting a PostgreSQL `DATABASE_URL`. Local
+SQLite creates its disposable schema automatically; PostgreSQL never does.
+
+Use Supabase's direct or session-pooler connection string in the worker only:
+
+```env
+DATABASE_URL=postgresql://postgres.PROJECT_REF:PASSWORD@HOST:5432/postgres?sslmode=require
+```
+
+The worker automatically selects the Psycopg 3 driver. Do not use the browser's
+publishable key for ingestion, and never expose the database password or
+service-role key through a `VITE_` variable. Signed-in browser users can select
+active jobs and company names; boards, raw payloads, and run diagnostics remain
+private under row-level security.
