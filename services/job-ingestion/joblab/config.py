@@ -14,11 +14,23 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Settings(BaseModel):
-    database_url: str = Field(default_factory=lambda: os.getenv("DATABASE_URL", f"sqlite:///{ROOT / 'german_jobs.db'}"))
+    database_url: str = Field(default_factory=lambda: os.getenv("DATABASE_URL", f"sqlite:///{ROOT / 'jobman_jobs.db'}"))
     user_agent: str = Field(default_factory=lambda: os.getenv("CRAWLER_USER_AGENT", "JobDatabaseLab/0.1 (+local-test)"))
     per_domain_delay: float = Field(default_factory=lambda: float(os.getenv("PER_DOMAIN_DELAY_SECONDS", "1.0")))
     inactive_after_days: int = Field(default_factory=lambda: int(os.getenv("INACTIVE_AFTER_DAYS", "7")))
     target_country: str = Field(default_factory=lambda: os.getenv("TARGET_COUNTRY", "DE"))
+
+    @property
+    def sqlalchemy_database_url(self) -> str:
+        if self.database_url.startswith("postgresql://"):
+            return self.database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+        if self.database_url.startswith("postgres://"):
+            return self.database_url.replace("postgres://", "postgresql+psycopg://", 1)
+        return self.database_url
+
+    @property
+    def is_sqlite(self) -> bool:
+        return self.sqlalchemy_database_url.startswith("sqlite")
 
 
 def load_sources(path: str | Path | None = None) -> list[dict[str, Any]]:

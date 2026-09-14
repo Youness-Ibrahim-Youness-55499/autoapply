@@ -19,6 +19,10 @@ without coupling ATS code to the React frontend. See `docs/ARCHITECTURE.md` and
 The same service can be installed as a Python package with
 `pip install -e ".[test]"`, or run from the included Dockerfile.
 
+For Supabase/PostgreSQL, apply the Jobman migration first and set the worker's
+private `DATABASE_URL`. The browser never receives database or service-role
+credentials. See `docs/JOBMAN_INTEGRATION.md`.
+
 ## Commands
 
 ```powershell

@@ -8,7 +8,10 @@ import { PageContainer } from "../components/layout/PageContainer";
 import { applicationStatusDetails } from "../features/applications/applicationStatus";
 import type { Application } from "../features/applications/types";
 import { useApplications } from "../features/applications/useApplications";
-import { mockJobs, type MockJob } from "../features/jobs/mockJobs";
+import {
+  type RecommendedJob,
+  useRecommendedJobs,
+} from "../features/jobs/useRecommendedJobs";
 import { getProfileCompletion } from "../features/profile/profile.utils";
 import { useProfile } from "../features/profile/useProfile";
 import { EmptyState } from "../components/states/EmptyState";
@@ -96,20 +99,14 @@ function InsightBanner({ percentage }: { percentage: number }) {
 }
 
 function MatchCard({
-  isApplied,
   isSaved,
   job,
-  onApply,
-  onExplain,
   onSave,
   onSkip,
   tint,
 }: {
-  isApplied: boolean;
   isSaved: boolean;
-  job: MockJob;
-  onApply: () => void;
-  onExplain: () => void;
+  job: RecommendedJob;
   onSave: () => void;
   onSkip: () => void;
   tint: (typeof cardTints)[number];
@@ -124,15 +121,11 @@ function MatchCard({
           <br />
           <span className="font-medium text-ink-muted/80">{job.posted}</span>
         </div>
-        <button
-          aria-label={t("dashboard.whyMatch")}
-          className="flex size-[52px] flex-col items-center justify-center rounded-full border-[3px] border-ink/15 bg-white text-center leading-none transition hover:border-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700"
-          onClick={onExplain}
-          type="button"
-        >
-          <div className="text-xs font-extrabold">{job.matchPercent}%</div>
-          <div className="text-[8px] font-bold text-ink-muted">{t("dashboard.matchLabel")}</div>
-        </button>
+        {job.provider ? (
+          <div className="rounded-full border border-ink/10 bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-ink-muted">
+            {job.provider}
+          </div>
+        ) : null}
       </div>
 
       <div className="flex-1 text-base font-bold leading-tight">{job.title}</div>
@@ -164,16 +157,16 @@ function MatchCard({
         >
           {t("dashboard.skip")}
         </button>
-        <button
-          className={`shrink-0 rounded-full px-3.5 py-2 text-xs font-bold text-white transition-colors ${
-            isApplied ? "bg-ink-muted" : "bg-brand-700 hover:bg-brand-800"
-          }`}
-          disabled={isApplied}
-          onClick={onApply}
-          type="button"
-        >
-          {isApplied ? t("dashboard.applied") : t("dashboard.apply")}
-        </button>
+        {job.applyUrl ? (
+          <a
+            className="shrink-0 rounded-full bg-brand-700 px-3.5 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-800"
+            href={job.applyUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            {t("dashboard.viewJob")}
+          </a>
+        ) : null}
       </div>
     </div>
   );
@@ -319,36 +312,31 @@ export function ProductHomePage() {
       : "there";
 
   const { applications, isLoading, errorMessage } = useApplications();
+  const {
+    errorMessage: jobsErrorMessage,
+    isLoading: jobsLoading,
+    jobs,
+  } = useRecommendedJobs();
   const { isLoading: isProfileLoading, profile } = useProfile();
   const profileCompletion = useMemo(() => getProfileCompletion(profile), [profile]);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set());
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
   const [skippedJobIds, setSkippedJobIds] = useState<Set<string>>(new Set());
-  const [explainedJob, setExplainedJob] = useState<MockJob | null>(null);
   const [isAutoApplyOpen, setIsAutoApplyOpen] = useState(false);
 
   const filteredJobs = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     return query
-      ? mockJobs.filter((job) => job.title.toLowerCase().includes(query) && !skippedJobIds.has(job.id))
-      : mockJobs.filter((job) => !skippedJobIds.has(job.id));
-  }, [searchQuery, skippedJobIds]);
+      ? jobs.filter((job) =>
+          `${job.title} ${job.company} ${job.location}`.toLowerCase().includes(query) &&
+          !skippedJobIds.has(job.id),
+        )
+      : jobs.filter((job) => !skippedJobIds.has(job.id));
+  }, [jobs, searchQuery, skippedJobIds]);
   const visibleJobs = filteredJobs.slice(0, 5);
 
-  function handleApply(jobId: string) {
-    setAppliedJobIds((current) => new Set(current).add(jobId));
-  }
-
   function handleStartAutoApply() {
-    setAppliedJobIds((current) => {
-      const next = new Set(current);
-      for (const job of visibleJobs) {
-        next.add(job.id);
-      }
-      return next;
-    });
     setIsAutoApplyOpen(false);
   }
 
@@ -424,15 +412,25 @@ export function ProductHomePage() {
             </div>
           </div>
 
-          <div className="mb-9 grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4">
-            {visibleJobs.map((job, index) => (
+          {jobsLoading ? (
+            <div className="mb-9 rounded-2xl border border-line bg-surface px-5 py-8 text-sm text-ink-muted">
+              {t("dashboard.loadingJobs")}
+            </div>
+          ) : jobsErrorMessage ? (
+            <div className="mb-9 rounded-2xl border border-line bg-surface px-5 py-8 text-sm text-ink-muted">
+              {t("dashboard.jobsUnavailable")}
+            </div>
+          ) : visibleJobs.length === 0 ? (
+            <div className="mb-9 rounded-2xl border border-line bg-surface px-5 py-8 text-sm text-ink-muted">
+              {t("dashboard.noJobsAvailable")}
+            </div>
+          ) : (
+            <div className="mb-9 grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4">
+              {visibleJobs.map((job, index) => (
               <MatchCard
-                isApplied={appliedJobIds.has(job.id)}
                 isSaved={savedJobIds.has(job.id)}
                 job={job}
                 key={job.id}
-                onApply={() => handleApply(job.id)}
-                onExplain={() => setExplainedJob(job)}
                 onSave={() => setSavedJobIds((current) => {
                   const next = new Set(current);
                   next.has(job.id) ? next.delete(job.id) : next.add(job.id);
@@ -441,8 +439,9 @@ export function ProductHomePage() {
                 onSkip={() => setSkippedJobIds((current) => new Set(current).add(job.id))}
                 tint={cardTints[index % cardTints.length]}
               />
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <div className="mb-3.5 text-lg font-bold tracking-tight">
             {t("dashboard.allApplications")}
@@ -466,15 +465,6 @@ export function ProductHomePage() {
         </section>
       </PageContainer>
 
-      {explainedJob && (
-        <DashboardModal onClose={() => setExplainedJob(null)} title={t("dashboard.whyMatch")}>
-          <p className="mt-3 font-semibold">{explainedJob.title}</p>
-          <p className="mt-2 text-sm text-ink-muted">{t("dashboard.matchExplanationUnavailable")}</p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {explainedJob.tags.map((tag) => <span className="rounded-full bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-900" key={tag}>{tag}</span>)}
-          </div>
-        </DashboardModal>
-      )}
       {isAutoApplyOpen && <AutoApplyModal onClose={() => setIsAutoApplyOpen(false)} onStart={handleStartAutoApply} profile={profile} />}
     </>
   );

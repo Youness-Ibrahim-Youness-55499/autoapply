@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 import asyncio
 import json
@@ -16,14 +16,16 @@ from joblab.adapters.lever import LeverAdapter
 from joblab.adapters.personio import PersonioAdapter
 from joblab.adapters.workday import WorkdayAdapter, workday_config
 from joblab.adapters.successfactors import SuccessFactorsAdapter, parse_legacy_listing
+from joblab.api import serialize_job
 from joblab.board_catalog import BoardInput, api_url, board_url, load_board_catalog, source_config
 from joblab.dedupe import fingerprint, secondary_title_match
-from joblab.ingestion import save_raw_job
+from joblab.ingestion import ingest, save_raw_job
 from joblab.location_filter import is_german_job
 from joblab.models import Base, Company, Job, JobSource, Source
 from joblab.normalization import normalize_domain, normalize_text
 from joblab.schemas import RawJob
 from joblab.registry import AdapterStatus, BoardRecord, EndpointStatus, GermanyStatus, QueryStatus, merge_records
+from joblab.config import Settings
 from joblab.verification import VerificationProgress
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -63,10 +65,12 @@ def test_jsonld_fixture_parsing():
 
 def test_idempotency_and_multi_source_linking():
     db = database()
-    first = Source(key="fixture:a", company_name="Example GmbH", source_type="fixture", provider="fixture")
-    second = Source(key="fixture:b", company_name="Example GmbH", source_type="fixture", provider="fixture")
+    company = Company(name="Example GmbH", normalized_name="example-gmbh", domain="example.com")
+    db.add(company); db.flush()
+    first = Source(company_id=company.id, key="fixture:a", company_name="Example GmbH", source_type="fixture", provider="fixture")
+    second = Source(company_id=company.id, key="fixture:b", company_name="Example GmbH", source_type="fixture", provider="fixture")
     db.add_all([first, second]); db.flush()
-    seen = datetime.utcnow()
+    seen = datetime.now(UTC)
     assert save_raw_job(db, first, raw("a-1", "fixture:a"), seen)
     assert not save_raw_job(db, first, raw("a-1", "fixture:a"), seen)
     assert not save_raw_job(db, second, raw("b-9", "fixture:b"), seen)
@@ -255,3 +259,52 @@ def test_verification_progress_reporting():
     progress.record("verified"); progress.record("failed"); progress.record("skipped")
     assert progress.checked == 3
     assert "1 verified" in progress.line()
+
+
+def test_supabase_postgres_url_uses_psycopg_driver():
+    settings = Settings(database_url="postgresql://user:secret@example.supabase.co:5432/postgres?sslmode=require")
+    assert settings.sqlalchemy_database_url.startswith("postgresql+psycopg://")
+    assert not settings.is_sqlite
+
+
+def test_storage_models_match_supabase_table_names():
+    assert Company.__tablename__ == "job_companies"
+    assert Source.__tablename__ == "job_boards"
+    assert Job.__tablename__ == "jobs"
+    assert JobSource.__tablename__ == "job_sources"
+
+
+def test_ingestion_records_first_run_source_failure(monkeypatch):
+    class FailingAdapter:
+        async def fetch(self, max_jobs=None):
+            raise RuntimeError("fixture fetch failed")
+
+    monkeypatch.setattr("joblab.ingestion.adapter_for", lambda config, fetcher: FailingAdapter())
+    db = database()
+    config = {
+        "company": "Broken Board GmbH",
+        "source_type": "ats",
+        "provider": "ashby",
+        "identifier": "broken-board",
+        "url": "https://jobs.ashbyhq.com/broken-board",
+    }
+
+    report = asyncio.run(ingest([config], db, settings=Settings(per_domain_delay=0)))
+
+    source = db.scalar(select(Source).where(Source.key == "ashby:broken-board"))
+    assert report.failed_sources == 1
+    assert source is not None
+    assert source.last_error == "fixture fetch failed"
+
+
+def test_serialized_job_includes_its_provider():
+    db = database()
+    company = Company(name="Example GmbH", normalized_name="example-gmbh", domain="example.com")
+    db.add(company); db.flush()
+    source = Source(company_id=company.id, key="ashby:example", company_name="Example GmbH", source_type="ats", provider="ashby")
+    db.add(source); db.flush()
+    assert save_raw_job(db, source, raw(), datetime.now(UTC))
+    db.commit()
+
+    job = db.scalar(select(Job))
+    assert serialize_job(job)["provider"] == "ashby"
