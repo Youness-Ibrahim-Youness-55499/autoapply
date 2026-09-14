@@ -8,7 +8,10 @@ import { PageContainer } from "../components/layout/PageContainer";
 import { applicationStatusDetails } from "../features/applications/applicationStatus";
 import type { Application } from "../features/applications/types";
 import { useApplications } from "../features/applications/useApplications";
-import { mockJobs, type MockJob } from "../features/jobs/mockJobs";
+import {
+  type RecommendedJob,
+  useRecommendedJobs,
+} from "../features/jobs/useRecommendedJobs";
 import { getProfileCompletion } from "../features/profile/profile.utils";
 import { useProfile } from "../features/profile/useProfile";
 import { EmptyState } from "../components/states/EmptyState";
@@ -102,7 +105,7 @@ function MatchCard({
   tint,
 }: {
   isApplied: boolean;
-  job: MockJob;
+  job: RecommendedJob;
   onApply: () => void;
   tint: (typeof cardTints)[number];
 }) {
@@ -116,10 +119,11 @@ function MatchCard({
           <br />
           <span className="font-medium text-ink-muted/80">{job.posted}</span>
         </div>
-        <div className="flex size-[52px] flex-col items-center justify-center rounded-full border-[3px] border-ink/15 bg-white text-center leading-none">
-          <div className="text-xs font-extrabold">{job.matchPercent}%</div>
-          <div className="text-[8px] font-bold text-ink-muted">{t("dashboard.matchLabel")}</div>
-        </div>
+        {job.provider ? (
+          <div className="rounded-full border border-ink/10 bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-ink-muted">
+            {job.provider}
+          </div>
+        ) : null}
       </div>
 
       <div className="flex-1 text-base font-bold leading-tight">{job.title}</div>
@@ -143,16 +147,17 @@ function MatchCard({
         >
           {t("dashboard.pass")}
         </button>
-        <button
-          className={`shrink-0 rounded-full px-3.5 py-2 text-xs font-bold text-white transition-colors ${
-            isApplied ? "bg-ink-muted" : "bg-brand-700 hover:bg-brand-800"
-          }`}
-          disabled={isApplied}
-          onClick={onApply}
-          type="button"
-        >
-          {isApplied ? t("dashboard.applied") : t("dashboard.apply")}
-        </button>
+        {job.applyUrl ? (
+          <a
+            className="shrink-0 rounded-full bg-brand-700 px-3.5 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-800"
+            href={job.applyUrl}
+            onClick={onApply}
+            rel="noreferrer"
+            target="_blank"
+          >
+            {isApplied ? t("dashboard.opened") : t("dashboard.viewJob")}
+          </a>
+        ) : null}
       </div>
     </div>
   );
@@ -208,6 +213,11 @@ export function ProductHomePage() {
       : "there";
 
   const { applications, isLoading, errorMessage } = useApplications();
+  const {
+    errorMessage: jobsErrorMessage,
+    isLoading: jobsLoading,
+    jobs,
+  } = useRecommendedJobs();
   const { profile } = useProfile();
   const profileCompletion = useMemo(() => getProfileCompletion(profile), [profile]);
 
@@ -217,9 +227,11 @@ export function ProductHomePage() {
   const filteredJobs = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     return query
-      ? mockJobs.filter((job) => job.title.toLowerCase().includes(query))
-      : mockJobs;
-  }, [searchQuery]);
+      ? jobs.filter((job) =>
+          `${job.title} ${job.company} ${job.location}`.toLowerCase().includes(query),
+        )
+      : jobs;
+  }, [jobs, searchQuery]);
   const visibleJobs = filteredJobs.slice(0, 5);
 
   function handleApply(jobId: string) {
@@ -305,8 +317,21 @@ export function ProductHomePage() {
             </div>
           </div>
 
-          <div className="mb-9 grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4">
-            {visibleJobs.map((job, index) => (
+          {jobsLoading ? (
+            <div className="mb-9 rounded-2xl border border-line bg-surface px-5 py-8 text-sm text-ink-muted">
+              {t("dashboard.loadingJobs")}
+            </div>
+          ) : jobsErrorMessage ? (
+            <div className="mb-9 rounded-2xl border border-line bg-surface px-5 py-8 text-sm text-ink-muted">
+              {t("dashboard.jobsUnavailable")}
+            </div>
+          ) : visibleJobs.length === 0 ? (
+            <div className="mb-9 rounded-2xl border border-line bg-surface px-5 py-8 text-sm text-ink-muted">
+              {t("dashboard.noJobsAvailable")}
+            </div>
+          ) : (
+            <div className="mb-9 grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4">
+              {visibleJobs.map((job, index) => (
               <MatchCard
                 isApplied={appliedJobIds.has(job.id)}
                 job={job}
@@ -314,8 +339,9 @@ export function ProductHomePage() {
                 onApply={() => handleApply(job.id)}
                 tint={cardTints[index % cardTints.length]}
               />
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <div className="mb-3.5 text-lg font-bold tracking-tight">
             {t("dashboard.allApplications")}
