@@ -41,6 +41,7 @@ class Source(Base):
     last_jobs_found: Mapped[int] = mapped_column(Integer, default=0)
     last_error: Mapped[str | None] = mapped_column(Text, nullable=True)
     company: Mapped[Company] = relationship(back_populates="boards")
+    occurrences: Mapped[list["JobSource"]] = relationship(back_populates="source")
 
 
 class Job(Base):
@@ -82,6 +83,7 @@ class JobSource(Base):
     retrieved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
     last_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
     job: Mapped[Job] = relationship(back_populates="occurrences")
+    source: Mapped[Source] = relationship(back_populates="occurrences")
 
 
 class Skill(Base):

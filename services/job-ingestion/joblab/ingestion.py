@@ -91,6 +91,10 @@ async def ingest(configs, db: Session, max_jobs: int | None = None, settings: Se
                 source = Source(company_id=company.id, key=key, company_name=config["company"], source_type=config["source_type"], provider=config.get("provider"), url=config.get("url"), enabled=True)
                 db.add(source); db.flush()
             source.last_run_at = datetime.now(UTC)
+            # Persist the board before making a network request. Otherwise a
+            # first-run failure rolls the new board back and leaves no record
+            # on which to store its diagnostic.
+            db.commit()
             logger.info("source start: %s", key)
             started = time.monotonic()
             try:

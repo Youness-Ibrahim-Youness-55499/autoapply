@@ -1,4 +1,5 @@
 import json
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Query
@@ -12,14 +13,18 @@ from .board_catalog import api_url, board_url, load_board_catalog
 from .models import Company, Job, JobSource, Source
 from .providers import PROVIDERS
 
-app = FastAPI(title="Job Database Lab", version="0.1.0")
 WEB = Path(__file__).resolve().parents[1] / "web"
 REGISTRY = Path(__file__).resolve().parents[1] / "data" / "german_company_ats_registry.json"
 DISCOVERIES = REGISTRY.parent / "discoveries"
 
 
-@app.on_event("startup")
-def startup(): init_db()
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title="Job Database Lab", version="0.1.0", lifespan=lifespan)
 
 
 @app.get("/health")
@@ -31,7 +36,8 @@ def home(): return FileResponse(WEB / "index.html")
 
 
 def serialize_job(job: Job):
-    return {"id": job.id, "title": job.title, "company": job.company.name, "location": job.location_text, "city": job.city, "country": job.country, "remote_type": job.remote_type, "employment_type": job.employment_type, "status": job.status, "apply_url": job.apply_url, "posted_at": job.posted_at, "last_seen_at": job.last_seen_at, "source_count": len(job.occurrences)}
+    providers = sorted({occurrence.source.provider for occurrence in job.occurrences if occurrence.source.provider})
+    return {"id": job.id, "title": job.title, "company": job.company.name, "location": job.location_text, "city": job.city, "country": job.country, "remote_type": job.remote_type, "employment_type": job.employment_type, "status": job.status, "apply_url": job.apply_url, "posted_at": job.posted_at, "last_seen_at": job.last_seen_at, "provider": providers[0] if len(providers) == 1 else "multiple", "source_count": len(job.occurrences)}
 
 
 @app.get("/jobs")
