@@ -1,0 +1,28 @@
+{
+  "jobs": [
+    {
+      "id": "ashby-de-1",
+      "title": "Software Engineer",
+      "location": "Berlin, Germany",
+      "workplaceType": "Hybrid",
+      "employmentType": "FullTime",
+      "publishedAt": "2026-09-01T10:00:00Z",
+      "jobUrl": "https://jobs.ashbyhq.com/example/de-1",
+      "applyUrl": "https://jobs.ashbyhq.com/example/application/de-1",
+      "descriptionPlain": "Build reliable software.",
+      "isListed": true
+    },
+    {
+      "id": "ashby-us-1",
+      "title": "Product Manager",
+      "location": "New York, United States",
+      "workplaceType": "OnSite",
+      "employmentType": "FullTime",
+      "publishedAt": "2026-09-02T10:00:00Z",
+      "jobUrl": "https://jobs.ashbyhq.com/example/us-1",
+      "applyUrl": "https://jobs.ashbyhq.com/example/application/us-1",
+      "descriptionPlain": "Lead product development.",
+      "isListed": true
+    }
+  ]
+}

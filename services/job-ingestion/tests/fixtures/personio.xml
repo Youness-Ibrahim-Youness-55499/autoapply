@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workzag-jobs>
+  <position>
+    <id>1001</id><subcompany>Example GmbH</subcompany><office>Berlin</office><department>Engineering</department><name>Software Engineer</name>
+    <jobDescriptions><jobDescription><name>Your mission</name><value><![CDATA[<p>Build reliable products.</p>]]></value></jobDescription></jobDescriptions>
+    <employmentType>permanent</employmentType><schedule>full-time</schedule><createdAt>2026-09-01T10:00:00Z</createdAt>
+  </position>
+  <position>
+    <id>1002</id><office>Munich</office><department>Product</department><name>Product Manager</name>
+    <jobDescriptions><jobDescription><name>Role</name><value><![CDATA[Lead product development.]]></value></jobDescription></jobDescriptions>
+    <employmentType>permanent</employmentType><schedule>full-time</schedule>
+  </position>
+</workzag-jobs>

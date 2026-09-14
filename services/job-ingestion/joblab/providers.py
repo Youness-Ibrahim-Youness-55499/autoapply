@@ -1,0 +1,15 @@
+PROVIDERS = [
+    {"id": "ashby", "name": "Ashby", "status": "working", "access": "Public company job-board API"},
+    {"id": "lever", "name": "Lever", "status": "working", "access": "Public company Postings API"},
+    {"id": "greenhouse", "name": "Greenhouse", "status": "working", "access": "Public company Job Board API"},
+    {"id": "smartrecruiters", "name": "SmartRecruiters", "status": "working", "access": "Public company Posting API"},
+    {"id": "workday", "name": "Workday", "status": "working", "access": "Tenant-specific public CXS endpoint"},
+    {"id": "personio", "name": "Personio", "status": "working", "access": "Public per-company XML feed; company slug required"},
+    {"id": "recruitee", "name": "Recruitee", "status": "needs_access", "access": "Careers API is moving to per-company tokens"},
+    {"id": "teamtailor", "name": "Teamtailor", "status": "needs_access", "access": "Public pages; API normally requires credentials"},
+    {"id": "successfactors", "name": "SAP SuccessFactors", "status": "working", "access": "Career Site Builder service and configurable legacy parser"},
+    {"id": "bamboohr", "name": "BambooHR", "status": "needs_access", "access": "Documented ATS API requires authentication"},
+    {"id": "softgarden", "name": "softgarden", "status": "needs_boards", "access": "Company-specific public portal/feed required"},
+    {"id": "onlyfy", "name": "onlyfy", "status": "needs_boards", "access": "Company-specific public portal required"},
+    {"id": "dvinci", "name": "d.vinci", "status": "needs_boards", "access": "Company-specific public endpoint required"},
+]

@@ -1,0 +1,557 @@
+﻿company,provider,identifier,board_url,region,company_domain,enabled,options
+10xteam,ashby,10xteam,https://jobs.ashbyhq.com/10xteam,global,,true,{}
+1password,ashby,1password,https://jobs.ashbyhq.com/1password,global,,true,{}
+5bluesoftware,ashby,5bluesoftware,https://jobs.ashbyhq.com/5bluesoftware,global,,true,{}
+Aceve,ashby,aceve,https://jobs.ashbyhq.com/aceve,global,,true,{}
+Adaption,ashby,adaption,https://jobs.ashbyhq.com/adaption,global,,true,{}
+Adjoe,ashby,adjoe,https://jobs.ashbyhq.com/adjoe,global,,true,{}
+AeroVect,ashby,AeroVect,https://jobs.ashbyhq.com/AeroVect,global,,true,{}
+Airapps,ashby,airapps,https://jobs.ashbyhq.com/airapps,global,,true,{}
+Airwallex,ashby,airwallex,https://jobs.ashbyhq.com/airwallex,global,,true,{}
+Almedia,ashby,almedia,https://jobs.ashbyhq.com/almedia,global,,true,{}
+Alta Ares,ashby,alta-ares,https://jobs.ashbyhq.com/alta-ares,global,,true,{}
+Amboss,ashby,amboss,https://jobs.ashbyhq.com/amboss,global,,true,{}
+Anyone Ai,ashby,anyone-ai,https://jobs.ashbyhq.com/anyone-ai,global,,true,{}
+Applied,ashby,applied,https://jobs.ashbyhq.com/applied,global,,true,{}
+Applike Group,ashby,applike-group,https://jobs.ashbyhq.com/applike-group,global,,true,{}
+Ashby,ashby,Ashby,https://jobs.ashbyhq.com/Ashby,global,,true,{}
+Astronomer,ashby,astronomer,https://jobs.ashbyhq.com/astronomer,global,,true,{}
+Atira,ashby,atira,https://jobs.ashbyhq.com/atira,global,,true,{}
+Attio,ashby,attio,https://jobs.ashbyhq.com/attio,global,,true,{}
+Aurorasolar,ashby,aurorasolar,https://jobs.ashbyhq.com/aurorasolar,global,,true,{}
+Avelios Medical,ashby,avelios-medical,https://jobs.ashbyhq.com/avelios-medical,global,,true,{}
+Axelera,ashby,axelera,https://jobs.ashbyhq.com/axelera,global,,true,{}
+Benchling,ashby,benchling,https://jobs.ashbyhq.com/benchling,global,,true,{}
+Bjakcareer,ashby,bjakcareer,https://jobs.ashbyhq.com/bjakcareer,global,,true,{}
+Blacksemiconductor,ashby,blacksemiconductor,https://jobs.ashbyhq.com/blacksemiconductor,global,,true,{}
+Bliro,ashby,bliro,https://jobs.ashbyhq.com/bliro,global,,true,{}
+Bratte,ashby,bratte,https://jobs.ashbyhq.com/bratte,global,,true,{}
+Brooklyn Health,ashby,brooklyn-health,https://jobs.ashbyhq.com/brooklyn-health,global,,true,{}
+Buena,ashby,buena,https://jobs.ashbyhq.com/buena,global,,true,{}
+Bunch,ashby,bunch,https://jobs.ashbyhq.com/bunch,global,,true,{}
+Bynder,ashby,bynder,https://jobs.ashbyhq.com/bynder,global,,true,{}
+Camunda,ashby,camunda,https://jobs.ashbyhq.com/camunda,global,,true,{}
+Cargo One,ashby,cargo-one,https://jobs.ashbyhq.com/cargo-one,global,,true,{}
+Carwow,ashby,Carwow,https://jobs.ashbyhq.com/Carwow,global,,true,{}
+Ceartas,ashby,ceartas,https://jobs.ashbyhq.com/ceartas,global,,true,{}
+Checkly,ashby,checkly,https://jobs.ashbyhq.com/checkly,global,,true,{}
+Choco,ashby,choco,https://jobs.ashbyhq.com/choco,global,,true,{}
+Clera,ashby,Clera,https://jobs.ashbyhq.com/Clera,global,,true,{}
+Clickhouse,ashby,clickhouse,https://jobs.ashbyhq.com/clickhouse,global,,true,{}
+Climatiq,ashby,climatiq,https://jobs.ashbyhq.com/climatiq,global,,true,{}
+Coderabbit,ashby,coderabbit,https://jobs.ashbyhq.com/coderabbit,global,,true,{}
+Codesphere,ashby,codesphere,https://jobs.ashbyhq.com/codesphere,global,,true,{}
+Cognition,ashby,cognition,https://jobs.ashbyhq.com/cognition,global,,true,{}
+Cohere,ashby,cohere,https://jobs.ashbyhq.com/cohere,global,,true,{}
+Colonist,ashby,colonist,https://jobs.ashbyhq.com/colonist,global,,true,{}
+Comstruct,ashby,comstruct,https://jobs.ashbyhq.com/comstruct,global,,true,{}
+Conductorai,ashby,conductorai,https://jobs.ashbyhq.com/conductorai,global,,true,{}
+Constructor,ashby,constructor,https://jobs.ashbyhq.com/constructor,global,,true,{}
+Cosuno,ashby,cosuno,https://jobs.ashbyhq.com/cosuno,global,,true,{}
+Cursor,ashby,cursor,https://jobs.ashbyhq.com/cursor,global,,true,{}
+Cuspai,ashby,cuspai,https://jobs.ashbyhq.com/cuspai,global,,true,{}
+Dandy,ashby,dandy,https://jobs.ashbyhq.com/dandy,global,,true,{}
+Dash0,ashby,dash0,https://jobs.ashbyhq.com/dash0,global,,true,{}
+Decagon,ashby,decagon,https://jobs.ashbyhq.com/decagon,global,,true,{}
+DeepL,ashby,DeepL,https://jobs.ashbyhq.com/DeepL,global,,true,{}
+Deepsetai,ashby,deepsetai,https://jobs.ashbyhq.com/deepsetai,global,,true,{}
+Delinea,ashby,delinea,https://jobs.ashbyhq.com/delinea,global,,true,{}
+Deliveroo,ashby,deliveroo,https://jobs.ashbyhq.com/deliveroo,global,,true,{}
+Docebo,ashby,docebo,https://jobs.ashbyhq.com/docebo,global,,true,{}
+Docker,ashby,docker,https://jobs.ashbyhq.com/docker,global,,true,{}
+Doinstruct,ashby,doinstruct,https://jobs.ashbyhq.com/doinstruct,global,,true,{}
+Dune,ashby,dune,https://jobs.ashbyhq.com/dune,global,,true,{}
+Easygenerator,ashby,easygenerator,https://jobs.ashbyhq.com/easygenerator,global,,true,{}
+Ekumenlabs,ashby,ekumenlabs,https://jobs.ashbyhq.com/ekumenlabs,global,,true,{}
+ElevenLabs,ashby,ElevenLabs,https://jobs.ashbyhq.com/ElevenLabs,global,,true,{}
+Ellamind,ashby,ellamind,https://jobs.ashbyhq.com/ellamind,global,,true,{}
+Elliptic,ashby,elliptic,https://jobs.ashbyhq.com/elliptic,global,,true,{}
+Engflow,ashby,engflow,https://jobs.ashbyhq.com/engflow,global,,true,{}
+Enpal,ashby,enpal,https://jobs.ashbyhq.com/enpal,global,,true,{}
+Everai,ashby,everai,https://jobs.ashbyhq.com/everai,global,,true,{}
+Everfield,ashby,everfield,https://jobs.ashbyhq.com/everfield,global,,true,{}
+Eye Security,ashby,eye-security,https://jobs.ashbyhq.com/eye-security,global,,true,{}
+Featherlessai,ashby,featherlessai,https://jobs.ashbyhq.com/featherlessai,global,,true,{}
+Fiducial,ashby,Fiducial,https://jobs.ashbyhq.com/Fiducial,global,,true,{}
+Filigran,ashby,filigran,https://jobs.ashbyhq.com/filigran,global,,true,{}
+Finto,ashby,finto,https://jobs.ashbyhq.com/finto,global,,true,{}
+Fonio,ashby,Fonio,https://jobs.ashbyhq.com/Fonio,global,,true,{}
+Foxelligroup,ashby,foxelligroup,https://jobs.ashbyhq.com/foxelligroup,global,,true,{}
+Furo,ashby,furo,https://jobs.ashbyhq.com/furo,global,,true,{}
+Galvany,ashby,galvany,https://jobs.ashbyhq.com/galvany,global,,true,{}
+Glow25,ashby,glow25,https://jobs.ashbyhq.com/glow25,global,,true,{}
+Gorilla,ashby,gorilla,https://jobs.ashbyhq.com/gorilla,global,,true,{}
+Greenlight Workforce Solutions,ashby,greenlight-workforce-solutions,https://jobs.ashbyhq.com/greenlight-workforce-solutions,global,,true,{}
+Growthprotocol,ashby,growthprotocol,https://jobs.ashbyhq.com/growthprotocol,global,,true,{}
+Harvey,ashby,harvey,https://jobs.ashbyhq.com/harvey,global,,true,{}
+Hawk,ashby,hawk,https://jobs.ashbyhq.com/hawk,global,,true,{}
+Higgsfieldai,ashby,higgsfieldai,https://jobs.ashbyhq.com/higgsfieldai,global,,true,{}
+Hirehire,ashby,hirehire,https://jobs.ashbyhq.com/hirehire,global,,true,{}
+Hivemq,ashby,hivemq,https://jobs.ashbyhq.com/hivemq,global,,true,{}
+Hiya,ashby,hiya,https://jobs.ashbyhq.com/hiya,global,,true,{}
+Horizon3ai,ashby,horizon3ai,https://jobs.ashbyhq.com/horizon3ai,global,,true,{}
+Hostinger,ashby,hostinger,https://jobs.ashbyhq.com/hostinger,global,,true,{}
+Iceye,ashby,iceye,https://jobs.ashbyhq.com/iceye,global,,true,{}
+Ideals,ashby,ideals,https://jobs.ashbyhq.com/ideals,global,,true,{}
+Illumio,ashby,illumio,https://jobs.ashbyhq.com/illumio,global,,true,{}
+Partyhat,ashby,partyhat,https://jobs.ashbyhq.com/partyhat,global,,true,{}
+Patlytics,ashby,patlytics,https://jobs.ashbyhq.com/patlytics,global,,true,{}
+Pebl,ashby,pebl,https://jobs.ashbyhq.com/pebl,global,,true,{}
+Peec,ashby,peec,https://jobs.ashbyhq.com/peec,global,,true,{}
+Pennylane,ashby,pennylane,https://jobs.ashbyhq.com/pennylane,global,,true,{}
+Percona,ashby,percona,https://jobs.ashbyhq.com/percona,global,,true,{}
+Pergolux,ashby,pergolux,https://jobs.ashbyhq.com/pergolux,global,,true,{}
+Perk,ashby,perk,https://jobs.ashbyhq.com/perk,global,,true,{}
+Perplexity,ashby,perplexity,https://jobs.ashbyhq.com/perplexity,global,,true,{}
+Phlair,ashby,phlair,https://jobs.ashbyhq.com/phlair,global,,true,{}
+Plane,ashby,plane,https://jobs.ashbyhq.com/plane,global,,true,{}
+Plasmidsaurus,ashby,plasmidsaurus,https://jobs.ashbyhq.com/plasmidsaurus,global,,true,{}
+Plaud,ashby,Plaud,https://jobs.ashbyhq.com/Plaud,global,,true,{}
+Pleo,ashby,pleo,https://jobs.ashbyhq.com/pleo,global,,true,{}
+Pliant,ashby,pliant,https://jobs.ashbyhq.com/pliant,global,,true,{}
+Positive Development,ashby,positive-development,https://jobs.ashbyhq.com/positive-development,global,,true,{}
+Powerus,ashby,powerus,https://jobs.ashbyhq.com/powerus,global,,true,{}
+Prior Labs,ashby,prior-labs,https://jobs.ashbyhq.com/prior-labs,global,,true,{}
+Profound,ashby,profound,https://jobs.ashbyhq.com/profound,global,,true,{}
+Proxima Fusion,ashby,proxima-fusion,https://jobs.ashbyhq.com/proxima-fusion,global,,true,{}
+Rasa,ashby,rasa,https://jobs.ashbyhq.com/rasa,global,,true,{}
+Reedsy,ashby,reedsy,https://jobs.ashbyhq.com/reedsy,global,,true,{}
+Reflow,ashby,reflow,https://jobs.ashbyhq.com/reflow,global,,true,{}
+Remberg,ashby,remberg,https://jobs.ashbyhq.com/remberg,global,,true,{}
+Reonic,ashby,reonic,https://jobs.ashbyhq.com/reonic,global,,true,{}
+Restate,ashby,restate,https://jobs.ashbyhq.com/restate,global,,true,{}
+Rhoda Ai,ashby,rhoda-ai,https://jobs.ashbyhq.com/rhoda-ai,global,,true,{}
+Rohlik,ashby,rohlik,https://jobs.ashbyhq.com/rohlik,global,,true,{}
+Roompricegenie,ashby,roompricegenie,https://jobs.ashbyhq.com/roompricegenie,global,,true,{}
+Rootglobal,ashby,rootglobal,https://jobs.ashbyhq.com/rootglobal,global,,true,{}
+Sanity,ashby,sanity,https://jobs.ashbyhq.com/sanity,global,,true,{}
+Sardine,ashby,sardine,https://jobs.ashbyhq.com/sardine,global,,true,{}
+Satispay,ashby,satispay,https://jobs.ashbyhq.com/satispay,global,,true,{}
+Se3,ashby,se3,https://jobs.ashbyhq.com/se3,global,,true,{}
+Searchable,ashby,searchable,https://jobs.ashbyhq.com/searchable,global,,true,{}
+Searchapi,ashby,SearchApi,https://jobs.ashbyhq.com/SearchApi,global,,true,{}
+Secfix,ashby,secfix,https://jobs.ashbyhq.com/secfix,global,,true,{}
+Semperis,ashby,semperis,https://jobs.ashbyhq.com/semperis,global,,true,{}
+Sentient Foundation,ashby,sentient-foundation,https://jobs.ashbyhq.com/sentient-foundation,global,,true,{}
+Sereact,ashby,sereact,https://jobs.ashbyhq.com/sereact,global,,true,{}
+Shook,ashby,shook,https://jobs.ashbyhq.com/shook,global,,true,{}
+Sierra,ashby,sierra,https://jobs.ashbyhq.com/sierra,global,,true,{}
+Singular,ashby,singular,https://jobs.ashbyhq.com/singular,global,,true,{}
+Siteminder,ashby,siteminder,https://jobs.ashbyhq.com/siteminder,global,,true,{}
+Snowflake,ashby,snowflake,https://jobs.ashbyhq.com/snowflake,global,,true,{}
+Solveintelligence,ashby,solveintelligence,https://jobs.ashbyhq.com/solveintelligence,global,,true,{}
+Sosafe,ashby,sosafe,https://jobs.ashbyhq.com/sosafe,global,,true,{}
+Spaitial,ashby,spaitial,https://jobs.ashbyhq.com/spaitial,global,,true,{}
+Spearbio,ashby,spearbio,https://jobs.ashbyhq.com/spearbio,global,,true,{}
+Statista,ashby,statista,https://jobs.ashbyhq.com/statista,global,,true,{}
+Sunday Gmbh,ashby,Sunday-GmbH,https://jobs.ashbyhq.com/Sunday-GmbH,global,,true,{}
+Sunday Natural,ashby,sunday-natural,https://jobs.ashbyhq.com/sunday-natural,global,,true,{}
+Supercell,ashby,supercell,https://jobs.ashbyhq.com/supercell,global,,true,{}
+Synthesia,ashby,synthesia,https://jobs.ashbyhq.com/synthesia,global,,true,{}
+Tacto,ashby,tacto,https://jobs.ashbyhq.com/tacto,global,,true,{}
+Taktile,ashby,taktile,https://jobs.ashbyhq.com/taktile,global,,true,{}
+Tandem Health,ashby,tandem-health,https://jobs.ashbyhq.com/tandem-health,global,,true,{}
+Tebi,ashby,tebi,https://jobs.ashbyhq.com/tebi,global,,true,{}
+Telli,ashby,telli,https://jobs.ashbyhq.com/telli,global,,true,{}
+Tempo Io,ashby,tempo-io,https://jobs.ashbyhq.com/tempo-io,global,,true,{}
+Terac,ashby,terac,https://jobs.ashbyhq.com/terac,global,,true,{}
+The Exploration Company,ashby,the-exploration-company,https://jobs.ashbyhq.com/the-exploration-company,global,,true,{}
+The Flex,ashby,the-flex,https://jobs.ashbyhq.com/the-flex,global,,true,{}
+The Global Talent Co,ashby,the-global-talent-co,https://jobs.ashbyhq.com/the-global-talent-co,global,,true,{}
+Trading212,ashby,trading212,https://jobs.ashbyhq.com/trading212,global,,true,{}
+Trawa,ashby,trawa,https://jobs.ashbyhq.com/trawa,global,,true,{}
+Trm Labs,ashby,trm-labs,https://jobs.ashbyhq.com/trm-labs,global,,true,{}
+Uncountable,ashby,uncountable,https://jobs.ashbyhq.com/uncountable,global,,true,{}
+Upvest,ashby,upvest,https://jobs.ashbyhq.com/upvest,global,,true,{}
+Vclusterlabs,ashby,vclusterlabs,https://jobs.ashbyhq.com/vclusterlabs,global,,true,{}
+Viktor,ashby,viktor,https://jobs.ashbyhq.com/viktor,global,,true,{}
+Vinci4D,ashby,vinci4d,https://jobs.ashbyhq.com/vinci4d,global,,true,{}
+Vistar,ashby,vistar,https://jobs.ashbyhq.com/vistar,global,,true,{}
+Vogel,ashby,Vogel,https://jobs.ashbyhq.com/Vogel,global,,true,{}
+Voize,ashby,voize,https://jobs.ashbyhq.com/voize,global,,true,{}
+Voodoo,ashby,voodoo,https://jobs.ashbyhq.com/voodoo,global,,true,{}
+Voyfai,ashby,voyfai,https://jobs.ashbyhq.com/voyfai,global,,true,{}
+Vrey,ashby,VREY,https://jobs.ashbyhq.com/VREY,global,,true,{}
+Watershed,ashby,watershed,https://jobs.ashbyhq.com/watershed,global,,true,{}
+Wemolo,ashby,wemolo,https://jobs.ashbyhq.com/wemolo,global,,true,{}
+Wordsmith,ashby,wordsmith,https://jobs.ashbyhq.com/wordsmith,global,,true,{}
+Worldly,ashby,worldly,https://jobs.ashbyhq.com/worldly,global,,true,{}
+Xyz Reality,ashby,xyz-reality,https://jobs.ashbyhq.com/xyz-reality,global,,true,{}
+Yepoda,ashby,yepoda,https://jobs.ashbyhq.com/yepoda,global,,true,{}
+Zauber,ashby,zauber,https://jobs.ashbyhq.com/zauber,global,,true,{}
+Zeit Ai,ashby,zeit-ai,https://jobs.ashbyhq.com/zeit-ai,global,,true,{}
+Zip,ashby,zip,https://jobs.ashbyhq.com/zip,global,,true,{}
+Zoe,ashby,zoe,https://jobs.ashbyhq.com/zoe,global,,true,{}
+EUROPART,dvinci,europart-karriere,https://europart-karriere.dvinci-hr.com/de/jobs,global,,false,{}
+Atolls,greenhouse,atolls,https://boards.greenhouse.io/atolls,global,,true,{}
+GetYourGuide,greenhouse,getyourguide,https://boards.greenhouse.io/getyourguide,global,,true,{}
+HelloFresh,greenhouse,hellofresh,https://boards.greenhouse.io/hellofresh,global,,true,{}
+360learning,lever,360learning,https://jobs.lever.co/360learning,global,,true,{}
+Actian,lever,actian,https://jobs.lever.co/actian,global,,true,{}
+Aevi,lever,aevi,https://jobs.eu.lever.co/aevi,eu,,true,{}
+Agicap,lever,agicap,https://jobs.lever.co/agicap,global,,true,{}
+Agile Defense,lever,agile-defense,https://jobs.lever.co/agile-defense,global,,true,{}
+Aircall,lever,aircall,https://jobs.lever.co/aircall,global,,true,{}
+Ajax,lever,ajax,https://jobs.lever.co/ajax,global,,true,{}
+Alimentiv 2,lever,alimentiv-2,https://jobs.lever.co/alimentiv-2,global,,true,{}
+Ampeco Global,lever,ampeco-global,https://jobs.lever.co/ampeco-global,global,,true,{}
+Apex.AI,lever,apex-ai,https://jobs.lever.co/apex-ai,global,,true,{}
+Appzen,lever,appzen,https://jobs.lever.co/appzen,global,,true,{}
+Arc'teryx,lever,arcteryx.com,https://jobs.lever.co/arcteryx.com,global,,true,{}
+Azul,lever,azul,https://jobs.lever.co/azul,global,,true,{}
+Bazaarvoice,lever,bazaarvoice,https://jobs.lever.co/bazaarvoice,global,,true,{}
+Bigblue,lever,bigblue,https://jobs.lever.co/bigblue,global,,true,{}
+Bluecatnetworks,lever,bluecatnetworks,https://jobs.lever.co/bluecatnetworks,global,,true,{}
+Brafton,lever,brafton,https://jobs.lever.co/brafton,global,,true,{}
+BTSE,lever,BTSE,https://jobs.lever.co/BTSE,global,,true,{}
+BURGA,lever,burga,https://jobs.lever.co/burga,global,,true,{}
+Cagents,lever,cagents,https://jobs.lever.co/cagents,global,,true,{}
+Caliza Financial Technologies,lever,caliza-financial-technologies,https://jobs.lever.co/caliza-financial-technologies,global,,true,{}
+Canarytechnologies,lever,canarytechnologies,https://jobs.lever.co/canarytechnologies,global,,true,{}
+Capital,lever,capital,https://jobs.lever.co/capital,global,,true,{}
+Cargo Partner,lever,cargo-partner,https://jobs.lever.co/cargo-partner,global,,true,{}
+Caseware,lever,caseware,https://jobs.lever.co/caseware,global,,true,{}
+CesiumAstro,lever,CesiumAstro,https://jobs.lever.co/CesiumAstro,global,,true,{}
+Clovirtualfashion,lever,clovirtualfashion,https://jobs.lever.co/clovirtualfashion,global,,true,{}
+Companial,lever,companial,https://jobs.lever.co/companial,global,,true,{}
+ControlUp,lever,controlup,https://jobs.lever.co/controlup,global,,true,{}
+Coupa,lever,coupa,https://jobs.lever.co/coupa,global,,true,{}
+Creatio,lever,creatio,https://jobs.eu.lever.co/creatio,eu,,true,{}
+Crytek,lever,crytek,https://jobs.lever.co/crytek,global,,true,{}
+Deliverect,lever,deliverect,https://jobs.lever.co/deliverect,global,,true,{}
+Deltasands,lever,deltasands,https://jobs.lever.co/deltasands,global,,true,{}
+Diamondfoundry,lever,diamondfoundry,https://jobs.lever.co/diamondfoundry,global,,true,{}
+Didomi,lever,didomi,https://jobs.lever.co/didomi,global,,true,{}
+DiliTrust,lever,dilitrust,https://jobs.lever.co/dilitrust,global,,true,{}
+Doctrine,lever,doctrine,https://jobs.lever.co/doctrine,global,,true,{}
+Doonails,lever,doonails,https://jobs.lever.co/doonails,global,,true,{}
+Duetti,lever,duetti,https://jobs.lever.co/duetti,global,,true,{}
+Dun & Bradstreet,lever,dnb,https://jobs.lever.co/dnb,global,,true,{}
+Economicmodeling,lever,economicmodeling,https://jobs.lever.co/economicmodeling,global,,true,{}
+Efficioconsulting,lever,efficioconsulting,https://jobs.eu.lever.co/efficioconsulting,eu,,true,{}
+Eleks,lever,eleks,https://jobs.lever.co/eleks,global,,true,{}
+Emma Sleep,lever,emma-sleep,https://jobs.lever.co/emma-sleep,global,,true,{}
+Engelvoelkers,lever,engelvoelkers,https://jobs.eu.lever.co/engelvoelkers,eu,,true,{}
+Equativ,lever,equativ,https://jobs.lever.co/equativ,global,,true,{}
+Espace,lever,espace,https://jobs.lever.co/espace,global,,true,{}
+Everbridge,lever,everbridge,https://jobs.lever.co/everbridge,global,,true,{}
+Extremenetworks,lever,extremenetworks,https://jobs.lever.co/extremenetworks,global,,true,{}
+Finn,lever,finn,https://jobs.lever.co/finn,global,,true,{}
+FireMon,lever,firemon,https://jobs.lever.co/firemon,global,,true,{}
+Fliff,lever,Fliff,https://jobs.lever.co/Fliff,global,,true,{}
+Foxitsoftware,lever,foxitsoftware,https://jobs.lever.co/foxitsoftware,global,,true,{}
+freiheit.com technologies,lever,freiheit-2,https://jobs.lever.co/freiheit-2,global,,true,{}
+Fresha,lever,fresha,https://jobs.lever.co/fresha,global,,true,{}
+Fuellabs,lever,fuellabs,https://jobs.lever.co/fuellabs,global,,true,{}
+Ghsmartjobs,lever,ghsmartjobs,https://jobs.lever.co/ghsmartjobs,global,,true,{}
+GurobiOptimization,lever,GurobiOptimization,https://jobs.lever.co/GurobiOptimization,global,,true,{}
+Heaten Germany GmbH,lever,heaten-germany-gmbh,https://jobs.lever.co/heaten-germany-gmbh,global,,true,{}
+Hophr,lever,hophr,https://jobs.lever.co/hophr,global,,true,{}
+Idt,lever,idt,https://jobs.lever.co/idt,global,,true,{}
+Impossiblecloud,lever,impossiblecloud,https://jobs.lever.co/impossiblecloud,global,,true,{}
+Innocraft,lever,innocraft,https://jobs.lever.co/innocraft,global,,true,{}
+Innogames,lever,innogames,https://jobs.eu.lever.co/innogames,eu,,true,{}
+Insider One,lever,insiderone,https://jobs.lever.co/insiderone,global,,true,{}
+Jobgether,lever,jobgether,https://jobs.lever.co/jobgether,global,,true,{}
+Justwatch,lever,justwatch,https://jobs.lever.co/justwatch,global,,true,{}
+Karllagerfeld,lever,karllagerfeld,https://jobs.eu.lever.co/karllagerfeld,eu,,true,{}
+Kepler,lever,kepler,https://jobs.lever.co/kepler,global,,true,{}
+Keyloop,lever,keyloop,https://jobs.lever.co/keyloop,global,,true,{}
+Kolibri Games,lever,kolibrigames,https://jobs.lever.co/kolibrigames,global,,true,{}
+Laminarprojects,lever,laminarprojects,https://jobs.lever.co/laminarprojects,global,,true,{}
+Lionbridge,lever,lionbridge,https://jobs.eu.lever.co/lionbridge,eu,,true,{}
+Lovehoneygroup,lever,lovehoneygroup,https://jobs.eu.lever.co/lovehoneygroup,eu,,true,{}
+Lyrahealth,lever,lyrahealth,https://jobs.lever.co/lyrahealth,global,,true,{}
+Magnetforensics,lever,magnetforensics,https://jobs.lever.co/magnetforensics,global,,true,{}
+Malt,lever,malt,https://jobs.lever.co/malt,global,,true,{}
+Markt Pilot,lever,markt-pilot,https://jobs.eu.lever.co/markt-pilot,eu,,true,{}
+Megaport,lever,megaport,https://jobs.lever.co/megaport,global,,true,{}
+Mendix,lever,mendix,https://jobs.lever.co/mendix,global,,true,{}
+Mobileye,lever,mobileye,https://jobs.eu.lever.co/mobileye,eu,,true,{}
+Netlight,lever,netlight,https://jobs.lever.co/netlight,global,,true,{}
+Nomagic,lever,Nomagic,https://jobs.lever.co/Nomagic,global,,true,{}
+Novaspace,lever,novaspace,https://jobs.lever.co/novaspace,global,,true,{}
+NuvoAir,lever,NuvoAir,https://jobs.lever.co/NuvoAir,global,,true,{}
+Objectway,lever,objectway,https://jobs.eu.lever.co/objectway,eu,,true,{}
+Octoenergy,lever,octoenergy,https://jobs.lever.co/octoenergy,global,,true,{}
+Ogury,lever,ogury,https://jobs.lever.co/ogury,global,,true,{}
+Palantir,lever,palantir,https://jobs.lever.co/palantir,global,,true,{}
+Penumbrainc,lever,penumbrainc,https://jobs.lever.co/penumbrainc,global,,true,{}
+Pigment,lever,pigment,https://jobs.lever.co/pigment,global,,true,{}
+Pipedrive,lever,pipedrive,https://jobs.lever.co/pipedrive,global,,true,{}
+Pnlfin,lever,pnlfin,https://jobs.eu.lever.co/pnlfin,eu,,true,{}
+PPRO,lever,ppro,https://jobs.lever.co/ppro,global,,true,{}
+Prilenia,lever,prilenia,https://jobs.lever.co/prilenia,global,,true,{}
+Profoundresearch,lever,profoundresearch,https://jobs.lever.co/profoundresearch,global,,true,{}
+Q Ctrl,lever,q-ctrl,https://jobs.lever.co/q-ctrl,global,,true,{}
+Qonto,lever,qonto,https://jobs.lever.co/qonto,global,,true,{}
+Qualysoft,lever,qualysoft,https://jobs.lever.co/qualysoft,global,,true,{}
+Quantco ,lever,quantco-,https://jobs.lever.co/quantco-,global,,true,{}
+Qwello,lever,qwello.eu,https://jobs.lever.co/qwello.eu,global,,true,{}
+Redhorsecorp,lever,redhorsecorp,https://jobs.lever.co/redhorsecorp,global,,true,{}
+Refugeerights,lever,refugeerights,https://jobs.eu.lever.co/refugeerights,eu,,true,{}
+Rover,lever,rover,https://jobs.lever.co/rover,global,,true,{}
+Rws,lever,rws,https://jobs.lever.co/rws,global,,true,{}
+Sambatv,lever,sambatv,https://jobs.lever.co/sambatv,global,,true,{}
+Saviynt,lever,saviynt,https://jobs.lever.co/saviynt,global,,true,{}
+Seb,lever,seb,https://jobs.eu.lever.co/seb,eu,,true,{}
+Serotonin,lever,serotonin,https://jobs.lever.co/serotonin,global,,true,{}
+Shieldai,lever,shieldai,https://jobs.lever.co/shieldai,global,,true,{}
+Siteimprove,lever,siteimprove,https://jobs.eu.lever.co/siteimprove,eu,,true,{}
+Skaylink,lever,skaylink,https://jobs.eu.lever.co/skaylink,eu,,true,{}
+Sonarsource,lever,sonarsource,https://jobs.lever.co/sonarsource,global,,true,{}
+Sonatype,lever,sonatype,https://jobs.lever.co/sonatype,global,,true,{}
+Sophos,lever,sophos,https://jobs.lever.co/sophos,global,,true,{}
+Sportalliance,lever,sportalliance,https://jobs.eu.lever.co/sportalliance,eu,,true,{}
+Spreetail,lever,spreetail,https://jobs.lever.co/spreetail,global,,true,{}
+Sprinto,lever,Sprinto,https://jobs.lever.co/Sprinto,global,,true,{}
+Stellar,lever,stellar,https://jobs.eu.lever.co/stellar,eu,,true,{}
+Storiogroup,lever,storiogroup,https://jobs.lever.co/storiogroup,global,,true,{}
+The Information Lab,lever,theinformationlab,https://jobs.lever.co/theinformationlab,global,,true,{}
+Tomtom,lever,tomtom,https://jobs.eu.lever.co/tomtom,eu,,true,{}
+Tradelink,lever,tradelink,https://jobs.eu.lever.co/tradelink,eu,,true,{}
+Trendyol,lever,trendyol,https://jobs.lever.co/trendyol,global,,true,{}
+Trustyou,lever,trustyou,https://jobs.lever.co/trustyou,global,,true,{}
+TSMG,lever,tsmg,https://jobs.lever.co/tsmg,global,,true,{}
+Tuumplatform,lever,tuumplatform,https://jobs.eu.lever.co/tuumplatform,eu,,true,{}
+Unisoninfra,lever,unisoninfra,https://jobs.lever.co/unisoninfra,global,,true,{}
+Unlimit,lever,unlimit,https://jobs.lever.co/unlimit,global,,true,{}
+Unzer,lever,unzer,https://jobs.eu.lever.co/unzer,eu,,true,{}
+Valdera,lever,valdera,https://jobs.lever.co/valdera,global,,true,{}
+Valiantys,lever,valiantys,https://jobs.lever.co/valiantys,global,,true,{}
+Veepee,lever,veepee,https://jobs.lever.co/veepee,global,,true,{}
+Veeva Systems,lever,veeva,https://jobs.lever.co/veeva,global,,true,{}
+Veo,lever,veo,https://jobs.lever.co/veo,global,,true,{}
+Vestiairecollective,lever,vestiairecollective,https://jobs.lever.co/vestiairecollective,global,,true,{}
+vivenu GmbH,lever,vivenu,https://jobs.lever.co/vivenu,global,,true,{}
+Walkme,lever,walkme,https://jobs.lever.co/walkme,global,,true,{}
+Welo Global / Welocalize,lever,weloglobal,https://jobs.lever.co/weloglobal,global,,true,{}
+Westernacher,lever,westernacher,https://jobs.eu.lever.co/westernacher,eu,,true,{}
+Xentral,lever,xentral,https://jobs.eu.lever.co/xentral,eu,,true,{}
+Xsolla,lever,xsolla,https://jobs.lever.co/xsolla,global,,true,{}
+Yuno,lever,yuno,https://jobs.lever.co/yuno,global,,true,{}
+Zeeco,lever,zeeco,https://jobs.lever.co/zeeco,global,,true,{}
+Zencore,lever,zencore,https://jobs.lever.co/zencore,global,,true,{}
+Zimperium,lever,zimperium,https://jobs.lever.co/zimperium,global,,true,{}
+ABRAMS Industries,onlyfy,,https://de.abrams-industries.com/karriere,global,,false,{}
+Dürr Dental,onlyfy,,https://www.duerrdental.com/de/DE/karriere/stellenangebote,global,,false,{}
+KET,onlyfy,,https://www.ket-muc.com/karriere-ket,global,,false,{}
+Klingenthal,onlyfy,,https://www.klingenthal.com/karriere/stellenangebote,global,,false,{}
+Mediengruppe Westfälischer Anzeiger,onlyfy,,https://wa-mediengruppe.de/stellenangebote,global,,false,{}
+BeWunder,personio,bewunder,https://bewunder.jobs.personio.de/xml?language=en,global,,true,{}
+Capmo,personio,capmo,https://capmo.jobs.personio.de/xml?language=en,global,,true,{}
+Carlsquare GmbH,personio,carlsquare-gmbh,https://carlsquare-gmbh.jobs.personio.de/xml?language=en,global,,true,{}
+Circus,personio,circus,https://circus.jobs.personio.de/xml?language=en,global,,true,{}
+denkmalstadt GmbH,personio,ueberseeinsel-gmbh,https://ueberseeinsel-gmbh.jobs.personio.de/,eu,,true,{}
+fayn GmbH,personio,teveo-gmbh,https://teveo-gmbh.jobs.personio.de/,eu,,true,{}
+GERMANY,personio,technopolis-group,https://technopolis-group.jobs.personio.com/,eu,,true,{}
+GmbH,personio,vmray-gmbh,https://vmray-gmbh.jobs.personio.de/,eu,,true,{}
+hakuna,personio,hakuna,https://hakuna.jobs.personio.de/xml?language=en,global,,true,{}
+Nesto Vet Regensburg GmbH,personio,veternicum-gmbh,https://veternicum-gmbh.jobs.personio.de/,eu,,true,{}
+Proemion GmbH,personio,vercore,https://vercore.jobs.personio.com/,eu,,true,{}
+stadtraum GmbH,personio,urbanovagroup,https://urbanovagroup.jobs.personio.com/,eu,,true,{}
+sustentio GmbH,personio,sustentio,https://sustentio.jobs.personio.com/,eu,,true,{}
+SVG Service und Vertrieb Süd GmbH,personio,svg-sued,https://svg-sued.jobs.personio.de/,eu,,true,{}
+Swissbit Germany AG,personio,swissbit,https://swissbit.jobs.personio.com/,eu,,true,{}
+Sykell Gmbh,personio,sykell-gmbh,https://sykell-gmbh.jobs.personio.de/,eu,,true,{}
+synaforce GmbH,personio,synaforce-gmbh,https://synaforce-gmbh.jobs.personio.de/,eu,,true,{}
+Synology GmbH,personio,synology,https://synology.jobs.personio.com/,eu,,true,{}
+Syseleven,personio,syseleven,https://syseleven.jobs.personio.com/,eu,,true,{}
+Takevalue,personio,takevalue,https://takevalue.jobs.personio.com/,eu,,true,{}
+Talentrocket,personio,talentrocket,https://talentrocket.jobs.personio.de/,eu,,true,{}
+Tam,personio,tam,https://tam.jobs.personio.de/,eu,,true,{}
+TAWO GmbH,personio,tawo-gmbh,https://tawo-gmbh.jobs.personio.com/,eu,,true,{}
+Techquartier,personio,techquartier,https://techquartier.jobs.personio.de/,eu,,true,{}
+Techspace BER GmbH,personio,techspace,https://techspace.jobs.personio.com/,eu,,true,{}
+TECVIA GmbH,personio,tecvia,https://tecvia.jobs.personio.de/,eu,,true,{}
+Telio Communications GmbH,personio,teliogroup,https://teliogroup.jobs.personio.com/,eu,,true,{}
+Tempelhof Projekt Gmbh,personio,tempelhof-projekt-gmbh,https://tempelhof-projekt-gmbh.jobs.personio.de/,eu,,true,{}
+Tertianum,personio,tertianum,https://tertianum.jobs.personio.de/,eu,,true,{}
+Texlock Gmbh,personio,texlock-gmbh,https://texlock-gmbh.jobs.personio.com/,eu,,true,{}
+The Branding Club GmbH,personio,thebrandingclub,https://thebrandingclub.jobs.personio.com/,eu,,true,{}
+The Marmalade,personio,the-marmalade,https://the-marmalade.jobs.personio.de/,eu,,true,{}
+The Nu Company Gmbh,personio,the-nu-company-gmbh,https://the-nu-company-gmbh.jobs.personio.de/,eu,,true,{}
+Theater Bremen GmbH- Aushilfen,personio,theaterbremen,https://theaterbremen.jobs.personio.de/,eu,,true,{}
+Theion Gmbh,personio,theion-gmbh,https://theion-gmbh.jobs.personio.de/,eu,,true,{}
+Theod Mahr Soehne Gmbh,personio,theod-mahr-soehne-gmbh,https://theod-mahr-soehne-gmbh.jobs.personio.de/,eu,,true,{}
+Therme Horizon GRS GmbH,personio,wund,https://wund.jobs.personio.de/,eu,,true,{}
+Threedy Gmbh,personio,threedy-gmbh,https://threedy-gmbh.jobs.personio.de/,eu,,true,{}
+Tli Stbg Dobner Gmbh Co Kg,personio,tli-stbg-dobner-gmbh-co-kg,https://tli-stbg-dobner-gmbh-co-kg.jobs.personio.de/,eu,,true,{}
+TNG Technology Consulting GmbH,personio,tngtech,https://tngtech.jobs.personio.de/,eu,,true,{}
+tozero GmbH,personio,tozero,https://tozero.jobs.personio.com/,eu,,true,{}
+TP-Link Deutschland GmbH,personio,tp-link-gmbh,https://tp-link-gmbh.jobs.personio.com/,eu,,true,{}
+Tradedoubler GmbH,personio,tradedoubler-en,https://tradedoubler-en.jobs.personio.de/,eu,,true,{}
+traide AI GmbH,personio,traide-ai,https://traide-ai.jobs.personio.com/,eu,,true,{}
+Trauringschmiede Drechsel GmbH,personio,trauringschmiede,https://trauringschmiede.jobs.personio.com/,eu,,true,{}
+Travian Games GmbH,personio,traviangames,https://traviangames.jobs.personio.de/,eu,,true,{}
+TrinaStorage GmbH - Germany,personio,trina-solar-1,https://trina-solar-1.jobs.personio.com/,eu,,true,{}
+Truemotion,personio,truemotion,https://truemotion.jobs.personio.de/,eu,,true,{}
+TRUSTEQ GmbH,personio,trusteq-gmbh,https://trusteq-gmbh.jobs.personio.de/,eu,,true,{}
+TTE Strategy GmbH ,personio,tte-strategy,https://tte-strategy.jobs.personio.com/,eu,,true,{}
+TUMO Deutschland gGmbH,personio,tumo-de,https://tumo-de.jobs.personio.com/,eu,,true,{}
+TWAICE Technologies GmbH,personio,twaice,https://twaice.jobs.personio.com/,eu,,true,{}
+Twentyfour Industries GmbH,personio,twentyfour-industries,https://twentyfour-industries.jobs.personio.com/,eu,,true,{}
+Ubica Robotics GmbH,personio,ubica-robotics,https://ubica-robotics.jobs.personio.com/,eu,,true,{}
+Ubilabs,personio,ubilabs,https://ubilabs.jobs.personio.de/,eu,,true,{}
+ubitricity – Gesellschaft für verteilte Energiesysteme mbH,personio,ubitricity-gmbh,https://ubitricity-gmbh.jobs.personio.com/,eu,,true,{}
+undconsorten Managementberatung GmbH & Co. KG,personio,undconsorten,https://undconsorten.jobs.personio.de/,eu,,true,{}
+UNITE gGmbH,personio,unite-ggmbh,https://unite-ggmbh.jobs.personio.de/,eu,,true,{}
+UniteLabs GmbH,personio,unitelabs,https://unitelabs.jobs.personio.com/,eu,,true,{}
+univativ GmbH,personio,univativ-group,https://univativ-group.jobs.personio.de/,eu,,true,{}
+Uptodate Ventures Gmbh,personio,uptodate-ventures-gmbh,https://uptodate-ventures-gmbh.jobs.personio.de/,eu,,true,{}
+UXMA GmbH & Co. KG,personio,uxma,https://uxma.jobs.personio.com/,eu,,true,{}
+valantic STI,personio,vsti,https://vsti.jobs.personio.de/,eu,,true,{}
+Valuedesk,personio,valuedesk,https://valuedesk.jobs.personio.de/,eu,,true,{}
+Vanilla Steel Gmbh,personio,vanilla-steel-gmbh,https://vanilla-steel-gmbh.jobs.personio.com/,eu,,true,{}
+Vanovate Gmbh,personio,vanovate-gmbh,https://vanovate-gmbh.jobs.personio.de/,eu,,true,{}
+Vantis GmbH,personio,vantis,https://vantis.jobs.personio.de/,eu,,true,{}
+velpTEC GmbH,personio,velptec,https://velptec.jobs.personio.com/,eu,,true,{}
+verbaneum GmbH,personio,verbaneum,https://verbaneum.jobs.personio.de/,eu,,true,{}
+Vereinigung Cockpit,personio,vereinigung-cockpit,https://vereinigung-cockpit.jobs.personio.de/,eu,,true,{}
+Vestigas,personio,vestigas,https://vestigas.jobs.personio.com/,eu,,true,{}
+viataurus GmbH,personio,viataurus,https://viataurus.jobs.personio.com/,eu,,true,{}
+Virtual Solution Ag,personio,virtual-solution-ag,https://virtual-solution-ag.jobs.personio.de/,eu,,true,{}
+Visable GmbH,personio,visable,https://visable.jobs.personio.com/,eu,,true,{}
+Visual Components,personio,visual-components,https://visual-components.jobs.personio.com/,eu,,true,{}
+VIU Deutschland GmbH,personio,viu-ventures,https://viu-ventures.jobs.personio.de/,eu,,true,{}
+Vivira Health Lab GmbH,personio,vivira,https://vivira.jobs.personio.de/,eu,,true,{}
+Vollack Ost,personio,vollack,https://vollack.jobs.personio.de/,eu,,true,{}
+Vollcorner,personio,vollcorner,https://vollcorner.jobs.personio.de/,eu,,true,{}
+VTF-IP GmbH,personio,vt-falkenried,https://vt-falkenried.jobs.personio.com/,eu,,true,{}
+Vyoma Gmbh,personio,vyoma-gmbh,https://vyoma-gmbh.jobs.personio.com/,eu,,true,{}
+vysion consulting gmbh,personio,vysion-consulting-gmbh,https://vysion-consulting-gmbh.jobs.personio.de/,eu,,true,{}
+Vössing Ingenieurgesellschaft mbH,personio,voessing,https://voessing.jobs.personio.de/,eu,,true,{}
+Wallround GmbH,personio,wallround,https://wallround.jobs.personio.com/,eu,,true,{}
+webgo GmbH,personio,webgo-gmbh,https://webgo-gmbh.jobs.personio.com/,eu,,true,{}
+Wecreate Germany Gmbh,personio,wecreate-germany-gmbh,https://wecreate-germany-gmbh.jobs.personio.de/,eu,,true,{}
+weltenbauer. Software Entwicklung GmbH,personio,weltenbauer-software-entwicklung-gmbh,https://weltenbauer-software-entwicklung-gmbh.jobs.personio.de/,eu,,true,{}
+WERTGRUND Immobilien Verwaltungs GmbH,personio,wertgrund,https://wertgrund.jobs.personio.de/,eu,,true,{}
+Westbridge Advisory GmbH,personio,westbridge-group,https://westbridge-group.jobs.personio.com/,eu,,true,{}
+WHU ,personio,whu-otto-beisheim-school-of-management-1,https://whu-otto-beisheim-school-of-management-1.jobs.personio.de/,eu,,true,{}
+wibatax Partnerschaft mbB Steuerberatungsgesellschaft,personio,wibatax,https://wibatax.jobs.personio.de/,eu,,true,{}
+WIBAU Haustechnik GmbH,personio,wibau,https://wibau.jobs.personio.de/,eu,,true,{}
+Wifor,personio,wifor,https://wifor.jobs.personio.com/,eu,,true,{}
+Wire Germany GmbH,personio,wire-1,https://wire-1.jobs.personio.de/,eu,,true,{}
+Wirtschaftsrat Der Cdu E V,personio,wirtschaftsrat-der-cdu-e-v,https://wirtschaftsrat-der-cdu-e-v.jobs.personio.de/,eu,,true,{}
+Workidentity,personio,workidentity,https://workidentity.jobs.personio.com/,eu,,true,{}
+Wps Workplace Solutions,personio,wps-workplace-solutions,https://wps-workplace-solutions.jobs.personio.de/,eu,,true,{}
+Yamaha Motor eBike Systems GmbH,personio,ymesg,https://ymesg.jobs.personio.de/,eu,,true,{}
+yfood Labs GmbH,personio,yfoodlabs,https://yfoodlabs.jobs.personio.de/,eu,,true,{}
+YOSHI EN GmbH,personio,yoshi,https://yoshi.jobs.personio.de/,eu,,true,{}
+Ypog Law,personio,ypog-law,https://ypog-law.jobs.personio.de/,eu,,true,{}
+zahneins GmbH,personio,zahneinsgmbh,https://zahneinsgmbh.jobs.personio.de/,eu,,true,{}
+ZDF Digital Medienproduktion GmbH,personio,zdf-digital,https://zdf-digital.jobs.personio.de/,eu,,true,{}
+Ziemlich Beste Freunde GmbH,personio,zbf,https://zbf.jobs.personio.de/,eu,,true,{}
+ZPUE GmbH,personio,zpuegmbh,https://zpuegmbh.jobs.personio.com/,eu,,true,{}
+ATLAS,smartrecruiters,ATLAS4,https://careers.smartrecruiters.com/ATLAS4,global,,true,{}
+Flink,smartrecruiters,Flink3,https://careers.smartrecruiters.com/Flink3,global,,true,{}
+McMakler,smartrecruiters,mcmakler1,https://careers.smartrecruiters.com/mcmakler1,global,,true,{}
+Securitas Germany,smartrecruiters,securitas,https://careers.smartrecruiters.com/securitas,global,,true,{}
+softgarden e-recruiting,softgarden,softgarden.career,https://softgarden.career.softgarden.de/en,global,,false,{}
+Bertrandt,successfactors,bertrandt.jobs.hr.cloud.sap,https://bertrandt.jobs.hr.cloud.sap/,global,,true,{}
+Meyer Burger,successfactors,MeyerBurger,https://api012.successfactors.eu/career?company=MeyerBurger,global,,false,{}
+Wlgore,successfactors,wlgore.jobs.hr.cloud.sap,https://wlgore.jobs.hr.cloud.sap/,global,,true,{}
+4Flow,workday,4flow|4flow,https://4flow.wd3.myworkdayjobs.com/4flow,global,,true,{}
+Abbott,workday,abbott|abbottcareers,https://abbott.wd5.myworkdayjobs.com/abbottcareers,global,,true,{}
+Abercrombie,workday,abercrombie|anf,https://abercrombie.wd108.myworkdayjobs.com/anf,global,,true,{}
+Acrisure,workday,acrisure|Acrisure,https://acrisure.wd1.myworkdayjobs.com/Acrisure,global,,true,{}
+Adobe,workday,adobe|external_experienced,https://adobe.wd5.myworkdayjobs.com/external_experienced,global,,true,{}
+Ag,workday,ag|Airbus,https://ag.wd3.myworkdayjobs.com/Airbus,global,,true,{}
+Agilent,workday,agilent|Agilent_Careers,https://agilent.wd5.myworkdayjobs.com/Agilent_Careers,global,,true,{}
+Agilent,workday,agilent|Agilent_Student_Careers,https://agilent.wd5.myworkdayjobs.com/Agilent_Student_Careers,global,,true,{}
+Aig,workday,aig|aig,https://aig.wd1.myworkdayjobs.com/aig,global,,true,{}
+Airliquidehr,workday,airliquidehr|AirLiquideExternalCareer,https://airliquidehr.wd3.myworkdayjobs.com/AirLiquideExternalCareer,global,,true,{}
+Alcon,workday,alcon|careers_alcon,https://alcon.wd5.myworkdayjobs.com/careers_alcon,global,,true,{}
+Alfalaval,workday,alfalaval|Alfa_Laval_jobs,https://alfalaval.wd3.myworkdayjobs.com/Alfa_Laval_jobs,global,,true,{}
+Allegion,workday,allegion|careers_SimonsVoss,https://allegion.wd5.myworkdayjobs.com/careers_SimonsVoss,global,,true,{}
+Allegion,workday,allegion|careers_SimonsVoss_English,https://allegion.wd5.myworkdayjobs.com/careers_SimonsVoss_English,global,,true,{}
+Allegion,workday,allegion|careers_SimonsVoss_French,https://allegion.wd5.myworkdayjobs.com/careers_SimonsVoss_French,global,,true,{}
+Allegion,workday,allegion|careers_SimonsVoss_Italian,https://allegion.wd5.myworkdayjobs.com/careers_SimonsVoss_Italian,global,,true,{}
+Apobank,workday,apobank|apobank_careers,https://apobank.wd103.myworkdayjobs.com/apobank_careers,global,,true,{}
+Arcticwolf,workday,arcticwolf|external,https://arcticwolf.wd1.myworkdayjobs.com/external,global,,true,{}
+Astrazeneca,workday,astrazeneca|Alexion,https://astrazeneca.wd3.myworkdayjobs.com/Alexion,global,,true,{}
+Autodesk,workday,autodesk|Ext,https://autodesk.wd1.myworkdayjobs.com/Ext,global,,true,{}
+Ayvens,workday,ayvens|AyvensCareers,https://ayvens.wd3.myworkdayjobs.com/AyvensCareers,global,,true,{}
+Bah,workday,bah|BAH_Jobs,https://bah.wd1.myworkdayjobs.com/BAH_Jobs,global,,true,{}
+Beigene,workday,beigene|BeiGene,https://beigene.wd5.myworkdayjobs.com/BeiGene,global,,true,{}
+BERNER Group,workday,bernergroup|Careers_Berner_Group,https://bernergroup.wd3.myworkdayjobs.com/Careers_Berner_Group,global,,true,{}
+Bristolmyerssquibb,workday,bristolmyerssquibb|BMS,https://bristolmyerssquibb.wd5.myworkdayjobs.com/BMS,global,,true,{}
+Carharttwip,workday,carharttwip|CarharttWIP,https://carharttwip.wd103.myworkdayjobs.com/CarharttWIP,global,,true,{}
+Cat,workday,cat|CaterpillarCareers,https://cat.wd5.myworkdayjobs.com/CaterpillarCareers,global,,true,{}
+Clarios,workday,clarios|clarioscareers,https://clarios.wd5.myworkdayjobs.com/clarioscareers,global,,true,{}
+Collectorsuniverse,workday,collectorsuniverse|collectors,https://collectorsuniverse.wd1.myworkdayjobs.com/collectors,global,,true,{}
+Columbiasportswearcompany,workday,columbiasportswearcompany|CSC_Careers,https://columbiasportswearcompany.wd5.myworkdayjobs.com/CSC_Careers,global,,true,{}
+Covestro,workday,covestro|cov_external,https://covestro.wd3.myworkdayjobs.com/cov_external,global,,true,{}
+Crowdstrike,workday,crowdstrike|crowdstrikecareers,https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers,global,,true,{}
+Csl,workday,csl|CSL_External,https://csl.wd1.myworkdayjobs.com/CSL_External,global,,true,{}
+Datev,workday,datev|Datev_Careers,https://datev.wd3.myworkdayjobs.com/Datev_Careers,global,,true,{}
+Db,workday,db|DBWebsite,https://db.wd3.myworkdayjobs.com/DBWebsite,global,,true,{}
+Deckers,workday,deckers|Deckers,https://deckers.wd5.myworkdayjobs.com/Deckers,global,,true,{}
+Dentsuaegis,workday,dentsuaegis|DAN_GLOBAL,https://dentsuaegis.wd3.myworkdayjobs.com/DAN_GLOBAL,global,,true,{}
+Embl,workday,embl|EMBL,https://embl.wd103.myworkdayjobs.com/EMBL,global,,true,{}
+Equinor,workday,equinor|EQNR,https://equinor.wd3.myworkdayjobs.com/EQNR,global,,true,{}
+Essity,workday,essity|Job_opportunities,https://essity.wd3.myworkdayjobs.com/Job_opportunities,global,,true,{}
+Evotecgroup,workday,evotecgroup|Evotec_Career_Site,https://evotecgroup.wd3.myworkdayjobs.com/Evotec_Career_Site,global,,true,{}
+Ffive,workday,ffive|f5jobs,https://ffive.wd5.myworkdayjobs.com/f5jobs,global,,true,{}
+Fico,workday,fico|external,https://fico.wd1.myworkdayjobs.com/external,global,,true,{}
+Fiserv,workday,fiserv|EXT,https://fiserv.wd5.myworkdayjobs.com/EXT,global,,true,{}
+Freseniusmedicalcare,workday,freseniusmedicalcare|fme,https://freseniusmedicalcare.wd3.myworkdayjobs.com/fme,global,,true,{}
+Freshfields,workday,freshfields|FBD_101,https://freshfields.wd3.myworkdayjobs.com/FBD_101,global,,true,{}
+Gevernova,workday,gevernova|Vernova_ExternalSite,https://gevernova.wd5.myworkdayjobs.com/Vernova_ExternalSite,global,,true,{}
+Gevernova,workday,gevernova|only_confidential_executive_recruiting,https://gevernova.wd5.myworkdayjobs.com/only_confidential_executive_recruiting,global,,true,{}
+Gsknch,workday,gsknch|GSKCareers,https://gsknch.wd3.myworkdayjobs.com/GSKCareers,global,,true,{}
+Harriscomputer,workday,harriscomputer|SIV,https://harriscomputer.wd3.myworkdayjobs.com/SIV,global,,true,{}
+Hengeler,workday,hengeler|HM-Careers-Legal,https://hengeler.wd502.myworkdayjobs.com/HM-Careers-Legal,global,,true,{}
+Hitachi,workday,hitachi|hitachi,https://hitachi.wd1.myworkdayjobs.com/hitachi,global,,true,{}
+Hpe,workday,hpe|Jobsathpe,https://hpe.wd5.myworkdayjobs.com/Jobsathpe,global,,true,{}
+Huntsman,workday,huntsman|Huntsman,https://huntsman.wd1.myworkdayjobs.com/Huntsman,global,,true,{}
+Icon,workday,icon|broadbean_external,https://icon.wd3.myworkdayjobs.com/broadbean_external,global,,true,{}
+Ing,workday,ing|ICSGBLCOR,https://ing.wd3.myworkdayjobs.com/ICSGBLCOR,global,,true,{}
+Ingrammicro,workday,ingrammicro|IngramMicro,https://ingrammicro.wd5.myworkdayjobs.com/IngramMicro,global,,true,{}
+Insulet,workday,insulet|insuletcareers,https://insulet.wd5.myworkdayjobs.com/insuletcareers,global,,true,{}
+Iqvia,workday,iqvia|IQVIA,https://iqvia.wd1.myworkdayjobs.com/IQVIA,global,,true,{}
+Jci,workday,jci|JCI,https://jci.wd5.myworkdayjobs.com/JCI,global,,true,{}
+Jj,workday,jj|jj,https://jj.wd5.myworkdayjobs.com/jj,global,,true,{}
+Jll,workday,jll|jllcareers,https://jll.wd1.myworkdayjobs.com/jllcareers,global,,true,{}
+Jll,workday,jll|lasallecareers,https://jll.wd1.myworkdayjobs.com/lasallecareers,global,,true,{}
+Juliusbaer,workday,juliusbaer|External,https://juliusbaer.wd3.myworkdayjobs.com/External,global,,true,{}
+Kardex,workday,kardex|kardex,https://kardex.wd103.myworkdayjobs.com/kardex,global,,true,{}
+Kiongroup,workday,kiongroup|KIONGroup,https://kiongroup.wd3.myworkdayjobs.com/KIONGroup,global,,true,{}
+Levi Strauss & Co.,workday,levistraussandco|External,https://levistraussandco.wd5.myworkdayjobs.com/External,global,,true,{}
+Lhoist,workday,lhoist|Careers,https://lhoist.wd3.myworkdayjobs.com/Careers,global,,true,{}
+Marathonhealth,workday,marathonhealth|Marathon-Health-Careers,https://marathonhealth.wd501.myworkdayjobs.com/Marathon-Health-Careers,global,,true,{}
+Megger,workday,megger|MeggerCareers,https://megger.wd3.myworkdayjobs.com/MeggerCareers,global,,true,{}
+Michelinhr,workday,michelinhr|Michelin,https://michelinhr.wd3.myworkdayjobs.com/Michelin,global,,true,{}
+Micron,workday,micron|External,https://micron.wd1.myworkdayjobs.com/External,global,,true,{}
+Miele,workday,miele|miele-jobs,https://miele.wd3.myworkdayjobs.com/miele-jobs,global,,true,{}
+Mksinst,workday,mksinst|MKSCareersEMEA,https://mksinst.wd1.myworkdayjobs.com/MKSCareersEMEA,global,,true,{}
+Monolithicpower,workday,monolithicpower|MPS_Careers,https://monolithicpower.wd12.myworkdayjobs.com/MPS_Careers,global,,true,{}
+Motorola Solutions,workday,motorolasolutions|Careers,https://motorolasolutions.wd5.myworkdayjobs.com/Careers,global,,true,{}
+Ms,workday,ms|External,https://ms.wd5.myworkdayjobs.com/External,global,,true,{}
+Msd,workday,msd|SearchJobs,https://msd.wd5.myworkdayjobs.com/SearchJobs,global,,true,{}
+Nilfisk,workday,nilfisk|Nilfisk,https://nilfisk.wd3.myworkdayjobs.com/Nilfisk,global,,true,{}
+Nrf,workday,nrf|External,https://nrf.wd3.myworkdayjobs.com/External,global,,true,{}
+Nvidia,workday,nvidia|NVIDIAExternalCareerSite,https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite,global,,true,{}
+Nxp,workday,nxp|careers,https://nxp.wd3.myworkdayjobs.com/careers,global,,true,{}
+Pfizer,workday,pfizer|PfizerCareers,https://pfizer.wd1.myworkdayjobs.com/PfizerCareers,global,,true,{}
+Philips,workday,philips|jobs-and-careers,https://philips.wd3.myworkdayjobs.com/jobs-and-careers,global,,true,{}
+Priceline,workday,priceline|Priceline,https://priceline.wd1.myworkdayjobs.com/Priceline,global,,true,{}
+Prysmiangroup,workday,prysmiangroup|Careers,https://prysmiangroup.wd3.myworkdayjobs.com/Careers,global,,true,{}
+Redhat,workday,redhat|jobs,https://redhat.wd5.myworkdayjobs.com/jobs,global,,true,{}
+Regalrexnord,workday,regalrexnord|Careers,https://regalrexnord.wd1.myworkdayjobs.com/Careers,global,,true,{}
+Relx,workday,relx|ElsevierJobs,https://relx.wd3.myworkdayjobs.com/ElsevierJobs,global,,true,{}
+Relx,workday,relx|relx,https://relx.wd3.myworkdayjobs.com/relx,global,,true,{}
+Rollsroyce,workday,rollsroyce|Intern_Graduate,https://rollsroyce.wd3.myworkdayjobs.com/Intern_Graduate,global,,true,{}
+Saabgroup,workday,saabgroup|Saab_careers,https://saabgroup.wd116.myworkdayjobs.com/Saab_careers,global,,true,{}
+Salesforce,workday,salesforce|External_Career_Site,https://salesforce.wd12.myworkdayjobs.com/External_Career_Site,global,,true,{}
+Sandvik,workday,sandvik|coromant-jobs,https://sandvik.wd3.myworkdayjobs.com/coromant-jobs,global,,true,{}
+Sanofi,workday,sanofi|SanofiCareers,https://sanofi.wd3.myworkdayjobs.com/SanofiCareers,global,,true,{}
+Statestreet,workday,statestreet|Global,https://statestreet.wd1.myworkdayjobs.com/Global,global,,true,{}
+Stem,workday,stem|StemInc,https://stem.wd12.myworkdayjobs.com/StemInc,global,,true,{}
+Synnex,workday,synnex|tdsynnexcareers,https://synnex.wd5.myworkdayjobs.com/tdsynnexcareers,global,,true,{}
+The Coca-Cola Company,workday,coke|coca-cola-careers,https://coke.wd1.myworkdayjobs.com/coca-cola-careers,global,,true,{}
+Theirc,workday,theirc|External_Careers,https://theirc.wd1.myworkdayjobs.com/External_Careers,global,,true,{}
+Trekbikes,workday,trekbikes|TREK,https://trekbikes.wd1.myworkdayjobs.com/TREK,global,,true,{}
+Trimble,workday,trimble|TrimbleCareers,https://trimble.wd1.myworkdayjobs.com/TrimbleCareers,global,,true,{}
+Tsys,workday,tsys|TSYS,https://tsys.wd1.myworkdayjobs.com/TSYS,global,,true,{}
+Zeppelin,workday,zeppelin|careers,https://zeppelin.wd3.myworkdayjobs.com/careers,global,,true,{}
