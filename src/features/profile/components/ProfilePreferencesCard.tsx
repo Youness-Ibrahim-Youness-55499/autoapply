@@ -50,6 +50,13 @@ export function ProfilePreferencesCard({ onEdit, profile }: ProfilePreferencesCa
       </div>
 
       <div className="mt-5">
+        <p className="eyebrow">{t("profile.preferences.preferredLocations")}</p>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          {profile.preferredLocations.length ? profile.preferredLocations.map((location) => <Badge key={location}>{location}</Badge>) : <p className="text-sm text-ink-muted">{t("profile.preferences.locationsEmpty")}</p>}
+        </div>
+      </div>
+
+      <div className="mt-5">
         <p className="eyebrow">{t("profile.preferences.workStyle")}</p>
         <div className="mt-2.5 flex flex-wrap gap-2">
           {workPreferences.map((preference) => {
@@ -78,6 +85,24 @@ export function ProfilePreferencesCard({ onEdit, profile }: ProfilePreferencesCa
           })}
         </div>
       </div>
+
+      <details className="mt-5 rounded-xl border border-line bg-canvas/60 p-4">
+        <summary className="cursor-pointer text-sm font-semibold">{t("profile.preferences.optional")}</summary>
+        <dl className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <dt className="eyebrow">{t("profile.preferences.minimumSalary")}</dt>
+            <dd className="mt-1 text-sm font-semibold">{profile.minimumSalary === null ? t("profile.missing") : `€${profile.minimumSalary.toLocaleString()}`}</dd>
+          </div>
+          <div>
+            <dt className="eyebrow">{t("profile.preferences.travel")}</dt>
+            <dd className="mt-1 text-sm font-semibold">{t(`profile.travel.${profile.travelWillingness}`)}</dd>
+          </div>
+          <div className="sm:col-span-2">
+            <dt className="eyebrow">{t("profile.preferences.companyTypes")}</dt>
+            <dd className="mt-2 flex flex-wrap gap-2">{profile.companyTypes.length ? profile.companyTypes.map((type) => <Badge key={type}>{type}</Badge>) : <span className="text-sm text-ink-muted">{t("profile.missing")}</span>}</dd>
+          </div>
+        </dl>
+      </details>
 
       <div className="mt-5">
         <p className="eyebrow">{t("profile.preferences.relocation")}</p>

@@ -4,20 +4,22 @@ import re
 from uuid import uuid4
 
 from .extractor import TextLine
-from .schemas import EducationEntry, ExperienceEntry, ParsedProfile
+from .schemas import EducationEntry, ExperienceEntry, LanguageEntry, ParsedProfile
 
 
 SECTION_ALIASES = {
+    "certificates": {"certificates", "certifications", "certifiactes"},
     "education": {"education"},
     "experience": {"experience", "work experience", "working experience", "employment"},
     "skills": {"skills", "technical skills", "core skills"},
+    "languages": {"languages", "language skills"},
 }
 DATE_RANGE = re.compile(
     r"(?P<start>(?:[A-Za-z]{3,9}\s+)?\d{4})\s*[-–—]\s*"
     r"(?P<end>present|current|(?:[A-Za-z]{3,9}\s+)?\d{4})",
     re.IGNORECASE,
 )
-BULLET_PREFIX = re.compile(r"^[\s•·▪◦*-]+")
+BULLET_PREFIX = re.compile(r"^[\s•·▪◦*\-�]+")
 
 
 def normalized(value: str) -> str:
@@ -80,7 +82,7 @@ def heading_and_body(details: list[TextLine]) -> tuple[str, list[TextLine]]:
     heading_lines: list[str] = []
     body_index = len(details)
     for index, line in enumerate(details):
-        if re.match(r"^[•·▪◦*-]", line.text.strip()):
+        if re.match(r"^[•·▪◦*\-�]", line.text.strip()):
             body_index = index
             break
         heading_lines.append(line.text)
@@ -90,7 +92,7 @@ def heading_and_body(details: list[TextLine]) -> tuple[str, list[TextLine]]:
 def parse_skills(lines: list[TextLine]) -> list[str]:
     values: list[str] = []
     for line in section_lines(lines, "skills"):
-        has_bullet = bool(re.match(r"^[•·▪◦*-]", line.text.strip()))
+        has_bullet = bool(re.match(r"^[•·▪◦*\-�]", line.text.strip()))
         if not has_bullet and "," not in line.text:
             continue
         value = BULLET_PREFIX.sub("", line.text).strip()
@@ -100,6 +102,30 @@ def parse_skills(lines: list[TextLine]) -> list[str]:
             if skill and skill.casefold() not in {item.casefold() for item in values}:
                 values.append(skill)
     return values[:100]
+
+
+def parse_languages(lines: list[TextLine]) -> list[LanguageEntry]:
+    entries: list[LanguageEntry] = []
+    rows: list[list[TextLine]] = []
+    for line in section_lines(lines, "languages"):
+        row = next((item for item in rows if item[0].page == line.page and abs(item[0].y0 - line.y0) < 3), None)
+        if row is None:
+            rows.append([line])
+        else:
+            row.append(line)
+
+    for row in rows:
+        value = BULLET_PREFIX.sub("", " ".join(line.text for line in sorted(row, key=lambda item: item.x0))).strip(" .")
+        level_match = re.search(r"\b(A1|A2|B1|B2|C1|C2|Native)\b", value, re.IGNORECASE)
+        if not level_match:
+            continue
+        name = re.split(r"\s*[-–—:]\s*", value, maxsplit=1)[0].strip()
+        if not name or len(name.split()) > 3:
+            continue
+        raw_level = level_match.group(1)
+        level = "Native" if raw_level.lower() == "native" else raw_level.upper()
+        entries.append(LanguageEntry(id=str(uuid4()), name=name, level=level))
+    return entries
 
 
 def pair_rows(lines: list[TextLine], page_widths: list[float], target: str) -> list[tuple[TextLine, list[TextLine]]]:
@@ -184,4 +210,5 @@ def parse_profile(lines: list[TextLine], page_widths: list[float]) -> ParsedProf
         skills=parse_skills(lines),
         education=parse_education(lines, page_widths),
         experience=parse_experience(lines, page_widths),
+        languages=parse_languages(lines),
     )

@@ -33,6 +33,8 @@ class ParseProfileTest(unittest.TestCase):
             line("Software Engineer, Example GmbH, Ber-", 230),
             line("lin", 245),
             line("- Built deterministic document pipelines", 265),
+            line("Languages", 290, x=40, size=14),
+            line("- German - B2", 305),
             line("Skills", 320, x=40, size=14),
             line("- Python, TypeScript", 350),
             line("Example Candidate", 700, x=400),
@@ -50,6 +52,9 @@ class ParseProfileTest(unittest.TestCase):
         self.assertEqual(profile.experience[0].company, "Example GmbH")
         self.assertEqual(profile.experience[0].location, "Berlin")
         self.assertTrue(profile.experience[0].current)
+        self.assertEqual(profile.languages[0].name, "German")
+        self.assertEqual(profile.languages[0].level, "B2")
+        self.assertFalse(profile.languages[0].confirmed)
 
 
 if __name__ == "__main__":

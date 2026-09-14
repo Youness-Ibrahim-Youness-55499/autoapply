@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProductPageHeader } from "../components/app/ProductPageHeader";
+import { Link } from "react-router-dom";
 import { Seo } from "../components/Seo";
 import { PageContainer } from "../components/layout/PageContainer";
 import { ErrorState } from "../components/states/ErrorState";
@@ -8,17 +8,20 @@ import { Button } from "../components/ui/Button";
 import { ProfileEditModal, type ProfileSection } from "../features/profile/components/ProfileEditModal";
 import { ProfileEducationCard } from "../features/profile/components/ProfileEducationCard";
 import { ProfileExperienceCard } from "../features/profile/components/ProfileExperienceCard";
+import { ApplicationExclusionsCard, ApplicationPreferencesCard, MatchingMarketCard, ProfileFutureInsights, ProfileInterpretationCard, ProfileLanguagesCard, WorkEligibilityCard } from "../features/profile/components/ProfileIntelligenceCards";
 import { ProfilePreferencesCard } from "../features/profile/components/ProfilePreferencesCard";
 import { ProfileProgress } from "../features/profile/components/ProfileProgress";
 import { ProfileSkillsCard } from "../features/profile/components/ProfileSkillsCard";
 import { ProfileSummaryCard } from "../features/profile/components/ProfileSummaryCard";
 import { useProfile } from "../features/profile/useProfile";
+import { useCvStatus } from "../features/profile/useCvStatus";
 import { useTranslation } from "../i18n";
 
 export function ProfilePage() {
   const {
     isLoading,
     isSaving,
+    hasExtendedSchema,
     loadErrorMessage,
     profile,
     retry,
@@ -27,6 +30,7 @@ export function ProfilePage() {
     successMessage,
   } = useProfile();
   const { t } = useTranslation();
+  const cvStatus = useCvStatus();
   const [activeSection, setActiveSection] = useState<ProfileSection | null>(null);
 
   return (
@@ -38,10 +42,10 @@ export function ProfilePage() {
         title={t("profile.title")}
       />
       <PageContainer className="py-10 sm:py-14 lg:px-10" size="wide">
-        <ProductPageHeader
-          description={t("profile.description")}
-          title={t("profile.title")}
-        />
+        <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div><p className="eyebrow">{t("profile.header.eyebrow")}</p><h1 className="page-heading mt-4">{t("profile.title")}</h1><p className="lead mt-5 max-w-3xl">{t("profile.description")}</p></div>
+          <Button className="shrink-0" onClick={() => setActiveSection("summary")}>{t("profile.header.edit")}</Button>
+        </header>
 
         {isLoading && (
           <div className="mt-10 max-w-4xl">
@@ -63,8 +67,24 @@ export function ProfilePage() {
         )}
 
         {!isLoading && !loadErrorMessage && (
-          <div className="mt-8 max-w-6xl">
-            <ProfileProgress profile={profile} />
+          <div className="mt-8 w-full">
+            {!hasExtendedSchema && (
+              <div className="mb-6 rounded-card border border-amber-200 bg-amber-50 p-5 text-amber-950">
+                <p className="font-semibold">{t("profile.schemaPreview.title")}</p>
+                <p className="mt-1 text-sm text-amber-900/75">
+                  {t("profile.schemaPreview.description")}
+                </p>
+              </div>
+            )}
+            {!cvStatus.isLoading && !cvStatus.hasCv && (
+              <div className="mb-6 flex flex-col gap-3 rounded-card border border-amber-200 bg-amber-50 p-5 text-amber-950 sm:flex-row sm:items-center sm:justify-between">
+                <div><p className="font-semibold">{t("profile.cv.emptyTitle")}</p><p className="mt-1 text-sm text-amber-900/75">{t("profile.cv.emptyDescription")}</p></div>
+                <Link className="shrink-0 text-sm font-semibold underline underline-offset-4" to="/app/documents">
+                  {t("profile.cv.upload")}
+                </Link>
+              </div>
+            )}
+            <ProfileProgress onComplete={() => setActiveSection("preferences")} profile={profile} />
 
             <div aria-live="polite">
               {successMessage && (
@@ -82,31 +102,32 @@ export function ProfilePage() {
               )}
             </div>
 
-            <div className="mt-6 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+            <div className="mt-6 grid items-start gap-6 lg:grid-cols-[1.45fr_1fr]">
               <div className="flex flex-col gap-6">
+                <ProfileInterpretationCard onEdit={() => setActiveSection("summary")} profile={profile} />
                 <ProfileSummaryCard
                   onEdit={() => setActiveSection("summary")}
                   profile={profile}
-                />
-                <ProfileEducationCard
-                  education={profile.education}
-                  onEdit={() => setActiveSection("education")}
                 />
                 <ProfileExperienceCard
                   experience={profile.experience}
                   onEdit={() => setActiveSection("experience")}
                 />
+                <ProfileSkillsCard onEdit={() => setActiveSection("skills")} skills={profile.skills} />
+                <ProfileEducationCard education={profile.education} onEdit={() => setActiveSection("education")} />
+                <ProfileFutureInsights />
               </div>
 
               <div className="flex flex-col gap-6">
+                <MatchingMarketCard />
                 <ProfilePreferencesCard
                   onEdit={() => setActiveSection("preferences")}
                   profile={profile}
                 />
-                <ProfileSkillsCard
-                  onEdit={() => setActiveSection("skills")}
-                  skills={profile.skills}
-                />
+                <ProfileLanguagesCard onEdit={() => setActiveSection("languages")} profile={profile} />
+                <WorkEligibilityCard onEdit={() => setActiveSection("eligibility")} profile={profile} />
+                <ApplicationPreferencesCard onEdit={() => setActiveSection("application")} profile={profile} />
+                <ApplicationExclusionsCard onEdit={() => setActiveSection("exclusions")} profile={profile} />
               </div>
             </div>
           </div>
