@@ -109,6 +109,7 @@ class GenericAdapter(Adapter):
                     failed += 1
                 if max_jobs and len(jobs) >= max_jobs: break
 
+        jobs = list({(job.source_job_id, job.source_url): job for job in jobs}.values())
         jobs = self.limited(jobs, max_jobs)
         self.parser_name = parser
         self.last_diagnostic = SourceDiagnostic(source=self.config["company"], http_status=response.status_code, parser=parser, discovered=discovered, parsed=len(jobs), failed=failed, duration_seconds=time.monotonic()-started)

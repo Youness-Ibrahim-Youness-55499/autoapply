@@ -25,7 +25,7 @@ from joblab.models import Base, Company, Job, JobSource, Source
 from joblab.normalization import normalize_domain, normalize_text
 from joblab.schemas import RawJob
 from joblab.registry import AdapterStatus, BoardRecord, EndpointStatus, GermanyStatus, QueryStatus, merge_records
-from joblab.config import Settings
+from joblab.config import Settings, load_custom_career_sources, load_registry_sources
 from joblab.verification import VerificationProgress
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -265,6 +265,32 @@ def test_supabase_postgres_url_uses_psycopg_driver():
     settings = Settings(database_url="postgresql://user:secret@example.supabase.co:5432/postgres?sslmode=require")
     assert settings.sqlalchemy_database_url.startswith("postgresql+psycopg://")
     assert not settings.is_sqlite
+
+
+def test_registry_csv_and_custom_career_loaders(tmp_path):
+    ats = tmp_path / "registry.csv"
+    ats.write_text(
+        "company_name,ats_provider,board_identifier,board_url,region,company_domain,query_status,adapter_status,germany_status,options\n"
+        'Example GmbH,personio,example,https://example.jobs.personio.de,eu,,queryable,working,verified,"{""country"":""DE""}"\n'
+        "Disabled GmbH,personio,disabled,https://disabled.jobs.personio.de,eu,,failed,working,verified,{}\n",
+        encoding="utf-8",
+    )
+    sources = load_registry_sources("personio", path=ats.with_suffix(".json"))
+    assert len(sources) == 1
+    assert sources[0]["identifier"] == "example"
+    assert sources[0]["country"] == "DE"
+    assert sources[0]["company_domain"] is None
+
+    custom = tmp_path / "custom.csv"
+    custom.write_text(
+        "company_name,company_domain,career_url,enabled\n"
+        "Example GmbH,example.de,https://example.de/jobs,true\n"
+        "Monitoring GmbH,,https://monitoring.example/jobs,false\n",
+        encoding="utf-8",
+    )
+    custom_sources = load_custom_career_sources(path=custom)
+    assert len(custom_sources) == 1
+    assert custom_sources[0]["source_type"] == "generic"
 
 
 def test_storage_models_match_supabase_table_names():

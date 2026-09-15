@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from joblab.config import load_registry_sources
+from joblab.config import load_custom_career_sources, load_registry_sources
 from joblab.db import SessionLocal, init_db
 from joblab.ingestion import database_counts, ingest
 
@@ -22,7 +22,8 @@ async def main():
         parser.error("--max-sources must be between 1 and 500")
     if not 1 <= args.max_jobs <= 100:
         parser.error("--max-jobs must be between 1 and 100")
-    sources = load_registry_sources(args.provider, args.max_sources)
+    sources = (load_custom_career_sources(args.max_sources)
+               if args.provider == "custom_career" else load_registry_sources(args.provider, args.max_sources))
     if not sources:
         parser.error(f"no ingestion-ready registry boards for {args.provider}")
     init_db()

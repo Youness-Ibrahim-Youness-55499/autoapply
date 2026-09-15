@@ -25,6 +25,39 @@ Workday needs `--identifier tenant|career_site --board-url URL`.
 SuccessFactors needs `--board-url URL`; use `--mode legacy` for its older site
 format. Only live-verified boards with German jobs become ingestion-ready.
 
+## Curated production inputs
+
+The repository includes two reviewed source registries:
+
+- `data/validated_ats_sources.csv` contains ATS boards and enables only boards
+  with a working adapter and verified German jobs.
+- `data/bavaria_custom_career_sources.csv` contains verified company career
+  pages. Only sources that produced structured German jobs in the bounded
+  validation run are enabled; the others remain available for monitoring.
+
+Run bounded local ingestion with:
+
+```powershell
+.venv\Scripts\python.exe scripts\run_registry_ingestion.py --provider personio --max-sources 5 --max-jobs 10
+.venv\Scripts\python.exe scripts\run_registry_ingestion.py --provider custom_career --max-sources 6 --max-jobs 10
+```
+
+Refresh every ingestion-ready board once with:
+
+```powershell
+.venv\Scripts\python.exe scripts\refresh_registry.py --max-jobs 100
+```
+
+For a continuously running worker, repeat the refresh every six hours:
+
+```powershell
+.venv\Scripts\python.exe scripts\refresh_registry.py --max-jobs 100 --interval-hours 6
+```
+
+Only one refresh worker should run against a database at a time. In production,
+run the one-shot command from the platform scheduler instead of keeping the
+local loop alive.
+
 ## Merge strategy
 
 Place this directory at `services/job-ingestion` in Jobman and preserve it as a
