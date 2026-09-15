@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "../i18n";
 import { useAuth } from "../auth/AuthProvider";
 import { ProductPageHeader } from "../components/app/ProductPageHeader";
@@ -312,29 +312,36 @@ export function ProductHomePage() {
       : "there";
 
   const { applications, isLoading, errorMessage } = useApplications();
+  const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearchQuery = useDeferredValue(searchQuery);
   const {
     errorMessage: jobsErrorMessage,
+    hasMore,
     isLoading: jobsLoading,
+    isLoadingMore,
     jobs,
-  } = useRecommendedJobs();
+    loadMore,
+  } = useRecommendedJobs(deferredSearchQuery);
   const { isLoading: isProfileLoading, profile } = useProfile();
   const profileCompletion = useMemo(() => getProfileCompletion(profile), [profile]);
 
-  const [searchQuery, setSearchQuery] = useState("");
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
   const [skippedJobIds, setSkippedJobIds] = useState<Set<string>>(new Set());
   const [isAutoApplyOpen, setIsAutoApplyOpen] = useState(false);
+  const [visibleJobCount, setVisibleJobCount] = useState(5);
 
   const filteredJobs = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    return query
-      ? jobs.filter((job) =>
-          `${job.title} ${job.company} ${job.location}`.toLowerCase().includes(query) &&
-          !skippedJobIds.has(job.id),
-        )
-      : jobs.filter((job) => !skippedJobIds.has(job.id));
-  }, [jobs, searchQuery, skippedJobIds]);
-  const visibleJobs = filteredJobs.slice(0, 5);
+    return jobs.filter((job) => !skippedJobIds.has(job.id));
+  }, [jobs, skippedJobIds]);
+  const visibleJobs = filteredJobs.slice(0, visibleJobCount);
+
+  useEffect(() => setVisibleJobCount(5), [deferredSearchQuery]);
+
+  async function handleLoadMoreJobs() {
+    const nextCount = visibleJobCount + 5;
+    if (nextCount > jobs.length && hasMore) await loadMore();
+    setVisibleJobCount(nextCount);
+  }
 
   function handleStartAutoApply() {
     setIsAutoApplyOpen(false);
@@ -425,21 +432,35 @@ export function ProductHomePage() {
               {t("dashboard.noJobsAvailable")}
             </div>
           ) : (
-            <div className="mb-9 grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4">
-              {visibleJobs.map((job, index) => (
-              <MatchCard
-                isSaved={savedJobIds.has(job.id)}
-                job={job}
-                key={job.id}
-                onSave={() => setSavedJobIds((current) => {
-                  const next = new Set(current);
-                  next.has(job.id) ? next.delete(job.id) : next.add(job.id);
-                  return next;
-                })}
-                onSkip={() => setSkippedJobIds((current) => new Set(current).add(job.id))}
-                tint={cardTints[index % cardTints.length]}
-              />
-              ))}
+            <div className="mb-9">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4">
+                {visibleJobs.map((job, index) => (
+                  <MatchCard
+                    isSaved={savedJobIds.has(job.id)}
+                    job={job}
+                    key={job.id}
+                    onSave={() => setSavedJobIds((current) => {
+                      const next = new Set(current);
+                      next.has(job.id) ? next.delete(job.id) : next.add(job.id);
+                      return next;
+                    })}
+                    onSkip={() => setSkippedJobIds((current) => new Set(current).add(job.id))}
+                    tint={cardTints[index % cardTints.length]}
+                  />
+                ))}
+              </div>
+              {(visibleJobs.length < filteredJobs.length || hasMore) && (
+                <div className="mt-5 flex justify-center">
+                  <button
+                    className="rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-semibold text-brand-800 transition-colors hover:bg-canvas disabled:cursor-wait disabled:opacity-60"
+                    disabled={isLoadingMore}
+                    onClick={() => void handleLoadMoreJobs()}
+                    type="button"
+                  >
+                    {isLoadingMore ? t("dashboard.loadingMoreJobs") : t("dashboard.loadMoreJobs")}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
