@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "../../i18n";
-import { BrandLogo } from "../BrandLogo";
+import { Logo } from "../Logo";
 import { PageContainer } from "./PageContainer";
 
 const footerGroups = [
@@ -37,11 +37,8 @@ export function Footer() {
       <PageContainer>
         <div className="grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-[1.5fr_0.75fr_0.75fr_0.75fr]">
           <div>
-            <a
-              className="text-xl font-bold text-brand-900"
-              href="#top"
-            >
-              <BrandLogo />
+            <a href="#top">
+              <Logo />
             </a>
             <p className="body-copy mt-4 max-w-sm">
               {t("footer.description")}

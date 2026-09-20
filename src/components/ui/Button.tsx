@@ -9,9 +9,9 @@ type ButtonSize = "sm" | "md" | "lg";
 
 const variantClasses: Record<ButtonVariant, string> = {
   danger:
-    "border-red-700 bg-red-700 text-white shadow-button hover:border-red-800 hover:bg-red-800",
+    "border-[var(--color-status-error)] bg-[var(--color-status-error)] text-white shadow-button hover:brightness-90",
   primary:
-    "border-brand-900 bg-brand-900 text-white shadow-button hover:border-brand-800 hover:bg-brand-800",
+    "border-brand-800 bg-[linear-gradient(180deg,#07825f,var(--color-brand-800))] text-white shadow-button hover:brightness-105",
   secondary:
     "border-line bg-surface text-ink shadow-button hover:border-brand-200 hover:bg-brand-50",
   quiet:
@@ -31,7 +31,7 @@ export type ButtonProps = {
   variant?: ButtonVariant;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
-function buttonClasses(
+export function buttonClasses(
   variant: ButtonVariant,
   size: ButtonSize,
   className: string,

@@ -1,19 +1,22 @@
 import { useMemo, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ProductPageHeader } from "../components/app/ProductPageHeader";
+import { StatTile } from "../components/app/StatTile";
+import { ForwardIcon, PeopleIcon, SuccessIcon, WorkIcon } from "../components/icons/BrandIcons";
 import { Seo } from "../components/Seo";
 import { PageContainer } from "../components/layout/PageContainer";
 import { EmptyState } from "../components/states/EmptyState";
 import { ErrorState } from "../components/states/ErrorState";
 import { LoadingState } from "../components/states/LoadingState";
 import { Button } from "../components/ui/Button";
-import {
-  ApplicationFilters,
-  type ApplicationStatusFilter,
-} from "../features/applications/ApplicationFilters";
+import { ApplicationFilters } from "../features/applications/ApplicationFilters";
 import { ApplicationForm } from "../features/applications/ApplicationForm";
-import { ApplicationList } from "../features/applications/ApplicationList";
+import { ApplicationKanban } from "../features/applications/ApplicationKanban";
 import { ApplicationWorkflowPanel } from "../features/applications/ApplicationWorkflowPanel";
+import { recentCounts } from "../features/applications/activityStats";
+import { getApplicationStats } from "../features/applications/applicationStats";
+import { ApplicationsInsights } from "../features/applications/ApplicationsInsights";
+import { useWorkspaceEvents } from "../features/applications/useWorkspaceEvents";
 import { DeleteApplicationDialog } from "../features/applications/DeleteApplicationDialog";
 import type { Application } from "../features/applications/types";
 import { useApplications } from "../features/applications/useApplications";
@@ -28,8 +31,6 @@ export function ApplicationsPage() {
   const [workflowApplication, setWorkflowApplication] =
     useState<Application | null>(null);
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] =
-    useState<ApplicationStatusFilter>("all");
   const {
     applications,
     errorMessage,
@@ -41,12 +42,18 @@ export function ApplicationsPage() {
   } = useApplications();
   const isFormOpen = isCreateFormOpen || Boolean(editingApplication);
 
+  const { activity, events } = useWorkspaceEvents();
+  const stats = useMemo(() => getApplicationStats(applications), [applications]);
+  const recent = useMemo(() => recentCounts(applications, activity, 7), [applications, activity]);
+
   const visibleApplications = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase();
 
+    if (normalizedQuery.length === 0) {
+      return applications;
+    }
+
     return applications.filter((application) => {
-      const matchesStatus =
-        statusFilter === "all" || application.status === statusFilter;
       const searchableText = [
         application.job_title,
         application.company_name,
@@ -54,12 +61,10 @@ export function ApplicationsPage() {
       ]
         .join(" ")
         .toLocaleLowerCase();
-      const matchesQuery =
-        normalizedQuery.length === 0 || searchableText.includes(normalizedQuery);
 
-      return matchesStatus && matchesQuery;
+      return searchableText.includes(normalizedQuery);
     });
-  }, [applications, query, statusFilter]);
+  }, [applications, query]);
 
   function closeForm() {
     setIsCreateFormOpen(false);
@@ -68,7 +73,6 @@ export function ApplicationsPage() {
 
   function clearFilters() {
     setQuery("");
-    setStatusFilter("all");
   }
 
   function handleSaved() {
@@ -113,6 +117,10 @@ export function ApplicationsPage() {
   const location = useLocation();
   const { t } = useTranslation();
 
+  function weekDelta(count: number) {
+    return count > 0 ? t("dashboard.deltaThisWeek", { count }) : undefined;
+  }
+
   useEffect(() => {
     // If the URL contains a hash with an application id, open its edit form.
     const hash = location.hash?.replace("#", "");
@@ -142,10 +150,21 @@ export function ApplicationsPage() {
         title={t("applications.title")}
       />
       <PageContainer className="py-10 sm:py-14 lg:px-10" size="wide">
-        <ProductPageHeader
-          description={t("applications.description")}
-          title={t("applications.title")}
-        />
+        <div className="flex flex-wrap items-start justify-between gap-6">
+          <ProductPageHeader
+            description={t("applications.description")}
+            title={t("applications.title")}
+          />
+
+          <div className="soft-card w-full max-w-md rounded-card border border-line px-6 py-6 sm:w-auto">
+            <h2 className="text-xl font-bold leading-tight">
+              {t("applications.promoLine1")}
+              <br />
+              {t("applications.promoLine2")}{" "}
+              <span className="text-brand-700">{t("applications.promoLine3")}</span>
+            </h2>
+          </div>
+        </div>
 
         <div className="mt-7">
           <Button
@@ -166,7 +185,18 @@ export function ApplicationsPage() {
           />
         )}
 
-        <div className="mt-10 max-w-6xl">
+        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <StatTile delta={weekDelta(recent.applications)} icon={<WorkIcon />} label={t("dashboard.statTotal")} value={stats.total} />
+          <StatTile delta={weekDelta(recent.interviews)} icon={<PeopleIcon />} label={t("dashboard.statInterviews")} value={stats.interviews} />
+          <StatTile delta={weekDelta(recent.offers)} icon={<SuccessIcon />} label={t("dashboard.statOffers")} value={stats.offers} />
+          <StatTile
+            icon={<ForwardIcon />}
+            label={t("dashboard.statResponseRate")}
+            value={`${stats.responseRate}%`}
+          />
+        </div>
+
+        <div className="mt-8">
           {isLoading && (
             <LoadingState
               description={t("loading.applicationsDescription")}
@@ -191,17 +221,13 @@ export function ApplicationsPage() {
 
           {!isLoading && !errorMessage && applications.length > 0 && (
             <>
-              <ApplicationFilters
-                onQueryChange={setQuery}
-                onReset={clearFilters}
-                onStatusChange={setStatusFilter}
-                query={query}
-                status={statusFilter}
-              />
+              <ApplicationFilters onQueryChange={setQuery} onReset={clearFilters} query={query} />
 
               {visibleApplications.length > 0 ? (
-                <ApplicationList
+                <ApplicationKanban
                   applications={visibleApplications}
+                  events={events}
+                  onAdd={toggleCreateForm}
                   onDelete={setDeletingApplication}
                   onEdit={openEditForm}
                   onStatusUpdated={updateStatusLocally}
@@ -232,6 +258,15 @@ export function ApplicationsPage() {
             />
           )}
         </div>
+
+        {!isLoading && !errorMessage && (
+          <ApplicationsInsights
+            activity={activity}
+            applications={applications}
+            events={events}
+            onOpenWorkflow={openWorkflow}
+          />
+        )}
       </PageContainer>
 
       {deletingApplication && (

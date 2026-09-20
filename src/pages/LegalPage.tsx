@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { BrandLogo } from "../components/BrandLogo";
+import { Logo } from "../components/Logo";
 import { Seo } from "../components/Seo";
 import { SkipLink } from "../components/SkipLink";
 import { PageContainer } from "../components/layout/PageContainer";
@@ -220,7 +220,7 @@ export function LegalPage({ kind }: LegalPageProps) {
               className="text-lg font-bold text-brand-900"
               to="/"
             >
-              <BrandLogo />
+              <Logo />
             </Link>
             <Link
               className="text-sm font-semibold text-brand-800 hover:text-brand-600"

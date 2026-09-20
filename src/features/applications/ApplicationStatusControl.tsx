@@ -1,7 +1,7 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import { useAuth } from "../../auth/AuthProvider";
 import { useTranslation } from "../../i18n";
-import { supabase } from "../../lib/supabase";
+import { updateApplicationStatus } from "./applicationMutations";
 import { applicationStatusDetails } from "./applicationStatus";
 import {
   applicationStatuses,
@@ -54,19 +54,11 @@ export function ApplicationStatusControl({
     setSelectedStatus(nextStatus);
     setIsSaving(true);
 
-    const { data, error } = await supabase
-      .from("applications")
-      .update({ status: nextStatus })
-      .eq("id", application.id)
-      .eq("user_id", userId)
-      .select("id")
-      .maybeSingle();
+    const result = await updateApplicationStatus(userId, application.id, nextStatus);
 
-    if (error || !data) {
+    if (!result.ok) {
       setSelectedStatus(previousStatus);
-      setErrorMessage(
-        error?.message ?? t("applications.statusControl.notFound"),
-      );
+      setErrorMessage(result.message ?? t("applications.statusControl.notFound"));
       setIsSaving(false);
       return;
     }

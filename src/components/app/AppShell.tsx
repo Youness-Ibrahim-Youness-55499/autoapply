@@ -1,82 +1,296 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
 import { SkipLink } from "../SkipLink";
 import { ErrorState } from "../states/ErrorState";
 import { useTranslation } from "../../i18n";
-import { BrandLogo } from "../BrandLogo";
+import { useApplications } from "../../features/applications/useApplications";
+import { getProfileCompletion } from "../../features/profile/profile.utils";
+import { useProfile } from "../../features/profile/useProfile";
+import { Logo } from "../Logo";
+import { Waves } from "../decorations/Waves";
+import { LanguageMenu } from "../ui/LanguageMenu";
+import { GlobalSearch } from "./GlobalSearch";
+import { NotificationBell } from "./NotificationBell";
+
+// There's no billing/plans table yet, so this isn't read from a user
+// record -- it mirrors the "Track up to 20 roles" limit already advertised
+// on the Starter plan (see pricing.planStarter.featureOne in i18n.tsx) and
+// is applied to every signed-in user for now.
+const FREE_PLAN_APPLICATION_LIMIT = 20;
 
 type NavigationItem = {
-  iconSrc: string;
+  icon: ReactNode;
   labelKey: string;
   to: string;
 };
 
 type WorkspaceLinksProps = {
+  badges?: Partial<Record<string, ReactNode>>;
   onNavigate?: () => void;
-  tone: "light" | "row";
+  orientation?: "horizontal" | "vertical";
   t: (key: string) => string;
 };
+
+function NavigationIcon({ children }: { children: ReactNode }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-5 shrink-0"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      {children}
+    </svg>
+  );
+}
 
 const navigationItems: NavigationItem[] = [
   {
     labelKey: "nav.overview",
     to: "/app",
-    iconSrc: "/images/workspace-nav/overview.png",
+    icon: (
+      <NavigationIcon>
+        <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" stroke="currentColor" strokeWidth="1.7" />
+      </NavigationIcon>
+    ),
+  },
+  {
+    labelKey: "nav.jobs",
+    to: "/app/jobs",
+    icon: (
+      <NavigationIcon>
+        <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.7" />
+        <path d="m20 20-4-4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+      </NavigationIcon>
+    ),
   },
   {
     labelKey: "nav.applications",
     to: "/app/applications",
-    iconSrc: "/images/workspace-nav/applications.png",
+    icon: (
+      <NavigationIcon>
+        <path d="M8 6V4.8A1.8 1.8 0 0 1 9.8 3h4.4A1.8 1.8 0 0 1 16 4.8V6m4 4H4m2-4h12a2 2 0 0 1 2 2v10.5A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5V8a2 2 0 0 1 2-2Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+      </NavigationIcon>
+    ),
+  },
+  {
+    labelKey: "nav.cvOptimizer",
+    to: "/app/cv-optimizer",
+    icon: (
+      <NavigationIcon>
+        <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Zm7 12 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" />
+      </NavigationIcon>
+    ),
   },
   {
     labelKey: "nav.profile",
     to: "/app/profile",
-    iconSrc: "/images/workspace-nav/profile.png",
+    icon: (
+      <NavigationIcon>
+        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+      </NavigationIcon>
+    ),
   },
   {
     labelKey: "nav.documents",
     to: "/app/documents",
-    iconSrc: "/images/workspace-nav/documents.png",
+    icon: (
+      <NavigationIcon>
+        <path d="M7 3h7l4 4v14H7V3Zm7 0v5h4M10 13h5m-5 4h5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+      </NavigationIcon>
+    ),
   },
   {
     labelKey: "nav.settings",
     to: "/app/settings",
-    iconSrc: "/images/workspace-nav/settings.png",
+    icon: (
+      <NavigationIcon>
+        <path d="M12 15.25A3.25 3.25 0 1 0 12 8.75a3.25 3.25 0 0 0 0 6.5Zm7-3.25 2-1-2-3-2.1.7A7.8 7.8 0 0 0 15 7.6L14.5 5h-5L9 7.6a7.8 7.8 0 0 0-1.9 1.1L5 8l-2 3 2 1-2 1 2 3 2.1-.7A7.8 7.8 0 0 0 9 16.4l.5 2.6h5l.5-2.6a7.8 7.8 0 0 0 1.9-1.1l2.1.7 2-3-2-1Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      </NavigationIcon>
+    ),
   },
 ];
 
-function WorkspaceLinks({ onNavigate, tone, t }: WorkspaceLinksProps) {
-  const isRow = tone === "row";
+function WorkspaceLinks({ badges, onNavigate, orientation = "vertical", t }: WorkspaceLinksProps) {
+  const isHorizontal = orientation === "horizontal";
 
   return (
-    <ul className={isRow ? "flex items-center gap-1" : "mt-3 space-y-1"}>
-      {navigationItems.map((item) => (
-        <li key={item.to}>
-          <NavLink
-            className={({ isActive }) => {
-              if (isRow) {
-                return `flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${isActive ? "bg-brand-50 text-brand-900" : "text-ink-muted hover:bg-canvas hover:text-ink"}`;
-              }
+    <ul className={isHorizontal ? "flex items-center gap-1" : "mt-3 space-y-1"}>
+      {navigationItems.map((item) => {
+        const badge = badges?.[item.to];
 
-              return `flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${isActive ? "bg-brand-50 text-brand-900" : "text-ink-muted hover:bg-canvas hover:text-ink"}`;
-            }}
-            end={item.to === "/app"}
-            onClick={onNavigate}
-            to={item.to}
-          >
-            <img
-              alt=""
-              aria-hidden="true"
-              className="size-7 shrink-0 object-contain"
-              src={item.iconSrc}
-            />
-            {t(item.labelKey)}
-          </NavLink>
-        </li>
-      ))}
+        return (
+          <li key={item.to}>
+            <NavLink
+              className={({ isActive }) =>
+                `flex items-center text-sm font-semibold transition ${
+                  isHorizontal ? "min-h-10 gap-2 rounded-full px-3.5" : "min-h-12 gap-3 rounded-xl px-3"
+                } ${isActive ? "bg-brand-50 text-brand-900" : "text-ink-muted hover:bg-canvas hover:text-ink"}`
+              }
+              end={item.to === "/app"}
+              onClick={onNavigate}
+              to={item.to}
+            >
+              {item.icon}
+              <span className={isHorizontal ? "whitespace-nowrap" : "flex-1 truncate"}>{t(item.labelKey)}</span>
+              {badge && <span className="shrink-0 text-xs font-bold text-ink-muted">{badge}</span>}
+            </NavLink>
+          </li>
+        );
+      })}
     </ul>
+  );
+}
+
+function AccountMenu({
+  isSigningOut,
+  name,
+  onSignOut,
+  planMeter,
+  session,
+  t,
+}: {
+  isSigningOut: boolean;
+  name: string;
+  onSignOut: () => void;
+  planMeter: ReactNode;
+  session: ReturnType<typeof useAuth>["session"];
+  t: (key: string) => string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const initial = name.charAt(0).toUpperCase();
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    function handlePointerDown(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+
+    window.addEventListener("mousedown", handlePointerDown);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("mousedown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <button
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        className="flex items-center gap-2 rounded-full border border-line bg-canvas py-1 pl-1 pr-3 transition hover:bg-surface"
+        onClick={() => setIsOpen((open) => !open)}
+        type="button"
+      >
+        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-400 text-sm font-bold text-brand-950">
+          {initial}
+        </span>
+        <span className="hidden text-left sm:block">
+          <span className="block max-w-32 truncate text-sm font-semibold leading-tight">{name}</span>
+        </span>
+        <svg aria-hidden="true" className="size-4 shrink-0 text-ink-muted" fill="none" viewBox="0 0 24 24">
+          <path d="m6 9 6 6 6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div
+          className="absolute right-0 top-full z-30 mt-2 w-64 overflow-hidden rounded-xl border border-line bg-surface py-1 shadow-lg"
+          role="menu"
+        >
+          <p className="truncate px-4 py-2 text-xs text-ink-muted">{session?.user.email}</p>
+          <div className="px-3 pb-2">{planMeter}</div>
+          <Link
+            className="block px-4 py-2 text-sm font-medium text-ink transition hover:bg-canvas"
+            onClick={() => setIsOpen(false)}
+            role="menuitem"
+            to="/app/settings"
+          >
+            {t("nav.settings")}
+          </Link>
+          <Link
+            className="block px-4 py-2 text-sm font-medium text-ink transition hover:bg-canvas"
+            onClick={() => setIsOpen(false)}
+            role="menuitem"
+            to="/app/help"
+          >
+            {t("nav.help")}
+          </Link>
+          <button
+            className="block w-full px-4 py-2 text-left text-sm font-medium text-ink transition hover:bg-canvas disabled:opacity-50"
+            disabled={isSigningOut}
+            onClick={onSignOut}
+            role="menuitem"
+            type="button"
+          >
+            {t("header.logOut")}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SidebarPlanMeter({
+  limit,
+  t,
+  used,
+}: {
+  limit: number;
+  t: (key: string, values?: Record<string, string | number>) => string;
+  used: number;
+}) {
+  const percentUsed = Math.min(Math.round((used / limit) * 100), 100);
+  const isExhausted = used >= limit;
+
+  return (
+    <div
+      className="relative min-h-32 overflow-hidden rounded-xl border border-line px-3.5 py-3"
+      style={{ background: "linear-gradient(180deg, #ffffff 0%, #f2fffa 100%)" }}
+    >
+      <div className="relative z-10">
+        <div className="flex items-center justify-between">
+          <span className="text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-ink-muted">
+            {t("dashboard.planFreeLabel")}
+          </span>
+          <span className="text-xs font-bold text-ink">
+            {used}/{limit}
+          </span>
+        </div>
+        <div aria-hidden="true" className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-line">
+          <div
+            className="h-full rounded-full transition-[width]"
+            style={{
+              backgroundColor: isExhausted ? "var(--color-status-error)" : "var(--color-accent-gold)",
+              width: `${percentUsed}%`,
+            }}
+          />
+        </div>
+        <Link
+          className="mt-2 inline-block text-xs font-semibold text-brand-700 transition hover:text-brand-800"
+          to="/#pricing"
+        >
+          {t("dashboard.planUpgrade")}
+        </Link>
+      </div>
+      <Waves className="h-14" />
+    </div>
   );
 }
 
@@ -95,7 +309,10 @@ export function AppShell() {
     typeof metadataName === "string" && metadataName.trim()
       ? metadataName.trim()
       : "Your account";
-  const initial = name.charAt(0).toUpperCase();
+  const { applications } = useApplications();
+  const { profile } = useProfile();
+  const profileCompletion = getProfileCompletion(profile);
+  const navBadges = { "/app/profile": `${profileCompletion.percentage}%` };
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -161,86 +378,39 @@ export function AppShell() {
     menuButtonRef.current?.focus();
   }
 
-  const accountCard = (
-    <div className="flex items-center gap-3 rounded-xl border border-line bg-canvas p-3">
-      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-400 text-sm font-bold text-brand-950">
-        {initial}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold">{name}</p>
-        <p className="truncate text-xs text-ink-muted">{session?.user.email}</p>
-      </div>
-      <button
-        aria-label={t("header.logOut")}
-        className="rounded-lg p-2 text-ink-muted transition hover:bg-surface hover:text-ink disabled:opacity-50"
-        disabled={isSigningOut}
-        onClick={handleSignOut}
-        title={t("header.logOut")}
-        type="button"
-      >
-        <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
-          <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4m5-4 3-3-3-3m3 3H9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-        </svg>
-      </button>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-canvas">
       <SkipLink />
 
       <header className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur">
-        <div className="flex min-h-20 items-center gap-4 px-5 sm:px-8 lg:px-10">
-          <Link className="shrink-0 text-xl font-bold text-brand-950" to="/app">
-            <BrandLogo />
+        <div className="grid min-h-20 grid-cols-[auto_1fr] items-center gap-3 px-5 sm:px-8 xl:grid-cols-[1fr_auto_1fr]">
+          <Link className="shrink-0 justify-self-start" to="/app">
+            <Logo className="h-12 xl:h-14" />
           </Link>
 
-          <nav aria-label={t("workspace")} className="hidden lg:flex">
-            <WorkspaceLinks t={t} tone="row" />
+          <nav aria-label={t("workspace")} className="hidden xl:block">
+            <WorkspaceLinks badges={navBadges} orientation="horizontal" t={t} />
           </nav>
 
-          <div className="ml-auto flex items-center gap-3">
-            <div className="hidden items-center gap-2 rounded-full border border-line bg-surface px-3 py-2 text-sm text-ink-muted sm:flex">
-              <label className="sr-only" htmlFor="locale-select">
-                {t("language.label")}
-              </label>
-              <select
-                className="bg-transparent text-sm text-ink-muted outline-none"
-                id="locale-select"
-                onChange={(event) => setLocale(event.target.value as "en" | "de")}
-                value={locale}
-              >
-                <option value="en">{t("language.english")}</option>
-                <option value="de">{t("language.german")}</option>
-              </select>
-            </div>
-
-            <div className="hidden items-center gap-2 lg:flex">
-              <span
-                className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-400 text-sm font-bold text-brand-950"
-                title={name}
-              >
-                {initial}
-              </span>
-              <button
-                aria-label={t("header.logOut")}
-                className="rounded-lg p-2 text-ink-muted transition hover:bg-canvas hover:text-ink disabled:opacity-50"
-                disabled={isSigningOut}
-                onClick={handleSignOut}
-                title={t("header.logOut")}
-                type="button"
-              >
-                <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 24 24">
-                  <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4m5-4 3-3-3-3m3 3H9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-                </svg>
-              </button>
-            </div>
-
+          <div className="flex items-center gap-2 justify-self-end">
+            <LanguageMenu />
+            <GlobalSearch applications={applications} />
+            <NotificationBell applications={applications} />
+            <AccountMenu
+              isSigningOut={isSigningOut}
+              name={name}
+              onSignOut={handleSignOut}
+              planMeter={
+                <SidebarPlanMeter limit={FREE_PLAN_APPLICATION_LIMIT} t={t} used={applications.length} />
+              }
+              session={session}
+              t={t}
+            />
             <button
               aria-controls="mobile-workspace-navigation"
               aria-expanded={isMenuOpen}
               aria-label={t("nav.openWorkspace")}
-              className="grid size-11 place-items-center rounded-xl border border-line bg-surface text-brand-950 shadow-sm transition hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 lg:hidden"
+              className="grid size-11 place-items-center rounded-xl border border-line bg-surface text-brand-950 shadow-sm transition hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 xl:hidden"
               onClick={() => setIsMenuOpen(true)}
               ref={menuButtonRef}
               type="button"
@@ -253,7 +423,7 @@ export function AppShell() {
         </div>
 
         {signOutError && (
-          <div className="border-t border-line px-5 py-3 sm:px-8 lg:px-10">
+          <div className="border-t border-line px-5 py-3 sm:px-8">
             <ErrorState compact description={signOutError} title={t("errors.signOut")} />
           </div>
         )}
@@ -264,7 +434,7 @@ export function AppShell() {
       </main>
 
       {isMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 xl:hidden">
           <button
             aria-label="Close workspace navigation"
             className="absolute inset-0 bg-brand-950/45 backdrop-blur-[2px]"
@@ -280,8 +450,8 @@ export function AppShell() {
             role="dialog"
           >
             <div className="flex min-h-20 items-center justify-between border-b border-line px-5">
-              <Link className="text-xl font-bold text-brand-900" onClick={closeMenu} to="/app">
-                <BrandLogo />
+              <Link onClick={closeMenu} to="/app">
+                <Logo />
               </Link>
               <button
                 aria-label={t("nav.closeWorkspace")}
@@ -300,20 +470,11 @@ export function AppShell() {
               <p className="px-3 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-ink-muted">
                 {t("workspace")}
               </p>
-              <WorkspaceLinks onNavigate={closeMenu} tone="light" t={t} />
+              <WorkspaceLinks badges={navBadges} onNavigate={closeMenu} t={t} />
             </nav>
 
             <div className="border-t border-line p-4">
-              {signOutError && (
-                <div className="mb-3">
-                  <ErrorState
-                    compact
-                    description={signOutError}
-                    title={t("errors.signOut")}
-                  />
-                </div>
-              )}
-              {accountCard}
+              <SidebarPlanMeter limit={FREE_PLAN_APPLICATION_LIMIT} t={t} used={applications.length} />
             </div>
           </aside>
         </div>
