@@ -1,492 +1,416 @@
+import { useMemo, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "../i18n";
 import { useAuth } from "../auth/AuthProvider";
-import { ProductPageHeader } from "../components/app/ProductPageHeader";
-import { Seo } from "../components/Seo";
-import { PageContainer } from "../components/layout/PageContainer";
-import { applicationStatusDetails } from "../features/applications/applicationStatus";
-import type { Application } from "../features/applications/types";
-import { useApplications } from "../features/applications/useApplications";
+import { StatTile } from "../components/app/StatTile";
+import { Waves } from "../components/decorations/Waves";
+import { BarChart } from "../components/charts/BarChart";
 import {
-  type RecommendedJob,
-  useRecommendedJobs,
-} from "../features/jobs/useRecommendedJobs";
-import { getProfileCompletion } from "../features/profile/profile.utils";
-import { useProfile } from "../features/profile/useProfile";
-import { EmptyState } from "../components/states/EmptyState";
-import { LoadingState } from "../components/states/LoadingState";
+  ArrowRightIcon,
+  BookmarkIcon,
+  CheckCircleIcon,
+  ForwardIcon,
+  PeopleIcon,
+  SuccessIcon,
+  WorkIcon,
+} from "../components/icons/BrandIcons";
+import { PageContainer } from "../components/layout/PageContainer";
+import { Logo } from "../components/Logo";
+import { Seo } from "../components/Seo";
 import { ErrorState } from "../components/states/ErrorState";
+import { ArrowLink } from "../components/ui/ArrowLink";
+import { Card } from "../components/ui/Card";
+import { DemoBadge } from "../components/ui/DemoBadge";
+import { LinkButton } from "../components/ui/LinkButton";
+import { ProgressBar } from "../components/ui/ProgressBar";
+import { buildWeeklyActivity, recentCounts, sum } from "../features/applications/activityStats";
+import { getApplicationStats } from "../features/applications/applicationStats";
+import { selectUpcoming } from "../features/applications/upcoming";
+import { useWorkspaceEvents } from "../features/applications/useWorkspaceEvents";
+import { useApplications } from "../features/applications/useApplications";
+import { useDocuments } from "../features/documents/useDocuments";
+import { matchJob } from "../features/jobs/matchJob";
+import { mockJobs } from "../features/jobs/mockJobs";
+import { useRecommendedJobs } from "../features/jobs/useRecommendedJobs";
+import { useJobApplications, type TrackableJob } from "../features/jobs/useJobApplications";
+import { getProfileCompletion } from "../features/profile/profile.utils";
+import { READINESS_LABEL_KEYS, READINESS_ORDER } from "../features/profile/profileSectionLabels";
+import { useProfile } from "../features/profile/useProfile";
+import { useTranslation } from "../i18n";
 
-// Alternating pastel tints for match cards -- two existing shades of the
-// brand scale, not new colors, matching the design's "two-tone rotation"
-// idea without introducing hues outside the current palette.
-const cardTints = ["bg-brand-50", "bg-brand-100"] as const;
+const ACTIVITY_WEEKS = 8;
+const ACTIVITY_COLORS = { applications: "#10b981", interviews: "#f4b400", responses: "#065f46" } as const;
 
-// There's no billing/plans table yet, so this isn't read from a user
-// record -- it mirrors the "Track up to 20 roles" limit already advertised
-// on the Starter plan (see pricing.planStarter.featureOne in i18n.tsx) and
-// is applied to every signed-in user for now. Swapping this constant for a
-// real per-user field later is a one-line change at the call site below.
-const FREE_PLAN_APPLICATION_LIMIT = 20;
-
-function PlanUsageBanner({ limit, used }: { limit: number; used: number }) {
-  const { t } = useTranslation();
-  const remaining = Math.max(limit - used, 0);
-  const percentUsed = Math.min(Math.round((used / limit) * 100), 100);
-  const isExhausted = remaining === 0;
-
+function Panel({ action, children, title }: { action?: ReactNode; children: ReactNode; title: string }) {
   return (
-    <div className="mb-4 rounded-card border border-line bg-surface px-5 py-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-sm font-bold">{t("dashboard.planFreeLabel")}</p>
-          <p className="mt-0.5 text-xs text-ink-muted">
-            {isExhausted
-              ? t("dashboard.planExhausted", { limit })
-              : t("dashboard.planRemaining", { limit, remaining })}
-          </p>
-        </div>
-        <Link
-          className="shrink-0 rounded-full border border-line bg-canvas px-4 py-2 text-xs font-bold text-ink transition-colors hover:bg-brand-50"
-          to="/#pricing"
-        >
-          {t("dashboard.planUpgrade")}
-        </Link>
+    <Card className="h-full" padding="sm">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="text-base font-bold tracking-tight">{title}</h2>
+        {action}
       </div>
-      <div
-        aria-hidden="true"
-        className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-canvas"
-      >
-        <div
-          className={`h-full rounded-full transition-[width] ${isExhausted ? "bg-red-500" : "bg-brand-700"}`}
-          style={{ width: `${percentUsed}%` }}
-        />
-      </div>
-    </div>
+      {children}
+    </Card>
   );
 }
 
-const filterChips = [
-  { active: false, key: "date", labelKey: "dashboard.filterDate" },
-  { active: true, key: "location", labelKey: "dashboard.filterLocation" },
-  { active: false, key: "workplace", labelKey: "dashboard.filterWorkplace" },
-  { active: false, key: "companies", labelKey: "dashboard.filterCompanies" },
-  { active: false, key: "jobType", labelKey: "dashboard.filterJobType" },
-] as const;
-
-function InsightBanner({ percentage }: { percentage: number }) {
-  const { t } = useTranslation();
-
+function CompanyMark({ company }: { company: string }) {
   return (
-    <div className="mb-5 flex items-center gap-3 rounded-card bg-brand-50 px-5 py-4">
-      <span aria-hidden="true" className="text-lg">
-        ✨
-      </span>
-      <div className="text-sm text-brand-900">
-        {percentage >= 100
-          ? t("dashboard.insightMessageComplete")
-          : t("dashboard.insightMessage", { percent: percentage })}
-      </div>
-      <Link
-        className="ml-auto shrink-0 rounded-full bg-brand-700 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-800"
-        to="/app/profile"
-      >
-        {t("dashboard.insightReview")}
-      </Link>
-    </div>
+    <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-canvas text-sm font-extrabold text-ink">
+      {company
+        .split(" ")
+        .map((word) => word.charAt(0))
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()}
+    </span>
   );
 }
 
-function MatchCard({
-  isSaved,
-  job,
-  onSave,
-  onSkip,
-  tint,
-}: {
-  isSaved: boolean;
-  job: RecommendedJob;
-  onSave: () => void;
-  onSkip: () => void;
-  tint: (typeof cardTints)[number];
-}) {
-  const { t } = useTranslation();
-
-  return (
-    <div className={`flex min-h-52 flex-col gap-3 rounded-2xl ${tint} p-[18px]`}>
-      <div className="flex items-start justify-between">
-        <div className="text-xs font-semibold text-ink-muted">
-          {job.location}
-          <br />
-          <span className="font-medium text-ink-muted/80">{job.posted}</span>
-        </div>
-        {job.provider ? (
-          <div className="rounded-full border border-ink/10 bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-ink-muted">
-            {job.provider}
-          </div>
-        ) : null}
-      </div>
-
-      <div className="flex-1 text-base font-bold leading-tight">{job.title}</div>
-
-      <div className="flex flex-wrap gap-1.5">
-        {job.tags.map((tag) => (
-          <span
-            className="rounded-lg bg-white/55 px-2.5 py-1 text-[11px] font-semibold text-ink"
-            key={tag}
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      <div className="flex items-center gap-2">
-        <div className="flex-1 truncate text-sm font-semibold">{job.company}</div>
-        <button
-          className="shrink-0 rounded-full bg-white/60 px-3.5 py-2 text-xs font-bold transition-colors hover:bg-white/80"
-          onClick={onSave}
-          type="button"
-        >
-          {isSaved ? t("dashboard.saved") : t("dashboard.save")}
-        </button>
-        <button
-          className="shrink-0 rounded-full bg-white/60 px-3.5 py-2 text-xs font-bold transition-colors hover:bg-white/80"
-          onClick={onSkip}
-          type="button"
-        >
-          {t("dashboard.skip")}
-        </button>
-        {job.applyUrl ? (
-          <a
-            className="shrink-0 rounded-full bg-brand-700 px-3.5 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-800"
-            href={job.applyUrl}
-            rel="noreferrer"
-            target="_blank"
-          >
-            {t("dashboard.viewJob")}
-          </a>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-function DashboardModal({
-  children,
-  onClose,
-  title,
-}: {
-  children: React.ReactNode;
-  onClose: () => void;
-  title: string;
-}) {
-  return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-ink/45 p-4" onMouseDown={onClose}>
-      <div
-        aria-labelledby="dashboard-modal-title"
-        aria-modal="true"
-        className="w-full max-w-md rounded-card border border-line bg-surface p-6 shadow-xl"
-        onMouseDown={(event) => event.stopPropagation()}
-        role="dialog"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <h2 className="text-xl font-bold" id="dashboard-modal-title">{title}</h2>
-          <button aria-label="Close" className="rounded-full p-1 text-ink-muted hover:bg-canvas hover:text-ink" onClick={onClose} type="button">×</button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function NeedsAttention({ applications, profileCompletion }: { applications: Application[]; profileCompletion: number }) {
-  const { t } = useTranslation();
-  const interviews = applications.filter((application) => application.status === "interview").length;
-  const items = [
-    ...(profileCompletion < 100 ? [{ label: t("dashboard.attentionProfile"), to: "/app/profile" }] : []),
-    ...(interviews > 0 ? [{ label: t("dashboard.attentionInterviews", { count: interviews }), to: "/app/applications" }] : []),
-  ];
-
-  return (
-    <section className="mb-5 rounded-card border border-line bg-surface px-5 py-4" aria-labelledby="attention-title">
-      <div className="flex flex-wrap items-center gap-3">
-        <h2 className="font-bold" id="attention-title">{t("dashboard.attentionTitle")}</h2>
-        {items.length === 0 ? (
-          <p className="text-sm text-ink-muted">{t("dashboard.attentionEmpty")}</p>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {items.map((item) => (
-              <Link className="rounded-full bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-900 hover:bg-brand-100" key={item.label} to={item.to}>{item.label}</Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function AutoApplyModal({ onClose, onStart, profile }: { onClose: () => void; onStart: () => void; profile: ReturnType<typeof useProfile>["profile"] }) {
-  const { t } = useTranslation();
-  const criteria = [
-    profile.desiredRoles.length ? [t("dashboard.criteriaRoles"), profile.desiredRoles.join(", ")] : null,
-    profile.location ? [t("dashboard.criteriaLocation"), profile.location] : null,
-    profile.employmentTypes.length ? [t("dashboard.criteriaEmployment"), profile.employmentTypes.join(", ")] : null,
-    [t("dashboard.criteriaWorkplace"), t(`profile.workPreference.${profile.workPreference}`)],
-  ].filter((item): item is string[] => item !== null);
-
-  return (
-    <DashboardModal onClose={onClose} title={t("dashboard.autoApplyTitle")}>
-      <p className="mt-3 text-sm text-ink-muted">{t("dashboard.autoApplyDescription")}</p>
-      <dl className="mt-5 divide-y divide-line rounded-2xl bg-canvas px-4">
-        {criteria.map(([label, value]) => <div className="flex justify-between gap-4 py-3 text-sm" key={label}><dt className="text-ink-muted">{label}</dt><dd className="text-right font-semibold">{value}</dd></div>)}
-      </dl>
-      <div className="mt-6 flex flex-wrap justify-end gap-2">
-        <button className="rounded-full px-4 py-2 text-sm font-semibold hover:bg-canvas" onClick={onClose} type="button">{t("dashboard.cancel")}</button>
-        <Link className="rounded-full border border-line px-4 py-2 text-sm font-semibold hover:bg-canvas" to="/app/profile">{t("dashboard.reviewSettings")}</Link>
-        <button className="rounded-full bg-brand-700 px-4 py-2 text-sm font-bold text-white hover:bg-brand-800" onClick={onStart} type="button">{t("dashboard.startAutoApply")}</button>
-      </div>
-    </DashboardModal>
-  );
-}
-
-function ApplicationsTable({ applications }: { applications: Application[] }) {
-  const { t } = useTranslation();
-
-  function nextStep(application: Application) {
-    if (application.status === "saved") return t("dashboard.nextStepPrepare");
-    if (application.status === "interview") return t("dashboard.nextStepInterview");
-    if (application.status === "offer") return t("dashboard.nextStepReviewOffer");
-    if (application.status === "rejected" || application.status === "withdrawn") return t("dashboard.nextStepNone");
-    return application.follow_up_at ? t("dashboard.nextStepFollowUp") : t("dashboard.nextStepMonitor");
-  }
-
-  return (
-    <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
-      <div className="grid min-w-[850px] grid-cols-[1.5fr_1fr_.6fr_.8fr_.9fr_1fr] gap-3 border-b border-line px-5 py-3 text-xs font-bold uppercase tracking-wide text-ink-muted">
-        <div>{t("dashboard.tableRole")}</div>
-        <div>{t("dashboard.tableCompany")}</div>
-        <div>{t("dashboard.tableMatch")}</div>
-        <div>{t("dashboard.tableApplied")}</div>
-        <div>{t("dashboard.tableStatus")}</div>
-        <div>{t("dashboard.tableNextStep")}</div>
-      </div>
-      {applications.map((application) => {
-        const statusDetail = applicationStatusDetails[application.status];
-
-        return (
-          <div
-            className="grid min-w-[850px] grid-cols-[1.5fr_1fr_.6fr_.8fr_.9fr_1fr] items-center gap-3 border-b border-line px-5 py-3.5 text-sm transition-colors last:border-b-0 hover:bg-canvas/60"
-            key={application.id}
-          >
-            <div className="font-semibold">{application.job_title}</div>
-            <div className="text-ink-muted">{application.company_name}</div>
-            <div className="text-ink-muted">—</div>
-            <div className="text-ink-muted">
-              {application.applied_at
-                ? new Date(application.applied_at).toLocaleDateString()
-                : "—"}
-            </div>
-            <div>
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${statusDetail.styles}`}
-              >
-                {t(statusDetail.labelKey)}
-              </span>
-            </div>
-            <div className="text-ink-muted">{nextStep(application)}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
+function greetingKey(hour: number) {
+  if (hour < 12) return "dashboard.greetingMorning";
+  if (hour < 18) return "dashboard.greetingAfternoon";
+  return "dashboard.greetingEvening";
 }
 
 export function ProductHomePage() {
-  const { t } = useTranslation();
+  const { locale, t } = useTranslation();
   const { session } = useAuth();
   const metadataName = session?.user.user_metadata.name;
-  const name =
-    typeof metadataName === "string" && metadataName.trim()
-      ? metadataName.trim()
-      : "there";
+  const name = typeof metadataName === "string" && metadataName.trim() ? metadataName.trim() : "";
 
-  const { applications, isLoading, errorMessage } = useApplications();
-  const [searchQuery, setSearchQuery] = useState("");
-  const deferredSearchQuery = useDeferredValue(searchQuery);
-  const {
-    errorMessage: jobsErrorMessage,
-    hasMore,
-    isLoading: jobsLoading,
-    isLoadingMore,
-    jobs,
-    loadMore,
-  } = useRecommendedJobs(deferredSearchQuery);
-  const { isLoading: isProfileLoading, profile } = useProfile();
-  const profileCompletion = useMemo(() => getProfileCompletion(profile), [profile]);
+  const { applications, errorMessage, refresh } = useApplications();
+  const { activity, events } = useWorkspaceEvents();
+  const { profile } = useProfile();
+  const { documents } = useDocuments();
+  const { pendingJobId, statusFor, track } = useJobApplications(applications);
+  // Live openings from the job service; the sample listings are only a fallback
+  // (service offline or empty), and are labelled as such.
+  const { jobs: liveJobs } = useRecommendedJobs();
 
-  const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
-  const [skippedJobIds, setSkippedJobIds] = useState<Set<string>>(new Set());
-  const [isAutoApplyOpen, setIsAutoApplyOpen] = useState(false);
-  const [visibleJobCount, setVisibleJobCount] = useState(5);
+  const stats = useMemo(() => getApplicationStats(applications), [applications]);
+  const recent = useMemo(() => recentCounts(applications, activity, 7), [applications, activity]);
+  const weekly = useMemo(
+    () => buildWeeklyActivity(applications, activity, ACTIVITY_WEEKS),
+    [applications, activity],
+  );
+  const completion = useMemo(() => getProfileCompletion(profile), [profile]);
+  const upcomingInterviews = useMemo(
+    () => selectUpcoming(events, new Date(), 7).filter((event) => event.kind === "interview").length,
+    [events],
+  );
 
-  const filteredJobs = useMemo(() => {
-    return jobs.filter((job) => !skippedJobIds.has(job.id));
-  }, [jobs, skippedJobIds]);
-  const visibleJobs = filteredJobs.slice(0, visibleJobCount);
+  const ranked = useMemo(
+    () =>
+      mockJobs
+        .map((job) => ({ job, match: matchJob(job, profile) }))
+        .sort((a, b) => b.match.percent - a.match.percent),
+    [profile],
+  );
+  const hasLiveJobs = liveJobs.length > 0;
+  const nextOpportunities = ranked.slice(0, 3);
+  const recommended = ranked.slice(3, 6);
+  const usesPlaceholderScores = ranked.some((item) => item.match.isPlaceholder);
 
-  useEffect(() => setVisibleJobCount(5), [deferredSearchQuery]);
+  const hasCv = documents.some((document) => document.category === "cv");
+  const hasDefaultCv = documents.some((document) => document.category === "cv" && document.isDefault);
+  const hasCoverLetter = documents.some((document) => document.category === "cover_letter");
 
-  async function handleLoadMoreJobs() {
-    const nextCount = visibleJobCount + 5;
-    if (nextCount > jobs.length && hasMore) await loadMore();
-    setVisibleJobCount(nextCount);
+  function delta(count: number) {
+    return count > 0 ? t("dashboard.deltaThisWeek", { count }) : undefined;
   }
 
-  function handleStartAutoApply() {
-    setIsAutoApplyOpen(false);
+  async function handleSave(job: TrackableJob) {
+    const success = await track(job, "saved");
+    if (success) refresh();
   }
+
+  // Rule-based "next step" (no AI): the first rule that applies wins.
+  const nextStep =
+    completion.percentage < 100
+      ? { body: t("dashboard.tip.profile", { percent: completion.percentage }), cta: t("dashboard.tip.ctaProfile"), to: "/app/profile" }
+      : applications.length === 0
+        ? { body: t("dashboard.tip.noApplications"), cta: t("dashboard.tip.ctaJobs"), to: "/app/jobs" }
+        : upcomingInterviews > 0
+          ? { body: t("dashboard.tip.interviews"), cta: t("dashboard.tip.ctaApplications"), to: "/app/applications" }
+          : { body: t("dashboard.tip.default", { count: recent.applications }), cta: t("dashboard.tip.ctaJobs"), to: "/app/jobs" };
+
+  const legend = [
+    { color: ACTIVITY_COLORS.applications, key: "applications", label: t("dashboard.activityApplications") },
+    { color: ACTIVITY_COLORS.responses, key: "responses", label: t("dashboard.activityResponses") },
+    { color: ACTIVITY_COLORS.interviews, key: "interviews", label: t("dashboard.activityInterviews") },
+  ] as const;
+
+  const dateFormatter = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" });
 
   return (
     <>
-      <Seo
-        description={t("seo.overview.description")}
-        noIndex
-        path="/app"
-        title={t("nav.overview")}
-      />
-      <PageContainer className="py-10 sm:py-14 lg:px-10" size="wide">
-        <ProductPageHeader
-          description={t("overview.description")}
-          eyebrow={t("workspace")}
-          title={t("overview.title", { name })}
-        />
+      <Seo description={t("seo.overview.description")} noIndex path="/app" title={t("nav.overview")} />
+      <PageContainer className="space-y-5 py-6 sm:py-8 lg:px-8" size="wide">
+        {errorMessage && <ErrorState compact description={errorMessage} title={t("dashboard.errorOverviewTitle")} />}
 
-        <section className="mt-8 max-w-6xl">
-          <PlanUsageBanner limit={FREE_PLAN_APPLICATION_LIMIT} used={applications.length} />
-          <InsightBanner percentage={profileCompletion.percentage} />
-          {!isLoading && !isProfileLoading && !errorMessage && (
-            <NeedsAttention applications={applications} profileCompletion={profileCompletion.percentage} />
-          )}
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_21rem]">
+          <section className="soft-card relative overflow-hidden rounded-card border border-line p-6 sm:p-8">
+            <p className="eyebrow">{t(greetingKey(new Date().getHours()), { name: name || t("dashboard.thereFallback") })}</p>
+            <h1 className="mt-3 max-w-md text-3xl font-extrabold leading-[1.1] tracking-tight sm:text-4xl">
+              {t("dashboard.heroTitle")}
+            </h1>
+            <p className="mt-3 max-w-md text-sm text-ink-muted">{t("dashboard.heroBody")}</p>
+            <div className="relative z-10 mt-5 flex flex-wrap gap-3">
+              <LinkButton to="/app/jobs">
+                {t("dashboard.findOpportunities")}
+                <ArrowRightIcon className="size-4" />
+              </LinkButton>
+              <LinkButton to="/app/cv-optimizer" variant="secondary">
+                {t("dashboard.improveCv")}
+              </LinkButton>
+            </div>
+            <Logo className="pointer-events-none absolute right-8 top-1/2 hidden h-40 -translate-y-1/2 md:block" variant="icon" />
+            <Waves className="h-14" />
+          </section>
 
-          <div className="mb-3.5 flex items-center gap-2.5 rounded-card border border-line bg-surface px-4.5 py-3.5">
-            <span aria-hidden="true" className="text-ink-muted">
-              ⌕
-            </span>
-            <input
-              className="flex-1 border-none bg-transparent text-sm outline-none"
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder={t("dashboard.searchPlaceholder")}
-              value={searchQuery}
-            />
-          </div>
+          <Card className="flex flex-col" padding="sm">
+            <p className="eyebrow">{t("dashboard.nextStep")}</p>
+            <p className="mt-3 text-base font-semibold leading-snug">{nextStep.body}</p>
+            <div className="mt-auto pt-5">
+              <LinkButton size="sm" to={nextStep.to}>
+                {nextStep.cta}
+                <ArrowRightIcon className="size-4" />
+              </LinkButton>
+            </div>
+          </Card>
+        </div>
 
-          <div className="mb-5 flex flex-wrap items-center gap-2">
-            {filterChips.map((chip) => (
-              <span
-                className={`rounded-full px-4 py-2 text-xs font-semibold ${
-                  chip.active ? "bg-brand-700 text-white" : "bg-canvas text-ink-muted"
-                }`}
-                key={chip.key}
-              >
-                {t(chip.labelKey)}
-              </span>
-            ))}
-            <button
-              className="ml-auto text-xs font-semibold text-ink-muted transition-colors hover:text-ink"
-              type="button"
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <StatTile delta={delta(recent.applications)} icon={<WorkIcon />} label={t("dashboard.statTotal")} value={stats.total} />
+          <StatTile delta={delta(recent.interviews)} icon={<PeopleIcon />} label={t("dashboard.statInterviews")} value={stats.interviews} />
+          <StatTile delta={delta(recent.offers)} icon={<SuccessIcon />} label={t("dashboard.statOffers")} value={stats.offers} />
+          <StatTile icon={<ForwardIcon />} label={t("dashboard.statResponseRate")} value={`${stats.responseRate}%`} />
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-3">
+          <div className="space-y-5">
+            <Panel
+              action={
+                <span className="flex items-center gap-3">
+                  {!hasLiveJobs && <DemoBadge />}
+                  <ArrowLink to="/app/jobs">{t("dashboard.viewAll")}</ArrowLink>
+                </span>
+              }
+              title={t("dashboard.nextOpportunities")}
             >
-              {t("dashboard.clearFilters")}
-            </button>
-          </div>
+              <ul className="space-y-2.5">
+                {hasLiveJobs
+                  ? liveJobs.slice(0, 3).map((job) => {
+                      const status = statusFor(job);
 
-          <div className="mb-4 flex items-center">
-            <div className="text-lg font-bold tracking-tight">{t("dashboard.topMatches")}</div>
-            <div className="ml-auto flex gap-2.5">
-              <Link
-                className="rounded-full border border-line bg-surface px-4 py-2 text-xs font-semibold transition-colors hover:bg-canvas"
-                to="/app/applications"
-              >
-                {t("dashboard.addYourOwn")}
-              </Link>
-              <button
-                className="rounded-full bg-brand-700 px-4.5 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-800"
-                onClick={() => setIsAutoApplyOpen(true)}
-                type="button"
-              >
-                {t("dashboard.startAutoApply")}
-              </button>
-            </div>
-          </div>
+                      return (
+                        <li className="flex items-center gap-3 rounded-xl border border-line p-3" key={job.id}>
+                          <CompanyMark company={job.company} />
+                          <div className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-bold">{job.title}</span>
+                            <span className="block truncate text-xs text-ink-muted">{job.company} · {job.location}</span>
+                            <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                              {job.tags.map((chip) => (
+                                <span className="rounded-full bg-canvas px-2 py-0.5 text-[0.6875rem] font-semibold text-ink" key={chip}>
+                                  {chip}
+                                </span>
+                              ))}
+                              {job.applyUrl && (
+                                <a
+                                  className="text-[0.6875rem] font-semibold text-brand-700 hover:text-brand-800"
+                                  href={job.applyUrl}
+                                  rel="noreferrer"
+                                  target="_blank"
+                                >
+                                  {t("dashboard.viewJob")} →
+                                </a>
+                              )}
+                            </span>
+                          </div>
+                          <button
+                            aria-label={t("jobs.saveAria", { title: job.title })}
+                            aria-pressed={status === "saved"}
+                            className={`grid size-9 shrink-0 place-items-center rounded-full transition ${
+                              status === "saved" ? "text-brand-700" : "text-ink-muted hover:bg-canvas hover:text-ink"
+                            }`}
+                            disabled={pendingJobId === job.id || status !== null}
+                            onClick={() => void handleSave(job)}
+                            type="button"
+                          >
+                            <BookmarkIcon className={status === "saved" ? "size-5 fill-current" : "size-5"} />
+                          </button>
+                        </li>
+                      );
+                    })
+                  : nextOpportunities.map(({ job }) => {
+                      const status = statusFor(job);
 
-          {jobsLoading ? (
-            <div className="mb-9 rounded-2xl border border-line bg-surface px-5 py-8 text-sm text-ink-muted">
-              {t("dashboard.loadingJobs")}
-            </div>
-          ) : jobsErrorMessage ? (
-            <div className="mb-9 rounded-2xl border border-line bg-surface px-5 py-8 text-sm text-ink-muted">
-              {t("dashboard.jobsUnavailable")}
-            </div>
-          ) : visibleJobs.length === 0 ? (
-            <div className="mb-9 rounded-2xl border border-line bg-surface px-5 py-8 text-sm text-ink-muted">
-              {t("dashboard.noJobsAvailable")}
-            </div>
-          ) : (
-            <div className="mb-9">
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4">
-                {visibleJobs.map((job, index) => (
-                  <MatchCard
-                    isSaved={savedJobIds.has(job.id)}
-                    job={job}
-                    key={job.id}
-                    onSave={() => setSavedJobIds((current) => {
-                      const next = new Set(current);
-                      next.has(job.id) ? next.delete(job.id) : next.add(job.id);
-                      return next;
+                      return (
+                        <li className="flex items-center gap-3 rounded-xl border border-line p-3" key={job.id}>
+                          <CompanyMark company={job.company} />
+                          <Link className="min-w-0 flex-1" to={`/app/jobs/${job.id}`}>
+                            <span className="block truncate text-sm font-bold">{job.title}</span>
+                            <span className="block truncate text-xs text-ink-muted">{job.company} · {job.location}</span>
+                            <span className="mt-1.5 flex flex-wrap gap-1.5">
+                              {[job.workMode, job.jobType].map((chip) => (
+                                <span className="rounded-full bg-canvas px-2 py-0.5 text-[0.6875rem] font-semibold text-ink" key={chip}>
+                                  {chip}
+                                </span>
+                              ))}
+                            </span>
+                          </Link>
+                          <button
+                            aria-label={t("jobs.saveAria", { title: job.title })}
+                            aria-pressed={status === "saved"}
+                            className={`grid size-9 shrink-0 place-items-center rounded-full transition ${
+                              status === "saved" ? "text-brand-700" : "text-ink-muted hover:bg-canvas hover:text-ink"
+                            }`}
+                            disabled={pendingJobId === job.id || status !== null}
+                            onClick={() => void handleSave(job)}
+                            type="button"
+                          >
+                            <BookmarkIcon className={status === "saved" ? "size-5 fill-current" : "size-5"} />
+                          </button>
+                        </li>
+                      );
                     })}
-                    onSkip={() => setSkippedJobIds((current) => new Set(current).add(job.id))}
-                    tint={cardTints[index % cardTints.length]}
-                  />
+              </ul>
+            </Panel>
+
+            <Panel
+              action={
+                <span className="flex items-center gap-3">
+                  <DemoBadge />
+                  <ArrowLink to="/app/jobs">{t("dashboard.viewAll")}</ArrowLink>
+                </span>
+              }
+              title={t("dashboard.recommended")}
+            >
+              <div className="grid grid-cols-3 gap-2.5">
+                {recommended.map(({ job }) => (
+                  <Link className="rounded-xl border border-line p-3 transition hover:bg-canvas" key={job.id} to={`/app/jobs/${job.id}`}>
+                    <span className="block truncate text-sm font-bold">{job.company}</span>
+                    <span className="mt-0.5 block truncate text-xs text-ink-muted">{job.title}</span>
+                    <span className="mt-2 inline-block rounded-full bg-brand-50 px-2 py-0.5 text-[0.6875rem] font-semibold text-brand-800">
+                      {job.workMode}
+                    </span>
+                  </Link>
                 ))}
               </div>
-              {(visibleJobs.length < filteredJobs.length || hasMore) && (
-                <div className="mt-5 flex justify-center">
-                  <button
-                    className="rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-semibold text-brand-800 transition-colors hover:bg-canvas disabled:cursor-wait disabled:opacity-60"
-                    disabled={isLoadingMore}
-                    onClick={() => void handleLoadMoreJobs()}
-                    type="button"
-                  >
-                    {isLoadingMore ? t("dashboard.loadingMoreJobs") : t("dashboard.loadMoreJobs")}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          <div className="mb-3.5 text-lg font-bold tracking-tight">
-            {t("dashboard.allApplications")}
+            </Panel>
           </div>
 
-          {isLoading ? (
-            <LoadingState
-              description={t("dashboard.loadingOverviewDescription")}
-              title={t("dashboard.loadingOverviewTitle")}
-            />
-          ) : errorMessage ? (
-            <ErrorState description={errorMessage} title={t("dashboard.errorOverviewTitle")} />
-          ) : applications.length === 0 ? (
-            <EmptyState
-              description={t("dashboard.noApplicationsYetDescription")}
-              title={t("dashboard.noApplicationsYet")}
-            />
-          ) : (
-            <ApplicationsTable applications={applications} />
-          )}
-        </section>
-      </PageContainer>
+          <div className="space-y-5">
+            <Panel title={t("dashboard.activityTitle")} action={<span className="text-xs font-semibold text-ink-muted">{t("dashboard.activityRange")}</span>}>
+              <BarChart
+                ariaLabel={t("dashboard.activityAria")}
+                height={190}
+                labels={weekly.starts.map((start) => dateFormatter.format(start))}
+                series={[
+                  { color: ACTIVITY_COLORS.applications, name: t("dashboard.activityApplications"), values: weekly.applications },
+                  { color: ACTIVITY_COLORS.responses, name: t("dashboard.activityResponses"), values: weekly.responses },
+                  { color: ACTIVITY_COLORS.interviews, name: t("dashboard.activityInterviews"), values: weekly.interviews },
+                ]}
+              />
+              <div className="mt-3 grid grid-cols-3 gap-2 border-t border-line pt-3">
+                {legend.map((item) => (
+                  <div key={item.key}>
+                    <p className="text-xl font-extrabold">{sum(weekly[item.key])}</p>
+                    <p className="flex items-center gap-1.5 text-xs font-semibold text-ink-muted">
+                      <span aria-hidden="true" className="size-2 rounded-full" style={{ backgroundColor: item.color }} />
+                      {item.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Panel>
 
-      {isAutoApplyOpen && <AutoApplyModal onClose={() => setIsAutoApplyOpen(false)} onStart={handleStartAutoApply} profile={profile} />}
+            <Panel
+              action={
+                <span className="flex items-center gap-3">
+                  <DemoBadge />
+                  <ArrowLink to="/app/jobs">{t("dashboard.viewAll")}</ArrowLink>
+                </span>
+              }
+              title={t("dashboard.recentMatches")}
+            >
+              <ul className="space-y-3.5">
+                {ranked.slice(0, 3).map(({ job, match }) => (
+                  <li key={job.id}>
+                    <div className="mb-1 flex items-baseline justify-between gap-3 text-sm">
+                      <span className="min-w-0 truncate font-semibold">{job.company}</span>
+                      <span className="shrink-0 text-xs font-bold text-brand-700">{match.percent}%</span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-line">
+                      <div className="h-full rounded-full bg-brand-500" style={{ width: `${match.percent}%` }} />
+                    </div>
+                    <p className="mt-1 truncate text-xs text-ink-muted">{job.title}</p>
+                  </li>
+                ))}
+              </ul>
+              {usesPlaceholderScores && (
+                <p className="mt-4 text-xs text-ink-muted">{t("dashboard.placeholderScores")}</p>
+              )}
+            </Panel>
+          </div>
+
+          <div className="space-y-5">
+            <Panel title={t("dashboard.profileCompleteness")}>
+              <ProgressBar label={t("dashboard.profileCompleteness")} percent={completion.percentage} />
+              <ul className="mt-4 space-y-2.5">
+                {READINESS_ORDER.map((key) => {
+                  const isDone = !completion.missing.includes(key);
+
+                  return (
+                    <li className="flex items-center gap-2.5 text-sm" key={key}>
+                      {isDone ? (
+                        <CheckCircleIcon className="size-5 shrink-0 text-brand-600" />
+                      ) : (
+                        <span aria-hidden="true" className="size-5 shrink-0 rounded-full border-2 border-line" />
+                      )}
+                      <span className="flex-1">{t(READINESS_LABEL_KEYS[key])}</span>
+                      {isDone ? (
+                        <span className="text-xs font-semibold text-brand-700">{t("dashboard.complete")}</span>
+                      ) : (
+                        <Link className="text-xs font-semibold text-brand-700 hover:text-brand-800" to="/app/profile">
+                          {t("dashboard.addNow")} →
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </Panel>
+
+            <Panel title={t("dashboard.cvReadiness")}>
+              <p className="text-sm text-ink-muted">{t("dashboard.cvReadinessHint")}</p>
+              <ul className="mt-4 space-y-2.5">
+                {[
+                  { done: hasCv, label: t("dashboard.cvCheckUploaded") },
+                  { done: hasDefaultCv, label: t("dashboard.cvCheckDefault") },
+                  { done: hasCoverLetter, label: t("dashboard.cvCheckCoverLetter") },
+                ].map((item) => (
+                  <li className="flex items-center gap-2.5 text-sm" key={item.label}>
+                    {item.done ? (
+                      <CheckCircleIcon className="size-5 shrink-0 text-brand-600" />
+                    ) : (
+                      <span aria-hidden="true" className="size-5 shrink-0 rounded-full border-2 border-amber-300" />
+                    )}
+                    {item.label}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-5 flex flex-wrap gap-2.5">
+                <LinkButton size="sm" to="/app/cv-optimizer">
+                  {t("dashboard.optimizeCv")}
+                </LinkButton>
+                <LinkButton size="sm" to="/app/documents" variant="secondary">
+                  {t("dashboard.manageDocuments")}
+                </LinkButton>
+              </div>
+            </Panel>
+          </div>
+        </div>
+      </PageContainer>
     </>
   );
 }

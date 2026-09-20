@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import { App } from "./App";
 import { AuthProvider } from "./auth/AuthProvider";
+import { ToastProvider } from "./components/ui/Toast";
 import { LocaleProvider } from "./i18n";
 import "./styles/global.css";
 
@@ -12,7 +13,9 @@ createRoot(document.getElementById("root")!).render(
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AuthProvider>
         <LocaleProvider>
-          <App />
+          <ToastProvider>
+            <App />
+          </ToastProvider>
         </LocaleProvider>
       </AuthProvider>
     </BrowserRouter>
