@@ -4,7 +4,7 @@ import { applicationStatusDetails } from "../../features/applications/applicatio
 import type { Application } from "../../features/applications/types";
 import { mockJobs } from "../../features/jobs/mockJobs";
 import { useTranslation } from "../../i18n";
-import { SearchIcon } from "../icons/BrandIcons";
+import { JobmanIcon } from "../icons/JobmanIcon";
 
 const MAX_RESULTS = 5;
 
@@ -82,7 +82,7 @@ export function GlobalSearch({ applications }: { applications: Application[] }) 
         title={t("search.global")}
         type="button"
       >
-        <SearchIcon className="size-5" />
+        <JobmanIcon name="search" />
       </button>
 
       {isOpen && (
@@ -90,7 +90,7 @@ export function GlobalSearch({ applications }: { applications: Application[] }) 
           <button aria-label={t("common.closeDialog")} className="absolute inset-0 cursor-default" onClick={() => setIsOpen(false)} type="button" />
           <div aria-label={t("search.global")} aria-modal="true" className="relative w-full max-w-xl overflow-hidden rounded-card border border-line bg-surface shadow-xl" role="dialog">
             <div className="flex items-center gap-3 border-b border-line px-4">
-              <SearchIcon className="size-5 shrink-0 text-ink-muted" />
+              <JobmanIcon className="size-5 shrink-0 text-ink-muted" name="search" />
               <input
                 className="min-h-14 w-full border-none bg-transparent text-sm outline-none placeholder:text-ink-muted"
                 onChange={(event) => setQuery(event.target.value)}

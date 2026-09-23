@@ -27,7 +27,7 @@ import {
 } from "../features/jobs/jobFilterState";
 import { matchJob } from "../features/jobs/matchJob";
 import { matchLabelKey } from "../features/jobs/matchLabel";
-import { mockJobs } from "../features/jobs/mockJobs";
+import { allJobLocations as allLocations, mockJobs } from "../features/jobs/mockJobs";
 import {
   MAX_SAVED_SEARCHES,
   createSavedSearch,
@@ -45,10 +45,6 @@ type SortMode = "match" | "salary";
 
 const PAGE_SIZE = 8;
 const VISIBLE_TAGS = 3;
-
-const allLocations = Array.from(new Set(mockJobs.map((job) => job.location))).sort((a, b) =>
-  a.localeCompare(b),
-);
 
 function companyInitials(company: string) {
   return company

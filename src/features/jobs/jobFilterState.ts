@@ -13,6 +13,7 @@ export type JobFilterState = {
   salaryMax: number;
   salaryMin: number;
   skills: Set<string>;
+  visaSponsorshipOnly: boolean;
   workModes: Set<string>;
 };
 
@@ -26,6 +27,7 @@ export function createEmptyJobFilters(): JobFilterState {
     salaryMax: SALARY_MAX,
     salaryMin: SALARY_MIN,
     skills: new Set(),
+    visaSponsorshipOnly: false,
     workModes: new Set(),
   };
 }
@@ -53,6 +55,7 @@ export function jobMatchesFilters(job: MockJob, filters: JobFilterState) {
     passes(filters.companySizes, job.companySize) &&
     passes(filters.industries, job.industry) &&
     (filters.skills.size === 0 || job.tags.some((tag) => filters.skills.has(tag))) &&
+    (!filters.visaSponsorshipOnly || job.sponsorsVisa) &&
     job.salaryMax >= filters.salaryMin &&
     job.salaryMin <= upperBound
   );
@@ -66,6 +69,7 @@ export function hasActiveJobFilters(filters: JobFilterState) {
     filters.jobTypes.size > 0 ||
     filters.locations.size > 0 ||
     filters.skills.size > 0 ||
+    filters.visaSponsorshipOnly ||
     filters.workModes.size > 0 ||
     filters.salaryMin > SALARY_MIN ||
     filters.salaryMax < SALARY_MAX

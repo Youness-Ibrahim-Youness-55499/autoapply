@@ -193,6 +193,16 @@ export function JobFilters({
         />
       </StaticSection>
 
+      <StaticSection title={t("jobs.filters.visaSponsorship")}>
+        <CheckboxList
+          onToggle={() => onChange({ ...filters, visaSponsorshipOnly: !filters.visaSponsorshipOnly })}
+          options={[
+            { count: jobs.filter((job) => job.sponsorsVisa).length, value: t("jobs.filters.visaSponsorshipYes") },
+          ]}
+          selected={filters.visaSponsorshipOnly ? new Set([t("jobs.filters.visaSponsorshipYes")]) : new Set()}
+        />
+      </StaticSection>
+
       <StaticSection title={t("jobs.filters.location")}>
         <div className="mt-2.5 flex items-center gap-2 rounded-xl border border-line bg-canvas px-3 py-2">
           <SearchIcon className="size-4 shrink-0 text-ink-muted" />

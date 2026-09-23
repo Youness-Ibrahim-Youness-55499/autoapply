@@ -10,6 +10,7 @@ import { getProfileCompletion } from "../../features/profile/profile.utils";
 import { useProfile } from "../../features/profile/useProfile";
 import { Logo } from "../Logo";
 import { Waves } from "../decorations/Waves";
+import { JobmanIcon, type JobmanIconName } from "../icons/JobmanIcon";
 import { LanguageMenu } from "../ui/LanguageMenu";
 import { GlobalSearch } from "./GlobalSearch";
 import { NotificationBell } from "./NotificationBell";
@@ -21,7 +22,7 @@ import { NotificationBell } from "./NotificationBell";
 const FREE_PLAN_APPLICATION_LIMIT = 20;
 
 type NavigationItem = {
-  icon: ReactNode;
+  icon: JobmanIconName;
   labelKey: string;
   to: string;
 };
@@ -33,84 +34,15 @@ type WorkspaceLinksProps = {
   t: (key: string) => string;
 };
 
-function NavigationIcon({ children }: { children: ReactNode }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className="size-5 shrink-0"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      {children}
-    </svg>
-  );
-}
-
+// Documents reuses the pack's "cv-optimizer" glyph: it is the pack's document
+// icon that reads as a CV, and "applications" is already taken by the tracker.
 const navigationItems: NavigationItem[] = [
-  {
-    labelKey: "nav.overview",
-    to: "/app",
-    icon: (
-      <NavigationIcon>
-        <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" stroke="currentColor" strokeWidth="1.7" />
-      </NavigationIcon>
-    ),
-  },
-  {
-    labelKey: "nav.jobs",
-    to: "/app/jobs",
-    icon: (
-      <NavigationIcon>
-        <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.7" />
-        <path d="m20 20-4-4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
-      </NavigationIcon>
-    ),
-  },
-  {
-    labelKey: "nav.applications",
-    to: "/app/applications",
-    icon: (
-      <NavigationIcon>
-        <path d="M8 6V4.8A1.8 1.8 0 0 1 9.8 3h4.4A1.8 1.8 0 0 1 16 4.8V6m4 4H4m2-4h12a2 2 0 0 1 2 2v10.5A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5V8a2 2 0 0 1 2-2Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-      </NavigationIcon>
-    ),
-  },
-  {
-    labelKey: "nav.cvOptimizer",
-    to: "/app/cv-optimizer",
-    icon: (
-      <NavigationIcon>
-        <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Zm7 12 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" />
-      </NavigationIcon>
-    ),
-  },
-  {
-    labelKey: "nav.profile",
-    to: "/app/profile",
-    icon: (
-      <NavigationIcon>
-        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-      </NavigationIcon>
-    ),
-  },
-  {
-    labelKey: "nav.documents",
-    to: "/app/documents",
-    icon: (
-      <NavigationIcon>
-        <path d="M7 3h7l4 4v14H7V3Zm7 0v5h4M10 13h5m-5 4h5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-      </NavigationIcon>
-    ),
-  },
-  {
-    labelKey: "nav.settings",
-    to: "/app/settings",
-    icon: (
-      <NavigationIcon>
-        <path d="M12 15.25A3.25 3.25 0 1 0 12 8.75a3.25 3.25 0 0 0 0 6.5Zm7-3.25 2-1-2-3-2.1.7A7.8 7.8 0 0 0 15 7.6L14.5 5h-5L9 7.6a7.8 7.8 0 0 0-1.9 1.1L5 8l-2 3 2 1-2 1 2 3 2.1-.7A7.8 7.8 0 0 0 9 16.4l.5 2.6h5l.5-2.6a7.8 7.8 0 0 0 1.9-1.1l2.1.7 2-3-2-1Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
-      </NavigationIcon>
-    ),
-  },
+  { icon: "dashboard", labelKey: "nav.overview", to: "/app" },
+  { icon: "opportunities", labelKey: "nav.jobs", to: "/app/jobs" },
+  { icon: "applications", labelKey: "nav.applications", to: "/app/applications" },
+  { icon: "profile", labelKey: "nav.profile", to: "/app/profile" },
+  { icon: "cv-optimizer", labelKey: "nav.documents", to: "/app/documents" },
+  { icon: "settings", labelKey: "nav.settings", to: "/app/settings" },
 ];
 
 function WorkspaceLinks({ badges, onNavigate, orientation = "vertical", t }: WorkspaceLinksProps) {
@@ -133,9 +65,13 @@ function WorkspaceLinks({ badges, onNavigate, orientation = "vertical", t }: Wor
               onClick={onNavigate}
               to={item.to}
             >
-              {item.icon}
-              <span className={isHorizontal ? "whitespace-nowrap" : "flex-1 truncate"}>{t(item.labelKey)}</span>
-              {badge && <span className="shrink-0 text-xs font-bold text-ink-muted">{badge}</span>}
+              {({ isActive }) => (
+                <>
+                  <JobmanIcon active={isActive} name={item.icon} />
+                  <span className={isHorizontal ? "whitespace-nowrap" : "flex-1 truncate"}>{t(item.labelKey)}</span>
+                  {badge && <span className="shrink-0 text-xs font-bold text-ink-muted">{badge}</span>}
+                </>
+              )}
             </NavLink>
           </li>
         );

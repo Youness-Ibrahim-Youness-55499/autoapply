@@ -3,7 +3,6 @@ import { SkipLink } from "../components/SkipLink";
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
 import { Faq } from "../components/sections/Faq";
-import { FinalCta } from "../components/sections/FinalCta";
 import { Hero } from "../components/sections/Hero";
 import { Pricing } from "../components/sections/Pricing";
 import { ScrollProcessShowcase } from "../components/sections/ScrollProcessShowcase";
@@ -22,7 +21,6 @@ export function LandingPage() {
         <ScrollProcessShowcase />
         <Pricing />
         <Faq />
-        <FinalCta />
       </main>
       <Footer />
     </div>
