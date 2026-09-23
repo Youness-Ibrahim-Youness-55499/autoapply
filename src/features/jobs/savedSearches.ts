@@ -35,6 +35,7 @@ export function serializeFilters(filters: JobFilterState): SerializedFilters {
     salaryMax: filters.salaryMax,
     salaryMin: filters.salaryMin,
     skills: [...filters.skills],
+    visaSponsorshipOnly: filters.visaSponsorshipOnly,
     workModes: [...filters.workModes],
   };
 }
@@ -51,6 +52,7 @@ export function deserializeFilters(filters: SerializedFilters): JobFilterState {
     salaryMax: filters.salaryMax ?? empty.salaryMax,
     salaryMin: filters.salaryMin ?? empty.salaryMin,
     skills: new Set(filters.skills ?? []),
+    visaSponsorshipOnly: filters.visaSponsorshipOnly ?? empty.visaSponsorshipOnly,
     workModes: new Set(filters.workModes ?? []),
   };
 }
@@ -125,6 +127,7 @@ export function savedSearchParts(search: SavedSearch): string[] {
     ...filters.skills,
     ...filters.industries,
     ...filters.locations,
+    ...(filters.visaSponsorshipOnly ? ["Visa sponsorship"] : []),
   ].filter((part) => part.length > 0);
 }
 

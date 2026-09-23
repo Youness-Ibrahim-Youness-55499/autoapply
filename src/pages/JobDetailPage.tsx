@@ -150,6 +150,7 @@ function JobDetail({ job }: { job: MockJob }) {
                   <div className="mt-3 flex flex-wrap items-center gap-2">
                     <Badge tone="fullTime">{job.jobType}</Badge>
                     {job.workMode === "Remote" && <Badge tone="remote">{job.workMode}</Badge>}
+                    {job.sponsorsVisa && <Badge tone="verified">{t("jobs.detail.sponsorsVisa")}</Badge>}
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">
                       <CalendarIcon className="size-3.5" />
                       {t("jobs.detail.applyBy", { date: applyByDate })}

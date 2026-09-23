@@ -5,7 +5,8 @@ import { selectUpcoming } from "../../features/applications/upcoming";
 import { useWorkspaceEvents } from "../../features/applications/useWorkspaceEvents";
 import { useTranslation } from "../../i18n";
 import { formatRelative } from "../../lib/relativeTime";
-import { BellIcon, CalendarIcon } from "../icons/BrandIcons";
+import { CalendarIcon } from "../icons/BrandIcons";
+import { JobmanIcon } from "../icons/JobmanIcon";
 
 const LOOKAHEAD_DAYS = 7;
 const MAX_ITEMS = 6;
@@ -52,7 +53,7 @@ export function NotificationBell({ applications }: { applications: Application[]
         onClick={() => setIsOpen((open) => !open)}
         type="button"
       >
-        <BellIcon className="size-5" />
+        <JobmanIcon name="notifications" />
         {items.length > 0 && (
           <span className="absolute right-2 top-2 size-2 rounded-full border border-white bg-brand-500" />
         )}

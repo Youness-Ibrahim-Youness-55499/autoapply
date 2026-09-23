@@ -112,14 +112,6 @@ export function TrustIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function BellIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <IconBase {...props}>
-      <path d="M12 4a5 5 0 0 0-5 5v3.2c0 .6-.2 1.2-.6 1.7L5 16h14l-1.4-2.1a2.8 2.8 0 0 1-.6-1.7V9a5 5 0 0 0-5-5Zm-2.2 15a2.2 2.2 0 0 0 4.4 0" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" />
-    </IconBase>
-  );
-}
-
 export function ShareIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <IconBase {...props}>
