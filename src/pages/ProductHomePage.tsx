@@ -1,15 +1,13 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
-import { MatchRing } from "../components/app/MatchRing";
 import { BarChart } from "../components/charts/BarChart";
-import { BookmarkIcon, CheckCircleIcon, CloseIcon, SearchIcon, SparkleIcon } from "../components/icons/BrandIcons";
+import { BookmarkIcon, CheckCircleIcon, CloseIcon, SearchIcon } from "../components/icons/BrandIcons";
 import { PageContainer } from "../components/layout/PageContainer";
 import { Seo } from "../components/Seo";
 import { ErrorState } from "../components/states/ErrorState";
 import { ArrowLink } from "../components/ui/ArrowLink";
 import { Card } from "../components/ui/Card";
-import { ConfirmModal } from "../components/ui/ConfirmModal";
 import { DemoBadge } from "../components/ui/DemoBadge";
 import { ProgressBar } from "../components/ui/ProgressBar";
 import { useToast } from "../components/ui/Toast";
@@ -18,6 +16,7 @@ import { applicationStatusDetails } from "../features/applications/applicationSt
 import { useWorkspaceEvents } from "../features/applications/useWorkspaceEvents";
 import { useApplications } from "../features/applications/useApplications";
 import { pickQuoteIndex } from "../features/dashboard/motivationalQuote";
+import { ApplyConfirmModal } from "../features/jobs/ApplyConfirmModal";
 import { loadDismissedJobIds, persistDismissedJobIds } from "../features/jobs/dismissedJobs";
 import { createEmptyJobFilters, jobMatchesFilters, type JobFilterState } from "../features/jobs/jobFilterState";
 import { matchJob } from "../features/jobs/matchJob";
@@ -37,6 +36,7 @@ import {
   FilterSelect,
   FilterToggle,
   JOB_CARD_CLASSNAME,
+  JobMatchCard,
   Panel,
   type FilterOption,
 } from "../features/jobs/OverviewJobsPanel";
@@ -344,65 +344,25 @@ export function ProductHomePage() {
               <ul className="space-y-2.5">
                 {topMatches.map(({ job, match }, index) => {
                   const status = statusFor(job);
-                  const accent = CARD_ACCENTS[index % CARD_ACCENTS.length];
 
                   return (
-                    <li className={`${JOB_CARD_CLASSNAME} ${accent.ring} ${accent.tint}`} key={job.id}>
-                      <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1.5 ${accent.bar}`} />
-                      <CompanyMark accentClassName={accent.mark} company={job.company} />
-                      <Link className="min-w-0 flex-1" to={`/app/jobs/${job.id}`}>
-                        <span className="block truncate text-sm font-bold">{job.title}</span>
-                        <span className="block truncate text-xs text-ink-muted">{job.company} · {job.location}</span>
-                        <span className="mt-1.5 flex flex-wrap gap-1.5">
-                          {[job.workMode, job.jobType].map((chip) => (
-                            <span className="rounded-full bg-surface px-2 py-0.5 text-[0.6875rem] font-semibold text-ink" key={chip}>
-                              {chip}
-                            </span>
-                          ))}
-                        </span>
-                      </Link>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <p className="hidden text-xs font-bold text-brand-700 sm:block">{t(matchLabelKey(match.percent))}</p>
-                        <MatchRing percent={match.percent} />
-                      </div>
-                      <div className="flex shrink-0 items-center gap-0.5">
-                        <button
-                          aria-label={t("jobs.applyAria", { title: job.title })}
-                          className={`grid size-9 shrink-0 place-items-center rounded-full transition ${
-                            status === "applied" ? "text-brand-700" : "text-ink-muted hover:bg-surface hover:text-brand-700"
-                          }`}
-                          disabled={pendingJobId === job.id || status === "applied"}
-                          onClick={() => setApplyTarget(job)}
-                          type="button"
-                        >
-                          {status === "applied" ? (
-                            <CheckCircleIcon className="size-5" />
-                          ) : (
-                            <SparkleIcon className="size-5" />
-                          )}
-                        </button>
-                        <button
-                          aria-label={t("jobs.saveAria", { title: job.title })}
-                          aria-pressed={status === "saved"}
-                          className={`grid size-9 shrink-0 place-items-center rounded-full transition ${
-                            status === "saved" ? "text-brand-700" : "text-ink-muted hover:bg-surface hover:text-ink"
-                          }`}
-                          disabled={pendingJobId === job.id || status !== null}
-                          onClick={() => void handleSave(job)}
-                          type="button"
-                        >
-                          <BookmarkIcon className={status === "saved" ? "size-5 fill-current" : "size-5"} />
-                        </button>
-                        <button
-                          aria-label={t("jobs.dismissAria", { title: job.title })}
-                          className="grid size-9 shrink-0 place-items-center rounded-full text-ink-muted transition hover:bg-surface hover:text-ink"
-                          onClick={() => handleDismiss(job.id)}
-                          type="button"
-                        >
-                          <CloseIcon className="size-4" />
-                        </button>
-                      </div>
-                    </li>
+                    <JobMatchCard
+                      accentIndex={index}
+                      applyAriaLabel={t("jobs.applyAria", { title: job.title })}
+                      dismissAriaLabel={t("jobs.dismissAria", { title: job.title })}
+                      isApplied={status === "applied"}
+                      isApplyDisabled={pendingJobId === job.id || status === "applied"}
+                      isSaveDisabled={pendingJobId === job.id || status !== null}
+                      isSaved={status === "saved"}
+                      job={job}
+                      key={job.id}
+                      match={match}
+                      matchLabel={t(matchLabelKey(match.percent))}
+                      onApply={() => setApplyTarget(job)}
+                      onDismiss={() => handleDismiss(job.id)}
+                      onSave={() => void handleSave(job)}
+                      saveAriaLabel={t("jobs.saveAria", { title: job.title })}
+                    />
                   );
                 })}
               </ul>
@@ -507,17 +467,13 @@ export function ProductHomePage() {
         </div>
       </PageContainer>
 
-      <ConfirmModal
-        cancelLabel={t("jobs.detail.cancel")}
-        confirmLabel={t("jobs.detail.applyConfirm")}
-        description={
-          applyTarget ? t("jobs.detail.applyBody", { company: applyTarget.company, title: applyTarget.title }) : ""
-        }
+      <ApplyConfirmModal
+        company={applyTarget?.company ?? ""}
         isBusy={applyTarget !== null && pendingJobId === applyTarget.id}
         isOpen={applyTarget !== null}
+        jobTitle={applyTarget?.title ?? ""}
         onCancel={() => setApplyTarget(null)}
         onConfirm={() => void handleConfirmApply()}
-        title={t("jobs.detail.applyTitle")}
       />
     </>
   );

@@ -1,11 +1,30 @@
 import type { ReactNode } from "react";
-import { ChevronDownIcon, CheckCircleIcon, CloseIcon } from "../../components/icons/BrandIcons";
+import { Link } from "react-router-dom";
+import { MatchRing } from "../../components/app/MatchRing";
+import {
+  BookmarkIcon,
+  ChevronDownIcon,
+  CheckCircleIcon,
+  CloseIcon,
+  SparkleIcon,
+} from "../../components/icons/BrandIcons";
 import { Card } from "../../components/ui/Card";
+import type { JobMatch } from "./matchJob";
+import type { MockJob } from "./mockJobs";
 
 // Shared between the real Overview page (ProductHomePage.tsx) and the
 // landing page's interactive preview (HeroDashboard.tsx) -- the two are
 // meant to look and behave identically, so the filter controls and job-card
 // chrome live here once instead of two copies that could drift apart.
+
+export function companyInitials(company: string) {
+  return company
+    .split(" ")
+    .map((word) => word.charAt(0))
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
 
 export type FilterOption = { label: string; value: string };
 
@@ -48,13 +67,102 @@ export function Panel({ action, children, title }: { action?: ReactNode; childre
 export function CompanyMark({ accentClassName, company }: { accentClassName: string; company: string }) {
   return (
     <span className={`grid size-11 shrink-0 place-items-center rounded-xl text-sm font-extrabold ${accentClassName}`}>
-      {company
-        .split(" ")
-        .map((word) => word.charAt(0))
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()}
+      {companyInitials(company)}
     </span>
+  );
+}
+
+// The job-match row used by both the Overview page's "Top matches" panel and
+// the landing page's dashboard preview: accent bar, company mark, title/chips
+// linking to the job detail page, match ring, and apply/save/dismiss actions.
+// Labels are passed in already translated so this stays free of an i18n
+// dependency, same as FilterSelect/FilterToggle above.
+export function JobMatchCard({
+  accentIndex,
+  applyAriaLabel,
+  dismissAriaLabel,
+  isApplied,
+  isApplyDisabled,
+  isSaveDisabled,
+  isSaved,
+  job,
+  match,
+  matchLabel,
+  onApply,
+  onDismiss,
+  onSave,
+  saveAriaLabel,
+}: {
+  accentIndex: number;
+  applyAriaLabel: string;
+  dismissAriaLabel: string;
+  isApplied: boolean;
+  isApplyDisabled: boolean;
+  isSaveDisabled: boolean;
+  isSaved: boolean;
+  job: MockJob;
+  match: JobMatch;
+  matchLabel: string;
+  onApply: () => void;
+  onDismiss: () => void;
+  onSave: () => void;
+  saveAriaLabel: string;
+}) {
+  const accent = CARD_ACCENTS[accentIndex % CARD_ACCENTS.length];
+
+  return (
+    <li className={`${JOB_CARD_CLASSNAME} ${accent.ring} ${accent.tint}`}>
+      <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1.5 ${accent.bar}`} />
+      <CompanyMark accentClassName={accent.mark} company={job.company} />
+      <Link className="min-w-0 flex-1" to={`/app/jobs/${job.id}`}>
+        <span className="block truncate text-sm font-bold">{job.title}</span>
+        <span className="block truncate text-xs text-ink-muted">{job.company} · {job.location}</span>
+        <span className="mt-1.5 flex flex-wrap gap-1.5">
+          {[job.workMode, job.jobType].map((chip) => (
+            <span className="rounded-full bg-surface px-2 py-0.5 text-[0.6875rem] font-semibold text-ink" key={chip}>
+              {chip}
+            </span>
+          ))}
+        </span>
+      </Link>
+      <div className="flex shrink-0 items-center gap-2">
+        <p className="hidden text-xs font-bold text-brand-700 sm:block">{matchLabel}</p>
+        <MatchRing percent={match.percent} />
+      </div>
+      <div className="flex shrink-0 items-center gap-0.5">
+        <button
+          aria-label={applyAriaLabel}
+          className={`grid size-9 shrink-0 place-items-center rounded-full transition ${
+            isApplied ? "text-brand-700" : "text-ink-muted hover:bg-surface hover:text-brand-700"
+          }`}
+          disabled={isApplyDisabled}
+          onClick={onApply}
+          type="button"
+        >
+          {isApplied ? <CheckCircleIcon className="size-5" /> : <SparkleIcon className="size-5" />}
+        </button>
+        <button
+          aria-label={saveAriaLabel}
+          aria-pressed={isSaved}
+          className={`grid size-9 shrink-0 place-items-center rounded-full transition ${
+            isSaved ? "text-brand-700" : "text-ink-muted hover:bg-surface hover:text-ink"
+          }`}
+          disabled={isSaveDisabled}
+          onClick={onSave}
+          type="button"
+        >
+          <BookmarkIcon className={isSaved ? "size-5 fill-current" : "size-5"} />
+        </button>
+        <button
+          aria-label={dismissAriaLabel}
+          className="grid size-9 shrink-0 place-items-center rounded-full text-ink-muted transition hover:bg-surface hover:text-ink"
+          onClick={onDismiss}
+          type="button"
+        >
+          <CloseIcon className="size-4" />
+        </button>
+      </div>
+    </li>
   );
 }
 

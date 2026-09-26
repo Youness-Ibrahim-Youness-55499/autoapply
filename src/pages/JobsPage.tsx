@@ -28,6 +28,7 @@ import {
 import { matchJob } from "../features/jobs/matchJob";
 import { matchLabelKey } from "../features/jobs/matchLabel";
 import { allJobLocations as allLocations, mockJobs } from "../features/jobs/mockJobs";
+import { companyInitials } from "../features/jobs/OverviewJobsPanel";
 import {
   MAX_SAVED_SEARCHES,
   createSavedSearch,
@@ -45,15 +46,6 @@ type SortMode = "match" | "salary";
 
 const PAGE_SIZE = 8;
 const VISIBLE_TAGS = 3;
-
-function companyInitials(company: string) {
-  return company
-    .split(" ")
-    .map((word) => word.charAt(0))
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
 
 export function JobsPage() {
   const { t } = useTranslation();
