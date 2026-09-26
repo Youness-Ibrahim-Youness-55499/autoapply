@@ -9,14 +9,15 @@ import { ErrorState } from "../components/states/ErrorState";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
-import { ConfirmModal } from "../components/ui/ConfirmModal";
 import { LinkButton } from "../components/ui/LinkButton";
 import { Tabs } from "../components/ui/Tabs";
 import { useToast } from "../components/ui/Toast";
 import { useApplications } from "../features/applications/useApplications";
+import { ApplyConfirmModal } from "../features/jobs/ApplyConfirmModal";
 import { matchJob } from "../features/jobs/matchJob";
 import { matchLabelKey } from "../features/jobs/matchLabel";
 import { mockJobs, type MockJob } from "../features/jobs/mockJobs";
+import { companyInitials } from "../features/jobs/OverviewJobsPanel";
 import { useJobApplications } from "../features/jobs/useJobApplications";
 import { useProfile } from "../features/profile/useProfile";
 import { useTranslation } from "../i18n";
@@ -134,12 +135,7 @@ function JobDetail({ job }: { job: MockJob }) {
             <Card>
               <div className="flex flex-wrap items-start gap-4">
                 <span className="grid size-16 shrink-0 place-items-center rounded-2xl border border-line bg-canvas text-xl font-extrabold text-ink">
-                  {job.company
-                    .split(" ")
-                    .map((word) => word.charAt(0))
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()}
+                  {companyInitials(job.company)}
                 </span>
                 <div className="min-w-0 flex-1 basis-64">
                   <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{job.title}</h1>
@@ -362,15 +358,13 @@ function JobDetail({ job }: { job: MockJob }) {
         </div>
       </PageContainer>
 
-      <ConfirmModal
-        cancelLabel={t("jobs.detail.cancel")}
-        confirmLabel={t("jobs.detail.applyConfirm")}
-        description={t("jobs.detail.applyBody", { company: job.company, title: job.title })}
+      <ApplyConfirmModal
+        company={job.company}
         isBusy={isPending}
         isOpen={isApplyOpen}
+        jobTitle={job.title}
         onCancel={() => setIsApplyOpen(false)}
         onConfirm={() => void handleTrack("applied")}
-        title={t("jobs.detail.applyTitle")}
       />
     </>
   );

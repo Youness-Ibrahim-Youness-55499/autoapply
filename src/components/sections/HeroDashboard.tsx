@@ -1,12 +1,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { MatchRing } from "../app/MatchRing";
 import {
   ArrowRightIcon,
-  BookmarkIcon,
   CalendarIcon,
   CheckCircleIcon,
-  CloseIcon,
   SearchIcon,
   SparkleIcon,
   StarIcon,
@@ -29,7 +26,7 @@ import {
   CompanyMark,
   FilterSelect,
   FilterToggle,
-  JOB_CARD_CLASSNAME,
+  JobMatchCard,
   Panel,
   type FilterOption,
 } from "../../features/jobs/OverviewJobsPanel";
@@ -172,62 +169,26 @@ export function HeroDashboard() {
   const completion = useMemo(() => getProfileCompletion(sampleProfile), []);
 
   function renderJobCard(job: (typeof mockJobs)[number], match: ReturnType<typeof matchJob>, index: number) {
-    const isSaved = savedIds.has(job.id);
     const isApplied = appliedIds.has(job.id);
-    const accent = CARD_ACCENTS[index % CARD_ACCENTS.length];
 
     return (
-      <li className={`${JOB_CARD_CLASSNAME} ${accent.ring} ${accent.tint}`} key={job.id}>
-        <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1.5 ${accent.bar}`} />
-        <CompanyMark accentClassName={accent.mark} company={job.company} />
-        <Link className="min-w-0 flex-1" to={`/app/jobs/${job.id}`}>
-          <span className="block truncate text-sm font-bold">{job.title}</span>
-          <span className="block truncate text-xs text-ink-muted">{job.company} · {job.location}</span>
-          <span className="mt-1.5 flex flex-wrap gap-1.5">
-            {[job.workMode, job.jobType].map((chip) => (
-              <span className="rounded-full bg-surface px-2 py-0.5 text-[0.6875rem] font-semibold text-ink" key={chip}>
-                {chip}
-              </span>
-            ))}
-          </span>
-        </Link>
-        <div className="flex shrink-0 items-center gap-2">
-          <p className="hidden text-xs font-bold text-brand-700 sm:block">{t(matchLabelKey(match.percent))}</p>
-          <MatchRing percent={match.percent} />
-        </div>
-        <div className="flex shrink-0 items-center gap-0.5">
-          <button
-            aria-label={t("jobs.applyAria", { title: job.title })}
-            className={`grid size-9 shrink-0 place-items-center rounded-full transition ${
-              isApplied ? "text-brand-700" : "text-ink-muted hover:bg-surface hover:text-brand-700"
-            }`}
-            disabled={isApplied}
-            onClick={() => toggleInSet(appliedIds, setAppliedIds, job.id)}
-            type="button"
-          >
-            {isApplied ? <CheckCircleIcon className="size-5" /> : <SparkleIcon className="size-5" />}
-          </button>
-          <button
-            aria-label={t("jobs.saveAria", { title: job.title })}
-            aria-pressed={isSaved}
-            className={`grid size-9 shrink-0 place-items-center rounded-full transition ${
-              isSaved ? "text-brand-700" : "text-ink-muted hover:bg-surface hover:text-ink"
-            }`}
-            onClick={() => toggleInSet(savedIds, setSavedIds, job.id)}
-            type="button"
-          >
-            <BookmarkIcon className={isSaved ? "size-5 fill-current" : "size-5"} />
-          </button>
-          <button
-            aria-label={t("jobs.dismissAria", { title: job.title })}
-            className="grid size-9 shrink-0 place-items-center rounded-full text-ink-muted transition hover:bg-surface hover:text-ink"
-            onClick={() => toggleInSet(dismissedIds, setDismissedIds, job.id)}
-            type="button"
-          >
-            <CloseIcon className="size-4" />
-          </button>
-        </div>
-      </li>
+      <JobMatchCard
+        accentIndex={index}
+        applyAriaLabel={t("jobs.applyAria", { title: job.title })}
+        dismissAriaLabel={t("jobs.dismissAria", { title: job.title })}
+        isApplied={isApplied}
+        isApplyDisabled={isApplied}
+        isSaveDisabled={false}
+        isSaved={savedIds.has(job.id)}
+        job={job}
+        key={job.id}
+        match={match}
+        matchLabel={t(matchLabelKey(match.percent))}
+        onApply={() => toggleInSet(appliedIds, setAppliedIds, job.id)}
+        onDismiss={() => toggleInSet(dismissedIds, setDismissedIds, job.id)}
+        onSave={() => toggleInSet(savedIds, setSavedIds, job.id)}
+        saveAriaLabel={t("jobs.saveAria", { title: job.title })}
+      />
     );
   }
 
