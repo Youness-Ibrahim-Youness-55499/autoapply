@@ -34,14 +34,12 @@ type WorkspaceLinksProps = {
   t: (key: string) => string;
 };
 
-// Documents reuses the pack's "cv-optimizer" glyph: it is the pack's document
-// icon that reads as a CV, and "applications" is already taken by the tracker.
 const navigationItems: NavigationItem[] = [
   { icon: "dashboard", labelKey: "nav.overview", to: "/app" },
   { icon: "opportunities", labelKey: "nav.jobs", to: "/app/jobs" },
   { icon: "applications", labelKey: "nav.applications", to: "/app/applications" },
+  { icon: "ai-assistant", labelKey: "nav.autopilot", to: "/app/autopilot" },
   { icon: "profile", labelKey: "nav.profile", to: "/app/profile" },
-  { icon: "cv-optimizer", labelKey: "nav.documents", to: "/app/documents" },
   { icon: "settings", labelKey: "nav.settings", to: "/app/settings" },
 ];
 
