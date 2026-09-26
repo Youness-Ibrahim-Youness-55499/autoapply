@@ -88,7 +88,9 @@ function CollapsibleSection({ children, title }: { children: ReactNode; title: s
   );
 }
 
-function SalarySlider({
+// Exported for reuse on the Autopilot page's salary-range field -- same
+// track/thumb behaviour, same €30K-€120K bounds, one implementation.
+export function SalarySlider({
   max,
   min,
   onChange,
